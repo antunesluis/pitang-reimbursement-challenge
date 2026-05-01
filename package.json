@@ -1,15 +1,15 @@
 {
     "name": "pitang-reimbursement-challenge",
     "module": "index.ts",
-    "type": "module",
-    "private": true,
-    "workspaces": [
-        "packages/*"
-    ],
     "devDependencies": {
-        "@types/bun": "latest"
+        "@types/bun": "latest",
     },
     "peerDependencies": {
-        "typescript": "^5"
-    }
+        "typescript": "^6.0.3"
+    },
+    "private": true,
+    "type": "module",
+    "workspaces": [
+        "packages/*"
+    ]
 }
