@@ -1,0 +1,510 @@
+{
+    "info": {
+        "_postman_id": "c39c0617-fbe7-45b0-8f16-c6b03c1e8267",
+        "name": "Desafio Pitang Reembolsos",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "_exporter_id": "32662210"
+    },
+    "item": [
+        {
+            "name": "Auth",
+            "item": [
+                {
+                    "name": "Login",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "packages": {},
+                                "requests": {},
+                                "exec": [
+                                    "const response = pm.response.json();",
+                                    "if (response.token) {",
+                                    "    pm.collectionVariables.set('token', response.token);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"alice@example.com\",\n    \"password\": \"secret123\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{url}}/auth/login",
+                            "host": ["{{url}}"],
+                            "path": ["auth", "login"]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Users",
+            "item": [
+                {
+                    "name": "Create User",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Alice\",\n    \"email\": \"alice@example.com\",\n    \"password\": \"secret123\",\n    \"role\": \"EMPLOYEE\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{url}}/users",
+                            "host": ["{{url}}"],
+                            "path": ["users"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create User — No role (defaults to EMPLOYEE)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Bob\",\n    \"email\": \"bob@example.com\",\n    \"password\": \"secret123\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{url}}/users",
+                            "host": ["{{url}}"],
+                            "path": ["users"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "List Users",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{url}}/users",
+                            "host": ["{{url}}"],
+                            "path": ["users"]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Categories",
+            "item": [
+                {
+                    "name": "List Categories",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/categories",
+                            "host": ["{{url}}"],
+                            "path": ["categories"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Category",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Transporte\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{url}}/categories",
+                            "host": ["{{url}}"],
+                            "path": ["categories"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Category",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"active\": false\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{url}}/categories/{{categoryId}}",
+                            "host": ["{{url}}"],
+                            "path": ["categories", "{{categoryId}}"]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Reimbursements",
+            "item": [
+                {
+                    "name": "Create Reimbursement",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"description\": \"Almoço com cliente\",\n    \"amount\": 85.50,\n    \"expenseDate\": \"2026-04-25T12:00:00Z\",\n    \"categoryId\": \"{{categoryId}}\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{url}}/reimbursements",
+                            "host": ["{{url}}"],
+                            "path": ["reimbursements"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "List Reimbursements",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/reimbursements",
+                            "host": ["{{url}}"],
+                            "path": ["reimbursements"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Reimbursement",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/reimbursements/{{reimbursementId}}",
+                            "host": ["{{url}}"],
+                            "path": ["reimbursements", "{{reimbursementId}}"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Reimbursement",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"description\": \"Almoço com cliente — atualizado\",\n    \"amount\": 95.00\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{url}}/reimbursements/{{reimbursementId}}",
+                            "host": ["{{url}}"],
+                            "path": ["reimbursements", "{{reimbursementId}}"]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Submit Reimbursement",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/submit",
+                            "host": ["{{url}}"],
+                            "path": [
+                                "reimbursements",
+                                "{{reimbursementId}}",
+                                "submit"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Approve Reimbursement",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/approve",
+                            "host": ["{{url}}"],
+                            "path": [
+                                "reimbursements",
+                                "{{reimbursementId}}",
+                                "approve"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Reject Reimbursement",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"rejectionReason\": \"Valor acima do permitido\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/reject",
+                            "host": ["{{url}}"],
+                            "path": [
+                                "reimbursements",
+                                "{{reimbursementId}}",
+                                "reject"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Pay Reimbursement",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/pay",
+                            "host": ["{{url}}"],
+                            "path": [
+                                "reimbursements",
+                                "{{reimbursementId}}",
+                                "pay"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Cancel Reimbursement",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/cancel",
+                            "host": ["{{url}}"],
+                            "path": [
+                                "reimbursements",
+                                "{{reimbursementId}}",
+                                "cancel"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Reimbursement History",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/history",
+                            "host": ["{{url}}"],
+                            "path": [
+                                "reimbursements",
+                                "{{reimbursementId}}",
+                                "history"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Upload Attachment",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"fileName\": \"nota.pdf\",\n    \"fileUrl\": \"https://example.com/nota.pdf\",\n    \"fileType\": \"application/pdf\"\n}",
+                            "options": { "raw": { "language": "json" } }
+                        },
+                        "url": {
+                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/attachments",
+                            "host": ["{{url}}"],
+                            "path": [
+                                "reimbursements",
+                                "{{reimbursementId}}",
+                                "attachments"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "List Attachments",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/attachments",
+                            "host": ["{{url}}"],
+                            "path": [
+                                "reimbursements",
+                                "{{reimbursementId}}",
+                                "attachments"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        }
+    ],
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [""]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [""]
+            }
+        }
+    ],
+    "variable": [
+        { "key": "url", "value": "http://localhost:3000" },
+        { "key": "token", "value": "" },
+        { "key": "categoryId", "value": "" },
+        { "key": "reimbursementId", "value": "" }
+    ]
+}

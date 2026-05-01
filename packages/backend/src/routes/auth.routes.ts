@@ -1,8 +1,9 @@
 import { Router } from 'express';
 
+import { login } from '../controllers/auth.controller.ts';
+import { validate } from '../middlewares/validate.middleware.ts';
+import { loginSchema } from '../schemas/auth.schema.ts';
+
 export const authRoutes = Router();
 
-// TODO: implement controller
-authRoutes.post('/login', (_req, res) => {
-    res.sendStatus(501);
-});
+authRoutes.post('/login', validate({ body: loginSchema }), login);
