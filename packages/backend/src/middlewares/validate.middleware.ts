@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express"
 import type { ZodSchema } from "zod"
+import { ZodError } from "zod"
 
 type ValidationSchemas = {
   body?: ZodSchema
@@ -15,7 +16,7 @@ export function validate(schemas: ValidationSchemas) {
         res.status(400).json(formatZodError(result.error))
         return
       }
-      req.params = result.data
+      req.params = result.data as Record<string, string>
     }
 
     if (schemas.query) {
@@ -24,7 +25,7 @@ export function validate(schemas: ValidationSchemas) {
         res.status(400).json(formatZodError(result.error))
         return
       }
-      req.query = result.data
+      req.query = result.data as Record<string, string | string[] | undefined>
     }
 
     if (schemas.body) {
@@ -40,12 +41,12 @@ export function validate(schemas: ValidationSchemas) {
   }
 }
 
-function formatZodError(error: { issues: { path: (string | number)[]; message: string }[] }) {
+function formatZodError(error: ZodError) {
   return {
     message: "Validation error",
     statusCode: 400,
     errors: error.issues.map((issue) => ({
-      field: issue.path.join("."),
+      field: issue.path.map(String).join("."),
       message: issue.message,
     })),
   }
