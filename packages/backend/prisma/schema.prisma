@@ -50,7 +50,7 @@ model User {
 
 model Category {
   id        String   @id @default(cuid())
-  name      String
+  name      String   @unique
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -99,7 +99,7 @@ model Attachment {
 model History {
   id          String   @id @default(cuid())
   action      Action
-  observation String
+  observation String?
   createdAt   DateTime @default(now())
 
   reimbursementId String

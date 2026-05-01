@@ -49,7 +49,7 @@ CREATE TABLE "attachments" (
 CREATE TABLE "histories" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "action" TEXT NOT NULL,
-    "observation" TEXT NOT NULL,
+    "observation" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "reimbursementId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
@@ -59,3 +59,6 @@ CREATE TABLE "histories" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "categories_name_key" ON "categories"("name");
