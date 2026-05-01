@@ -2,6 +2,7 @@ import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
 
+import { errorFallbackMiddleware } from './middlewares/error.fallback.middleware.ts';
 import { authRoutes } from './routes/auth.routes.ts';
 import { categoryRoutes } from './routes/category.routes.ts';
 import { reimbursementRoutes } from './routes/reimbursement.routes.ts';
@@ -29,5 +30,11 @@ app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 app.use('/categories', categoryRoutes);
 app.use('/reimbursements', reimbursementRoutes);
+
+app.use((_req, res) => {
+    res.status(404).json({ message: 'Route not found', statusCode: 404 });
+});
+
+app.use(errorFallbackMiddleware);
 
 export { app };
