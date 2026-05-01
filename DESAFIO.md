@@ -292,9 +292,9 @@ Além das funcionalidades principais, serão avaliadas boas práticas de backend
 
 ```json
 {
-  "message": "Categoria não encontrada ou inativa",
-  "statusCode": 400,
-  "error": "Bad Request"
+    "message": "Categoria não encontrada ou inativa",
+    "statusCode": 400,
+    "error": "Bad Request"
 }
 ```
 

@@ -10,12 +10,12 @@ bun install
 
 ## Commands
 
-| What | Command (from root) |
-|------|---------------------|
-| Backend dev | `bun run --cwd packages/backend index.ts` |
-| Frontend dev | `bun run --cwd packages/frontend dev` |
-| Frontend build | `bun run --cwd packages/frontend build` |
-| Frontend lint | `bun run --cwd packages/frontend lint` |
+| What           | Command (from root)                       |
+| -------------- | ----------------------------------------- |
+| Backend dev    | `bun run --cwd packages/backend index.ts` |
+| Frontend dev   | `bun run --cwd packages/frontend dev`     |
+| Frontend build | `bun run --cwd packages/frontend build`   |
+| Frontend lint  | `bun run --cwd packages/frontend lint`    |
 
 The backend now has scripts defined; run `bun run --cwd packages/backend dev` instead.
 Root-level `index.ts` is a `bun init` leftover — not a real entrypoint.

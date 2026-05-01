@@ -1,0 +1,9 @@
+dist
+node_modules
+*.tgz
+out
+generated
+coverage
+*.lcov
+*.tsbuildinfo
+bun.lock
