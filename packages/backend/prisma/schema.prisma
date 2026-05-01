@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "./src/generated/prisma"
@@ -12,11 +7,106 @@ datasource db {
   provider = "sqlite"
 }
 
+enum Role {
+  EMPLOYEE
+  MANAGER
+  FINANCE
+  ADMIN
+}
+
+enum Status {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+  PAID
+  CANCELLED
+}
+
+enum Action {
+  CREATED
+  UPDATED
+  SUBMITTED
+  APPROVED
+  REJECTED
+  PAID
+  CANCELLED
+}
+
 model User {
   id        String   @id @default(cuid())
   name      String
   email     String   @unique
   password  String
+  role      Role     @default(EMPLOYEE)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  reimbursements Reimbursement[] @relation("Requester")
+  histories      History[]
+
+  @@map("users")
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reimbursements Reimbursement[]
+
+  @@map("categories")
+}
+
+model Reimbursement {
+  id              String   @id @default(cuid())
+  description     String
+  amount          Float
+  expenseDate     DateTime
+  status          Status   @default(DRAFT)
+  rejectionReason String?
+
+  requesterId String
+  requester   User   @relation("Requester", fields: [requesterId], references: [id])
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  attachments Attachment[]
+  histories   History[]
+
+  @@map("reimbursements")
+}
+
+model Attachment {
+  id        String   @id @default(cuid())
+  fileName  String
+  fileUrl   String
+  fileType  String
+  createdAt DateTime @default(now())
+
+  reimbursementId String
+  reimbursement   Reimbursement @relation(fields: [reimbursementId], references: [id])
+
+  @@map("attachments")
+}
+
+model History {
+  id          String   @id @default(cuid())
+  action      Action
+  observation String
+  createdAt   DateTime @default(now())
+
+  reimbursementId String
+  reimbursement   Reimbursement @relation(fields: [reimbursementId], references: [id])
+
+  userId String
+  user   User @relation(fields: [userId], references: [id])
+
+  @@map("histories")
 }
