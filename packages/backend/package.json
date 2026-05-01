@@ -31,6 +31,7 @@
         "dev": "bun run --watch src/index.ts",
         "prisma:migrate": "bunx --bun prisma migrate dev",
         "prisma:generate": "bunx --bun prisma generate",
+        "prisma:seed": "bun run prisma/seed.ts",
         "prisma:studio": "bunx --bun prisma studio",
         "lint": "eslint ."
     }
