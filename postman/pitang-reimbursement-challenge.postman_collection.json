@@ -47,6 +47,24 @@
                         }
                     },
                     "response": []
+                },
+                {
+                    "name": "Me (current user)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/auth/me",
+                            "host": ["{{url}}"],
+                            "path": ["auth", "me"]
+                        }
+                    },
+                    "response": []
                 }
             ]
         },

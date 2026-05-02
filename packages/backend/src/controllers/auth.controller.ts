@@ -55,3 +55,7 @@ export async function login(req: Request, res: Response) {
         });
     }
 }
+
+export async function me(req: Request, res: Response) {
+  res.json(req.user);
+}
