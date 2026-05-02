@@ -123,6 +123,30 @@ export default tseslint.config(
             'react-refresh/only-export-components': 'warn',
         },
     },
+    // Route files export Route + component — suppress Fast Refresh warnings
+    {
+        files: ['packages/frontend/src/routes/**/*.tsx'],
+        rules: {
+            'react-refresh/only-export-components': 'off',
+        },
+    },
+    // Context providers export hooks — suppress Fast Refresh warnings
+    {
+        files: ['packages/frontend/src/contexts/**/*.tsx'],
+        rules: {
+            'react-refresh/only-export-components': 'off',
+        },
+    },
+    // Shadcn UI components may export variants
+    {
+        files: ['packages/frontend/src/components/ui/**/*.tsx'],
+        rules: {
+            'react-refresh/only-export-components': [
+                'warn',
+                { allowExportNames: ['buttonVariants'] },
+            ],
+        },
+    },
 
     // JS config files
     {

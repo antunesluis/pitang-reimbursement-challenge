@@ -10,12 +10,13 @@ bun install
 
 ## Commands
 
-| What           | Command (from root)                       |
-| -------------- | ----------------------------------------- |
-| Backend dev    | `bun run --cwd packages/backend index.ts` |
-| Frontend dev   | `bun run --cwd packages/frontend dev`     |
-| Frontend build | `bun run --cwd packages/frontend build`   |
-| Frontend lint  | `bun run --cwd packages/frontend lint`    |
+| What           | Command (from root)                     |
+| -------------- | --------------------------------------- |
+| Backend dev    | `bun run --cwd packages/backend dev`    |
+| Backend test   | `bun run --cwd packages/backend test`   |
+| Frontend dev   | `bun run --cwd packages/frontend dev`   |
+| Frontend build | `bun run --cwd packages/frontend build` |
+| Frontend lint  | `bun run --cwd packages/frontend lint`  |
 
 The backend now has scripts defined; run `bun run --cwd packages/backend dev` instead.
 Root-level `index.ts` is a `bun init` leftover — not a real entrypoint.
@@ -25,11 +26,21 @@ Root-level `index.ts` is a `bun init` leftover — not a real entrypoint.
 ```
 packages/backend/        — Express 5 + Prisma 7 + SQLite (libsql)
   src/index.ts           —   entrypoint
-  src/prisma.ts           —   PrismaClient singleton
-packages/frontend/       — Vite 8 + React 19
+  src/lib/prisma.ts      —   PrismaClient singleton
+packages/frontend/       — Vite 8 + React 19 + TanStack Router + Shadcn UI
   src/main.tsx           —   entrypoint
 DESAFIO.md               — full project spec/requirements
 ```
+
+## Frontend stack
+
+- **TanStack Router** (file-based routes in `src/routes/`, not React Router)
+- **Shadcn UI** + Tailwind CSS v4 (components in `src/components/ui/`)
+- **Context API** for auth state (`src/contexts/auth.context.tsx`)
+- **Fetch API** wrapper (`src/lib/api.ts`) with Bearer token injection and 401 redirect
+- **React Hook Form + Zod** for forms (installed, not wired yet)
+- **Cookies** (`js-cookie`) for token storage (not localStorage)
+- **Path alias** `@/` → `src/` configured in both Vite and tsconfig
 
 ## Prisma + SQLite
 
