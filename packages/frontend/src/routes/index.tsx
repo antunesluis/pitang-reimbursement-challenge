@@ -1,5 +1,6 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button.tsx';
 import {
@@ -12,6 +13,7 @@ import {
 import { Input } from '@/components/ui/input.tsx';
 import { Label } from '@/components/ui/label.tsx';
 import { useAuth } from '@/contexts/auth.context.tsx';
+import { type LoginFormData, loginSchema } from '@/schemas/auth.schema.ts';
 
 export const Route = createFileRoute('/')({
     component: LoginPage,
@@ -20,22 +22,28 @@ export const Route = createFileRoute('/')({
 function LoginPage() {
     const { login } = useAuth();
     const router = useRouter();
-    const [email, setEmail] = useState('admin@example.com');
-    const [password, setPassword] = useState('admin123');
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
 
-    async function handleSubmit(e: React.FormEvent) {
-        e.preventDefault();
-        setError('');
-        setLoading(true);
+    const {
+        formState: { errors, isSubmitting },
+        handleSubmit,
+        register,
+        setError,
+    } = useForm<LoginFormData>({
+        defaultValues: {
+            email: 'admin@example.com',
+            password: 'admin123',
+        },
+        resolver: zodResolver(loginSchema),
+    });
+
+    async function onSubmit(data: LoginFormData) {
         try {
-            await login(email, password);
+            await login(data.email, data.password);
             router.navigate({ to: '/dashboard' });
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Login failed');
-        } finally {
-            setLoading(false);
+            setError('root', {
+                message: err instanceof Error ? err.message : 'Login failed',
+            });
         }
     }
 
@@ -47,37 +55,48 @@ function LoginPage() {
                     <CardDescription>Sign in to your account</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form className="space-y-4" onSubmit={handleSubmit}>
+                    <form
+                        className="space-y-4"
+                        onSubmit={handleSubmit(onSubmit)}
+                    >
                         <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
                             <Input
                                 id="email"
-                                onChange={(e) => setEmail(e.target.value)}
                                 placeholder="admin@example.com"
-                                required
                                 type="email"
-                                value={email}
+                                {...register('email')}
                             />
+                            {errors.email && (
+                                <p className="text-destructive text-sm">
+                                    {errors.email.message}
+                                </p>
+                            )}
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="password">Password</Label>
                             <Input
                                 id="password"
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
                                 type="password"
-                                value={password}
+                                {...register('password')}
                             />
+                            {errors.password && (
+                                <p className="text-destructive text-sm">
+                                    {errors.password.message}
+                                </p>
+                            )}
                         </div>
-                        {error && (
-                            <p className="text-destructive text-sm">{error}</p>
+                        {errors.root && (
+                            <p className="text-destructive text-sm">
+                                {errors.root.message}
+                            </p>
                         )}
                         <Button
                             className="w-full"
-                            disabled={loading}
+                            disabled={isSubmitting}
                             type="submit"
                         >
-                            {loading ? 'Signing in...' : 'Sign in'}
+                            {isSubmitting ? 'Signing in...' : 'Sign in'}
                         </Button>
                     </form>
                 </CardContent>
