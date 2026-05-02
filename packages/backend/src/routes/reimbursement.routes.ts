@@ -1,56 +1,105 @@
 import { Router } from 'express';
 
+import { Role } from '../../prisma/src/generated/prisma/enums.ts';
+import {
+    addAttachment,
+    listAttachments,
+} from '../controllers/attachment.controller.ts';
+import {
+    approve,
+    cancel,
+    create,
+    getById,
+    getHistory,
+    list,
+    pay,
+    reject,
+    submit,
+    update,
+} from '../controllers/reimbursement.controller.ts';
 import { authMiddleware } from '../middlewares/auth.middleware.ts';
+import { roleMiddleware } from '../middlewares/role.middleware.ts';
+import { validate } from '../middlewares/validate.middleware.ts';
+import { createAttachmentSchema } from '../schemas/attachment.schema.ts';
+import { paramsWithId } from '../schemas/common.schema.ts';
+import {
+    createReimbursementSchema,
+    rejectReimbursementSchema,
+    updateReimbursementSchema,
+} from '../schemas/reimbursement.schema.ts';
 
 export const reimbursementRoutes = Router();
 
-// TODO: implement controllers with per-action role checks
 reimbursementRoutes.use(authMiddleware);
 
-reimbursementRoutes.get('/', (_req, res) => {
-    res.sendStatus(501);
-});
+reimbursementRoutes.get('/', list);
 
-reimbursementRoutes.post('/', (_req, res) => {
-    res.sendStatus(501);
-});
+reimbursementRoutes.post(
+    '/',
+    roleMiddleware([Role.EMPLOYEE]),
+    validate({ body: createReimbursementSchema }),
+    create,
+);
 
-reimbursementRoutes.get('/:id', (_req, res) => {
-    res.sendStatus(501);
-});
+reimbursementRoutes.get('/:id', validate({ params: paramsWithId }), getById);
 
-reimbursementRoutes.put('/:id', (_req, res) => {
-    res.sendStatus(501);
-});
+reimbursementRoutes.put(
+    '/:id',
+    roleMiddleware([Role.EMPLOYEE]),
+    validate({ body: updateReimbursementSchema, params: paramsWithId }),
+    update,
+);
 
-reimbursementRoutes.post('/:id/submit', (_req, res) => {
-    res.sendStatus(501);
-});
+reimbursementRoutes.post(
+    '/:id/submit',
+    roleMiddleware([Role.EMPLOYEE]),
+    validate({ params: paramsWithId }),
+    submit,
+);
 
-reimbursementRoutes.post('/:id/approve', (_req, res) => {
-    res.sendStatus(501);
-});
+reimbursementRoutes.post(
+    '/:id/approve',
+    roleMiddleware([Role.MANAGER]),
+    validate({ params: paramsWithId }),
+    approve,
+);
 
-reimbursementRoutes.post('/:id/reject', (_req, res) => {
-    res.sendStatus(501);
-});
+reimbursementRoutes.post(
+    '/:id/reject',
+    roleMiddleware([Role.MANAGER]),
+    validate({ body: rejectReimbursementSchema, params: paramsWithId }),
+    reject,
+);
 
-reimbursementRoutes.post('/:id/pay', (_req, res) => {
-    res.sendStatus(501);
-});
+reimbursementRoutes.post(
+    '/:id/pay',
+    roleMiddleware([Role.FINANCE]),
+    validate({ params: paramsWithId }),
+    pay,
+);
 
-reimbursementRoutes.post('/:id/cancel', (_req, res) => {
-    res.sendStatus(501);
-});
+reimbursementRoutes.post(
+    '/:id/cancel',
+    roleMiddleware([Role.EMPLOYEE]),
+    validate({ params: paramsWithId }),
+    cancel,
+);
 
-reimbursementRoutes.get('/:id/history', (_req, res) => {
-    res.sendStatus(501);
-});
+reimbursementRoutes.get(
+    '/:id/history',
+    validate({ params: paramsWithId }),
+    getHistory,
+);
 
-reimbursementRoutes.post('/:id/attachments', (_req, res) => {
-    res.sendStatus(501);
-});
+reimbursementRoutes.post(
+    '/:id/attachments',
+    roleMiddleware([Role.EMPLOYEE]),
+    validate({ body: createAttachmentSchema, params: paramsWithId }),
+    addAttachment,
+);
 
-reimbursementRoutes.get('/:id/attachments', (_req, res) => {
-    res.sendStatus(501);
-});
+reimbursementRoutes.get(
+    '/:id/attachments',
+    validate({ params: paramsWithId }),
+    listAttachments,
+);

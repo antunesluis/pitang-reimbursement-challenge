@@ -37,7 +37,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                                "raw": "{\n    \"email\": \"admin@example.com\",\n    \"password\": \"admin123\"\n}",
+                            "raw": "{\n    \"email\": \"admin@example.com\",\n    \"password\": \"admin123\"\n}",
                             "options": { "raw": { "language": "json" } }
                         },
                         "url": {
@@ -112,7 +112,10 @@
                     "request": {
                         "method": "GET",
                         "header": [
-                            { "key": "Authorization", "value": "Bearer {{token}}" }
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
                         ],
                         "url": {
                             "raw": "{{url}}/users",
