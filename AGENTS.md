@@ -52,7 +52,11 @@ Vite 8 uses **Rolldown** (not esbuild) as its bundler. The React plugin (`@vitej
 
 ## Testing
 
-No test framework configured yet. Do not try to run test commands.
+Uses **Bun's built-in test runner** (`bun:test`) + **supertest** for HTTP integration tests.
+Run: `bun run --cwd packages/backend test` or `bun test` from the backend directory.
+
+Tests use the same `dev.db` as development — each suite cleans and reseeds via `cleanupDatabase()` + `seedAdmin()` in `tests/setup.ts`.
+Test files: `tests/{auth,users,categories,reimbursements,attachments}.test.ts` (33 tests, all flows covered).
 
 ## Environment
 

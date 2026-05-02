@@ -10,7 +10,9 @@
         "@types/express": "^5.0.6",
         "@types/jsonwebtoken": "^9.0.10",
         "@types/node": "^25.6.0",
-        "prisma": "^7.8.0"
+        "@types/supertest": "^7.2.0",
+        "prisma": "^7.8.0",
+        "supertest": "^7.2.2"
     },
     "peerDependencies": {
         "typescript": "^5"
@@ -33,6 +35,7 @@
         "prisma:generate": "bunx --bun prisma generate",
         "prisma:seed": "bun run prisma/seed.ts",
         "prisma:studio": "bunx --bun prisma studio",
-        "lint": "eslint ."
+        "lint": "eslint .",
+        "test": "bun test"
     }
 }
