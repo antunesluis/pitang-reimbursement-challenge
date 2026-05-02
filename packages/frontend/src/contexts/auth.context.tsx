@@ -8,24 +8,15 @@ import {
     useState,
 } from 'react';
 
-import { api, setOnUnauthorized } from '@/lib/api.ts';
+import { setOnUnauthorized } from '@/lib/api.ts';
 import { cookieStorage } from '@/lib/cookies.ts';
+import { authService } from '@/services/auth.service.ts';
 
-type User = {
-    email: string;
-    id: string;
-    name: string;
-    role: 'ADMIN' | 'EMPLOYEE' | 'FINANCE' | 'MANAGER';
-};
-
-type LoginResponse = {
-    token: string;
-    user: User;
-};
+import type { User } from '@/types/index.ts';
 
 type AuthState = {
-    isLoading: boolean;
     isAuthenticated: boolean;
+    isLoading: boolean;
     login: (email: string, password: string) => Promise<void>;
     logout: () => void;
     user: null | User;
@@ -53,24 +44,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Validate token on mount
     useEffect(() => {
         const token = cookieStorage.getToken();
-
         if (!token) {
             setIsLoading(false);
             return;
         }
 
-        api.get<User>('/auth/me')
+        authService
+            .me()
             .then((userData) => setUser(userData))
             .catch(() => cookieStorage.removeToken())
-
             .finally(() => setIsLoading(false));
     }, []);
 
     const login = useCallback(async (email: string, password: string) => {
-        const data = await api.post<LoginResponse>('/auth/login', {
-            email,
-            password,
-        });
+        const data = await authService.login(email, password);
         cookieStorage.setToken(data.token);
         setUser(data.user);
     }, []);
@@ -98,5 +85,3 @@ export function useAuth() {
     }
     return context;
 }
-
-export type { User };

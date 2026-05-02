@@ -1,12 +1,12 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 
 import { useAuth } from '@/contexts/auth.context.tsx';
+import { cookieStorage } from '@/lib/cookies.ts';
 
 export const Route = createFileRoute('/_authenticated')({
-    beforeLoad: ({ location }) => {
-        // context is not available in beforeLoad, check cookie directly
-        if (!document.cookie.includes('auth_token')) {
-            throw redirect({ search: { redirect: location.href }, to: '/' });
+    beforeLoad: () => {
+        if (!cookieStorage.getToken()) {
+            throw redirect({ to: '/' });
         }
     },
     component: AuthenticatedLayout,
