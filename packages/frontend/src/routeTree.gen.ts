@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
 import { Route as AuthenticatedReimbursementsIndexRouteImport } from './routes/_authenticated/reimbursements/index'
 import { Route as AuthenticatedReimbursementsNewRouteImport } from './routes/_authenticated/reimbursements/new'
 import { Route as AuthenticatedReimbursementsIdRouteImport } from './routes/_authenticated/reimbursements/$id'
@@ -29,6 +30,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedUsersIndexRoute = AuthenticatedUsersIndexRouteImport.update({
+  id: '/users/',
+  path: '/users/',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedReimbursementsIndexRoute =
@@ -62,6 +68,7 @@ export interface FileRoutesByFullPath {
   '/reimbursements/$id': typeof AuthenticatedReimbursementsIdRouteWithChildren
   '/reimbursements/new': typeof AuthenticatedReimbursementsNewRoute
   '/reimbursements/': typeof AuthenticatedReimbursementsIndexRoute
+  '/users/': typeof AuthenticatedUsersIndexRoute
   '/reimbursements/$id/edit': typeof AuthenticatedReimbursementsIdEditRoute
 }
 export interface FileRoutesByTo {
@@ -70,6 +77,7 @@ export interface FileRoutesByTo {
   '/reimbursements/$id': typeof AuthenticatedReimbursementsIdRouteWithChildren
   '/reimbursements/new': typeof AuthenticatedReimbursementsNewRoute
   '/reimbursements': typeof AuthenticatedReimbursementsIndexRoute
+  '/users': typeof AuthenticatedUsersIndexRoute
   '/reimbursements/$id/edit': typeof AuthenticatedReimbursementsIdEditRoute
 }
 export interface FileRoutesById {
@@ -80,6 +88,7 @@ export interface FileRoutesById {
   '/_authenticated/reimbursements/$id': typeof AuthenticatedReimbursementsIdRouteWithChildren
   '/_authenticated/reimbursements/new': typeof AuthenticatedReimbursementsNewRoute
   '/_authenticated/reimbursements/': typeof AuthenticatedReimbursementsIndexRoute
+  '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
   '/_authenticated/reimbursements/$id/edit': typeof AuthenticatedReimbursementsIdEditRoute
 }
 export interface FileRouteTypes {
@@ -90,6 +99,7 @@ export interface FileRouteTypes {
     | '/reimbursements/$id'
     | '/reimbursements/new'
     | '/reimbursements/'
+    | '/users/'
     | '/reimbursements/$id/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/reimbursements/$id'
     | '/reimbursements/new'
     | '/reimbursements'
+    | '/users'
     | '/reimbursements/$id/edit'
   id:
     | '__root__'
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/_authenticated/reimbursements/$id'
     | '/_authenticated/reimbursements/new'
     | '/_authenticated/reimbursements/'
+    | '/_authenticated/users/'
     | '/_authenticated/reimbursements/$id/edit'
   fileRoutesById: FileRoutesById
 }
@@ -136,6 +148,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/users/': {
+      id: '/_authenticated/users/'
+      path: '/users'
+      fullPath: '/users/'
+      preLoaderRoute: typeof AuthenticatedUsersIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/reimbursements/': {
@@ -189,6 +208,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedReimbursementsIdRoute: typeof AuthenticatedReimbursementsIdRouteWithChildren
   AuthenticatedReimbursementsNewRoute: typeof AuthenticatedReimbursementsNewRoute
   AuthenticatedReimbursementsIndexRoute: typeof AuthenticatedReimbursementsIndexRoute
+  AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -197,6 +217,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
     AuthenticatedReimbursementsIdRouteWithChildren,
   AuthenticatedReimbursementsNewRoute: AuthenticatedReimbursementsNewRoute,
   AuthenticatedReimbursementsIndexRoute: AuthenticatedReimbursementsIndexRoute,
+  AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
