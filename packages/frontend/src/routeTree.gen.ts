@@ -14,6 +14,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
 import { Route as AuthenticatedReimbursementsIndexRouteImport } from './routes/_authenticated/reimbursements/index'
+import { Route as AuthenticatedCategoriesIndexRouteImport } from './routes/_authenticated/categories/index'
 import { Route as AuthenticatedReimbursementsNewRouteImport } from './routes/_authenticated/reimbursements/new'
 import { Route as AuthenticatedReimbursementsIdRouteImport } from './routes/_authenticated/reimbursements/$id'
 import { Route as AuthenticatedReimbursementsIdEditRouteImport } from './routes/_authenticated/reimbursements/$id.edit'
@@ -43,6 +44,12 @@ const AuthenticatedReimbursementsIndexRoute =
     path: '/reimbursements/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedCategoriesIndexRoute =
+  AuthenticatedCategoriesIndexRouteImport.update({
+    id: '/categories/',
+    path: '/categories/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedReimbursementsNewRoute =
   AuthenticatedReimbursementsNewRouteImport.update({
     id: '/reimbursements/new',
@@ -67,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/reimbursements/$id': typeof AuthenticatedReimbursementsIdRouteWithChildren
   '/reimbursements/new': typeof AuthenticatedReimbursementsNewRoute
+  '/categories/': typeof AuthenticatedCategoriesIndexRoute
   '/reimbursements/': typeof AuthenticatedReimbursementsIndexRoute
   '/users/': typeof AuthenticatedUsersIndexRoute
   '/reimbursements/$id/edit': typeof AuthenticatedReimbursementsIdEditRoute
@@ -76,6 +84,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/reimbursements/$id': typeof AuthenticatedReimbursementsIdRouteWithChildren
   '/reimbursements/new': typeof AuthenticatedReimbursementsNewRoute
+  '/categories': typeof AuthenticatedCategoriesIndexRoute
   '/reimbursements': typeof AuthenticatedReimbursementsIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
   '/reimbursements/$id/edit': typeof AuthenticatedReimbursementsIdEditRoute
@@ -87,6 +96,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/reimbursements/$id': typeof AuthenticatedReimbursementsIdRouteWithChildren
   '/_authenticated/reimbursements/new': typeof AuthenticatedReimbursementsNewRoute
+  '/_authenticated/categories/': typeof AuthenticatedCategoriesIndexRoute
   '/_authenticated/reimbursements/': typeof AuthenticatedReimbursementsIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
   '/_authenticated/reimbursements/$id/edit': typeof AuthenticatedReimbursementsIdEditRoute
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/reimbursements/$id'
     | '/reimbursements/new'
+    | '/categories/'
     | '/reimbursements/'
     | '/users/'
     | '/reimbursements/$id/edit'
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/reimbursements/$id'
     | '/reimbursements/new'
+    | '/categories'
     | '/reimbursements'
     | '/users'
     | '/reimbursements/$id/edit'
@@ -117,6 +129,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/reimbursements/$id'
     | '/_authenticated/reimbursements/new'
+    | '/_authenticated/categories/'
     | '/_authenticated/reimbursements/'
     | '/_authenticated/users/'
     | '/_authenticated/reimbursements/$id/edit'
@@ -164,6 +177,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedReimbursementsIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/categories/': {
+      id: '/_authenticated/categories/'
+      path: '/categories'
+      fullPath: '/categories/'
+      preLoaderRoute: typeof AuthenticatedCategoriesIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/reimbursements/new': {
       id: '/_authenticated/reimbursements/new'
       path: '/reimbursements/new'
@@ -207,6 +227,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedReimbursementsIdRoute: typeof AuthenticatedReimbursementsIdRouteWithChildren
   AuthenticatedReimbursementsNewRoute: typeof AuthenticatedReimbursementsNewRoute
+  AuthenticatedCategoriesIndexRoute: typeof AuthenticatedCategoriesIndexRoute
   AuthenticatedReimbursementsIndexRoute: typeof AuthenticatedReimbursementsIndexRoute
   AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
 }
@@ -216,6 +237,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedReimbursementsIdRoute:
     AuthenticatedReimbursementsIdRouteWithChildren,
   AuthenticatedReimbursementsNewRoute: AuthenticatedReimbursementsNewRoute,
+  AuthenticatedCategoriesIndexRoute: AuthenticatedCategoriesIndexRoute,
   AuthenticatedReimbursementsIndexRoute: AuthenticatedReimbursementsIndexRoute,
   AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
 }
