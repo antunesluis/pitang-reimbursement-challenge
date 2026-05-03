@@ -1,9 +1,11 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Download } from "lucide-react";
+import { Download } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { AttachmentUpload } from "@/components/AttachmentUpload.tsx";
+import { BackButton } from "@/components/BackButton.tsx";
+import { ErrorAlert } from "@/components/ErrorAlert.tsx";
 import { RejectDialog } from "@/components/RejectDialog.tsx";
 import { StatusBadge } from "@/components/StatusBadge.tsx";
 import { Button } from "@/components/ui/button.tsx";
@@ -82,15 +84,8 @@ function ReimbursementDetailPage() {
   if (error || !data) {
     return (
       <div className="space-y-4">
-        <Button asChild variant="ghost">
-          <Link to="/reimbursements">
-            <ArrowLeft className="mr-2 size-4" />
-            Back to list
-          </Link>
-        </Button>
-        <div className="text-destructive rounded-md border p-4">
-          <p>{error ?? "Reimbursement not found"}</p>
-        </div>
+        <BackButton label="Back to list" to="/reimbursements" />
+        <ErrorAlert message={error ?? "Reimbursement not found"} />
       </div>
     );
   }
@@ -108,21 +103,12 @@ function ReimbursementDetailPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button asChild variant="ghost">
-          <Link to="/reimbursements">
-            <ArrowLeft className="mr-2 size-4" />
-            Back
-          </Link>
-        </Button>
+        <BackButton to="/reimbursements" />
         <h1 className="text-2xl font-bold">{data.description}</h1>
         <StatusBadge status={data.status} />
       </div>
 
-      {error && (
-        <div className="text-destructive rounded-md border p-4">
-          <p>{error}</p>
-        </div>
-      )}
+      {error && <ErrorAlert message={error} />}
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Card>

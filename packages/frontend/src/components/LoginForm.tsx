@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 
+import { FieldError } from '@/components/FieldError.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import {
     Card,
@@ -60,11 +61,7 @@ export function LoginForm() {
                                 type="email"
                                 {...register('email')}
                             />
-                            {errors.email && (
-                                <p className="text-destructive text-sm">
-                                    {errors.email.message}
-                                </p>
-                            )}
+                            <FieldError message={errors.email?.message} />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="password">Password</Label>
@@ -73,17 +70,9 @@ export function LoginForm() {
                                 type="password"
                                 {...register('password')}
                             />
-                            {errors.password && (
-                                <p className="text-destructive text-sm">
-                                    {errors.password.message}
-                                </p>
-                            )}
+                            <FieldError message={errors.password?.message} />
                         </div>
-                        {errors.root && (
-                            <p className="text-destructive text-sm">
-                                {errors.root.message}
-                            </p>
-                        )}
+                        <FieldError message={errors.root?.message} />
                         <Button
                             className="w-full"
                             disabled={isSubmitting}

@@ -1,10 +1,13 @@
-/* eslint-disable react-hooks/set-state-in-effect */
+ 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
+import { BackButton } from "@/components/BackButton.tsx";
+import { CategorySelect } from "@/components/CategorySelect.tsx";
+import { ErrorAlert } from "@/components/ErrorAlert.tsx";
+import { FieldError } from '@/components/FieldError.tsx';
 import { Button } from "@/components/ui/button.tsx";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.tsx";
 import { Input } from "@/components/ui/input.tsx";
@@ -14,7 +17,6 @@ import {
   type UpdateReimbursementFormData,
   updateReimbursementSchema,
 } from "@/schemas/reimbursement.schema.ts";
-import { categoryService } from "@/services/category.service.ts";
 import { reimbursementService } from "@/services/reimbursement.service.ts";
 
 import type { Reimbursement } from "@/types/index.ts";
@@ -27,23 +29,18 @@ function EditReimbursementPage() {
   const { id } = Route.useParams();
   const router = useRouter();
   const [data, setData] = useState<null | Reimbursement>(null);
-  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
 
   const fetchData = useCallback(async () => {
     try {
-      const [reimbursement, cats] = await Promise.all([
-        reimbursementService.getById(id),
-        categoryService.list(),
-      ]);
+      const reimbursement = await reimbursementService.getById(id);
       if (reimbursement.status !== "DRAFT") {
         setLoadError("Only DRAFT reimbursements can be edited");
         setLoading(false);
         return;
       }
       setData(reimbursement);
-      setCategories(cats.filter((c) => c.active));
     } catch (err) {
       setLoadError(err instanceof Error ? err.message : "Failed to load");
     } finally {
@@ -60,6 +57,8 @@ function EditReimbursementPage() {
     handleSubmit,
     register,
     setError,
+    setValue,
+    watch,
   } = useForm<UpdateReimbursementFormData>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(updateReimbursementSchema) as any,
@@ -72,6 +71,8 @@ function EditReimbursementPage() {
         }
       : undefined,
   });
+
+  const categoryId = watch("categoryId");
 
   async function onSubmit(formData: UpdateReimbursementFormData) {
     try {
@@ -86,9 +87,7 @@ function EditReimbursementPage() {
       await reimbursementService.update(id, payload);
       router.navigate({ params: { id }, to: "/reimbursements/$id" });
     } catch (err) {
-      setError("root", {
-        message: err instanceof Error ? err.message : "Failed to update",
-      });
+      setError("root", { message: err instanceof Error ? err.message : "Failed to update" });
     }
   }
 
@@ -104,15 +103,8 @@ function EditReimbursementPage() {
   if (loadError) {
     return (
       <div className="mx-auto max-w-lg space-y-4">
-        <Button asChild variant="ghost">
-          <Link params={{ id }} to="/reimbursements/$id">
-            <ArrowLeft className="mr-2 size-4" />
-            Back
-          </Link>
-        </Button>
-        <div className="text-destructive rounded-md border p-4">
-          <p>{loadError}</p>
-        </div>
+        <BackButton params={{ id }} to="/reimbursements/$id" />
+        <ErrorAlert message={loadError} />
       </div>
     );
   }
@@ -120,12 +112,7 @@ function EditReimbursementPage() {
   return (
     <div className="mx-auto max-w-lg space-y-6">
       <div className="flex items-center gap-4">
-        <Button asChild variant="ghost">
-          <Link params={{ id }} to="/reimbursements/$id">
-            <ArrowLeft className="mr-2 size-4" />
-            Back
-          </Link>
-        </Button>
+        <BackButton params={{ id }} to="/reimbursements/$id" />
         <h1 className="text-2xl font-bold">Edit Reimbursement</h1>
       </div>
 
@@ -137,60 +124,32 @@ function EditReimbursementPage() {
           <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
-              <Input
-                id="description"
-                placeholder="Lunch with client"
-                {...register("description")}
-              />
-              {errors.description && (
-                <p className="text-destructive text-sm">{errors.description.message}</p>
-              )}
+              <Input id="description" placeholder="Lunch with client" {...register("description")} />
+              <FieldError message={errors.description?.message} />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="amount">Amount ($)</Label>
-              <Input
-                id="amount"
-                placeholder="0.00"
-                step="0.01"
-                type="number"
-                {...register("amount")}
-              />
-              {errors.amount && (
-                <p className="text-destructive text-sm">{errors.amount.message}</p>
-              )}
+              <Input id="amount" placeholder="0.00" step="0.01" type="number" {...register("amount")} />
+              <FieldError message={errors.amount?.message} />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="categoryId">Category</Label>
-              <select
-                className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-                id="categoryId"
-                {...register("categoryId")}
-              >
-                <option value="">Select a category</option>
-                {categories.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-              {errors.categoryId && (
-                <p className="text-destructive text-sm">{errors.categoryId.message}</p>
-              )}
+              <Label>Category</Label>
+              <CategorySelect
+                onChange={(value) => setValue("categoryId", value)}
+                value={categoryId ?? ""}
+              />
+              <FieldError message={errors.categoryId?.message} />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="expenseDate">Expense Date</Label>
               <Input id="expenseDate" type="date" {...register("expenseDate")} />
-              {errors.expenseDate && (
-                <p className="text-destructive text-sm">{errors.expenseDate.message}</p>
-              )}
+              <FieldError message={errors.expenseDate?.message} />
             </div>
 
-            {errors.root && (
-              <p className="text-destructive text-sm">{errors.root.message}</p>
-            )}
+            <FieldError message={errors.root?.message} />
 
             <Button className="w-full" disabled={isSubmitting} type="submit">
               {isSubmitting ? "Saving..." : "Save Changes"}

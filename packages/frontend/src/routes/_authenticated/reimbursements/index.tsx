@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { ErrorAlert } from "@/components/ErrorAlert.tsx";
 import { StatusBadge } from "@/components/StatusBadge.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Skeleton } from "@/components/ui/skeleton.tsx";
@@ -53,12 +54,7 @@ function ReimbursementListPage() {
     return (
       <div className="space-y-4">
         <h1 className="text-2xl font-bold">Reimbursements</h1>
-        <div className="text-destructive rounded-md border p-4">
-          <p>{error}</p>
-          <Button className="mt-2" onClick={() => window.location.reload()} variant="outline">
-            Retry
-          </Button>
-        </div>
+        <ErrorAlert message={error} />
       </div>
     );
   }

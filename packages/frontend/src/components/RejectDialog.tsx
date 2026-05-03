@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
+import { FieldError } from '@/components/FieldError.tsx';
 import { Button } from "@/components/ui/button.tsx";
 import {
   Dialog,
@@ -50,9 +51,7 @@ export function RejectDialog({ onClose, onSubmit, open }: Props) {
                 placeholder="Enter rejection reason..."
                 {...register("rejectionReason")}
               />
-              {errors.rejectionReason && (
-                <p className="text-destructive text-sm">{errors.rejectionReason.message}</p>
-              )}
+              <FieldError message={errors.rejectionReason?.message} />
             </div>
           </div>
           <DialogFooter className="mt-4">
