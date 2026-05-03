@@ -1,8 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { useCallback, useEffect, useState } from 'react';
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 import { BackButton } from '@/components/BackButton.tsx';
 import { CategorySelect } from '@/components/CategorySelect.tsx';
@@ -98,8 +98,8 @@ function EditReimbursementPage() {
             }
 
             await reimbursementService.update(id, payload);
-            toast.success("Reimbursement updated");
-            router.navigate({ params: { id }, to: "/reimbursements/$id" });
+            toast.success('Reimbursement updated');
+            router.navigate({ params: { id }, to: '/reimbursements/$id' });
         } catch (err) {
             setError('root', {
                 message:

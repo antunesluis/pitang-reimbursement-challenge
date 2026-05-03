@@ -2,8 +2,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
 import { FieldError } from '@/components/FieldError.tsx';
@@ -77,7 +77,7 @@ function CategoriesPage() {
     async function onSubmit(data: CreateCategoryFormData) {
         try {
             await categoryService.create(data.name);
-            toast.success("Category created");
+            toast.success('Category created');
             reset();
             setShowForm(false);
             await fetchCategories();
@@ -92,7 +92,9 @@ function CategoriesPage() {
     async function toggleActive(cat: Category) {
         try {
             await categoryService.update(cat.id, { active: !cat.active });
-            toast.success(cat.active ? "Category deactivated" : "Category activated");
+            toast.success(
+                cat.active ? 'Category deactivated' : 'Category activated',
+            );
             await fetchCategories();
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to update');
@@ -103,7 +105,7 @@ function CategoriesPage() {
         if (!editName.trim()) return;
         try {
             await categoryService.update(id, { name: editName.trim() });
-            toast.success("Category renamed");
+            toast.success('Category renamed');
             setEditingId(null);
             await fetchCategories();
         } catch (err) {

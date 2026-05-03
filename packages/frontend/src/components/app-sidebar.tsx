@@ -119,7 +119,11 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
                             tooltip="Reimbursement Control"
                         >
                             <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                                <Receipt className="size-4" />
+                                <img
+                                    alt="Logo"
+                                    className="size-5"
+                                    src="/logo_sem_texto_pitang.png"
+                                />
                             </div>
                             <div className="grid flex-1 text-left text-sm leading-tight">
                                 <span className="truncate font-semibold">

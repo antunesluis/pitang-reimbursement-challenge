@@ -1,8 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 import { AttachmentUpload } from '@/components/AttachmentUpload.tsx';
 import { CategorySelect } from '@/components/CategorySelect.tsx';
@@ -67,7 +67,7 @@ function NewReimbursementPage() {
                 );
             }
 
-            toast.success("Reimbursement created");
+            toast.success('Reimbursement created');
             router.navigate({
                 params: { id: reimbursement.id },
                 to: '/reimbursements/$id',

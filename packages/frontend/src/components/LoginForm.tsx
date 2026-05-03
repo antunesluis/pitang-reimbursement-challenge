@@ -42,8 +42,23 @@ export function LoginForm() {
     }
 
     return (
-        <div className="bg-muted/50 flex min-h-screen items-center justify-center">
-            <Card className="w-full max-w-sm">
+        <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-white dark:bg-zinc-950">
+            <div
+                className="pointer-events-none absolute inset-0"
+                style={{
+                    backgroundColor: '#d13e36',
+                    maskImage: 'url(/insigna-pitang.png)',
+                    maskPosition: 'center',
+                    maskRepeat: 'no-repeat',
+                    maskSize: 'contain',
+                    opacity: 0.4,
+                    WebkitMaskImage: 'url(/insigna-pitang.png)',
+                    WebkitMaskPosition: 'center',
+                    WebkitMaskRepeat: 'no-repeat',
+                    WebkitMaskSize: 'contain',
+                }}
+            />
+            <Card className="relative w-full max-w-sm shadow-md dark:bg-zinc-900">
                 <CardHeader>
                     <CardTitle>Reimbursement Control</CardTitle>
                     <CardDescription>Sign in to your account</CardDescription>

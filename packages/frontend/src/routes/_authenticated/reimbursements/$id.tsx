@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Download } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { Download } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 import { AttachmentUpload } from '@/components/AttachmentUpload.tsx';
 import { BackButton } from '@/components/BackButton.tsx';
@@ -69,8 +69,8 @@ function ReimbursementDetailPage() {
             await fetchData();
             toast.success(label);
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Action failed");
-            toast.error(err instanceof Error ? err.message : "Action failed");
+            setError(err instanceof Error ? err.message : 'Action failed');
+            toast.error(err instanceof Error ? err.message : 'Action failed');
         } finally {
             setActionLoading(false);
         }
@@ -241,7 +241,7 @@ function ReimbursementDetailPage() {
                                 onClick={() =>
                                     handleAction(
                                         () => reimbursementService.submit(id),
-                                        "Reimbursement submitted",
+                                        'Reimbursement submitted',
                                     )
                                 }
                             >
@@ -254,7 +254,7 @@ function ReimbursementDetailPage() {
                                 onClick={() =>
                                     handleAction(
                                         () => reimbursementService.approve(id),
-                                        "Reimbursement approved",
+                                        'Reimbursement approved',
                                     )
                                 }
                                 variant="default"
@@ -277,7 +277,7 @@ function ReimbursementDetailPage() {
                                 onClick={() =>
                                     handleAction(
                                         () => reimbursementService.pay(id),
-                                        "Payment marked as paid",
+                                        'Payment marked as paid',
                                     )
                                 }
                                 variant="default"
@@ -291,7 +291,7 @@ function ReimbursementDetailPage() {
                                 onClick={() =>
                                     handleAction(
                                         () => reimbursementService.cancel(id),
-                                        "Reimbursement cancelled",
+                                        'Reimbursement cancelled',
                                     )
                                 }
                                 variant="outline"
@@ -355,9 +355,13 @@ function ReimbursementDetailPage() {
                                         fileUrl: formData.fileUrl,
                                     });
                                     await fetchData();
-                                    toast.success("Attachment added");
+                                    toast.success('Attachment added');
                                 } catch (err) {
-                                    toast.error(err instanceof Error ? err.message : "Upload failed");
+                                    toast.error(
+                                        err instanceof Error
+                                            ? err.message
+                                            : 'Upload failed',
+                                    );
                                 }
                             }}
                         />
@@ -423,7 +427,7 @@ function ReimbursementDetailPage() {
                                 id,
                                 formData.rejectionReason,
                             ),
-                        "Reimbursement rejected",
+                        'Reimbursement rejected',
                     );
                     setRejectOpen(false);
                 }}
