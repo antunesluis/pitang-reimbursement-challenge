@@ -1,4 +1,4 @@
-import { Link, useMatches, useNavigate } from '@tanstack/react-router';
+import { Link, useMatchRoute } from "@tanstack/react-router";
 import {
     ChevronsUpDown,
     LayoutDashboard,
@@ -102,19 +102,12 @@ const ROLE_LABELS: Record<Role, string> = {
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
     const { logout, user } = useAuth();
     const { isMobile } = useSidebar();
-    const navigate = useNavigate();
-    const matches = useMatches();
+    const matchRoute = useMatchRoute();
 
-    const currentPath = matches[matches.length - 1]?.routeId ?? '';
     const role = user?.role;
     const filtered = NAV_ITEMS.filter((item) =>
         role ? item.roles.includes(role) : false,
     );
-
-    function isActive(path: string) {
-        if (path === '/dashboard') return currentPath.includes('dashboard');
-        return currentPath.includes(path.replace('/', ''));
-    }
 
     return (
         <Sidebar collapsible="icon" {...props}>
@@ -149,7 +142,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
                                 <SidebarMenuItem key={item.label}>
                                     <SidebarMenuButton
                                         asChild
-                                        isActive={isActive(item.path)}
+                                        isActive={!!matchRoute({ to: item.path })}
                                         tooltip={item.label}
                                     >
                                         <Link to={item.path}>
@@ -217,12 +210,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
                                     </div>
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                    onClick={() => {
-                                        logout();
-                                        void navigate({ to: '/' });
-                                    }}
-                                >
+                                <DropdownMenuItem onClick={logout}>
                                     <LogOut />
                                     Sign out
                                 </DropdownMenuItem>
