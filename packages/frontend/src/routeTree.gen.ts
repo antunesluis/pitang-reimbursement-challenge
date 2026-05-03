@@ -11,11 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedUsersRouteImport } from './routes/_authenticated/users'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as AuthenticatedCategoriesRouteImport } from './routes/_authenticated/categories'
-import { Route as AuthenticatedReimbursementsNewRouteImport } from './routes/_authenticated/reimbursements/new'
-import { Route as AuthenticatedReimbursementsIdRouteImport } from './routes/_authenticated/reimbursements/$id'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
@@ -26,86 +22,32 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedUsersRoute = AuthenticatedUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedCategoriesRoute = AuthenticatedCategoriesRouteImport.update({
-  id: '/categories',
-  path: '/categories',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedReimbursementsNewRoute =
-  AuthenticatedReimbursementsNewRouteImport.update({
-    id: '/reimbursements/new',
-    path: '/reimbursements/new',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedReimbursementsIdRoute =
-  AuthenticatedReimbursementsIdRouteImport.update({
-    id: '/reimbursements/$id',
-    path: '/reimbursements/$id',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/categories': typeof AuthenticatedCategoriesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/users': typeof AuthenticatedUsersRoute
-  '/reimbursements/$id': typeof AuthenticatedReimbursementsIdRoute
-  '/reimbursements/new': typeof AuthenticatedReimbursementsNewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/categories': typeof AuthenticatedCategoriesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/users': typeof AuthenticatedUsersRoute
-  '/reimbursements/$id': typeof AuthenticatedReimbursementsIdRoute
-  '/reimbursements/new': typeof AuthenticatedReimbursementsNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
-  '/_authenticated/categories': typeof AuthenticatedCategoriesRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
-  '/_authenticated/users': typeof AuthenticatedUsersRoute
-  '/_authenticated/reimbursements/$id': typeof AuthenticatedReimbursementsIdRoute
-  '/_authenticated/reimbursements/new': typeof AuthenticatedReimbursementsNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/categories'
-    | '/dashboard'
-    | '/users'
-    | '/reimbursements/$id'
-    | '/reimbursements/new'
+  fullPaths: '/' | '/dashboard'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/categories'
-    | '/dashboard'
-    | '/users'
-    | '/reimbursements/$id'
-    | '/reimbursements/new'
-  id:
-    | '__root__'
-    | '/'
-    | '/_authenticated'
-    | '/_authenticated/categories'
-    | '/_authenticated/dashboard'
-    | '/_authenticated/users'
-    | '/_authenticated/reimbursements/$id'
-    | '/_authenticated/reimbursements/new'
+  to: '/' | '/dashboard'
+  id: '__root__' | '/' | '/_authenticated' | '/_authenticated/dashboard'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -129,13 +71,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/users': {
-      id: '/_authenticated/users'
-      path: '/users'
-      fullPath: '/users'
-      preLoaderRoute: typeof AuthenticatedUsersRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -143,44 +78,15 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/categories': {
-      id: '/_authenticated/categories'
-      path: '/categories'
-      fullPath: '/categories'
-      preLoaderRoute: typeof AuthenticatedCategoriesRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/reimbursements/new': {
-      id: '/_authenticated/reimbursements/new'
-      path: '/reimbursements/new'
-      fullPath: '/reimbursements/new'
-      preLoaderRoute: typeof AuthenticatedReimbursementsNewRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/reimbursements/$id': {
-      id: '/_authenticated/reimbursements/$id'
-      path: '/reimbursements/$id'
-      fullPath: '/reimbursements/$id'
-      preLoaderRoute: typeof AuthenticatedReimbursementsIdRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
   }
 }
 
 interface AuthenticatedRouteChildren {
-  AuthenticatedCategoriesRoute: typeof AuthenticatedCategoriesRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedUsersRoute: typeof AuthenticatedUsersRoute
-  AuthenticatedReimbursementsIdRoute: typeof AuthenticatedReimbursementsIdRoute
-  AuthenticatedReimbursementsNewRoute: typeof AuthenticatedReimbursementsNewRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
-  AuthenticatedCategoriesRoute: AuthenticatedCategoriesRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
-  AuthenticatedUsersRoute: AuthenticatedUsersRoute,
-  AuthenticatedReimbursementsIdRoute: AuthenticatedReimbursementsIdRoute,
-  AuthenticatedReimbursementsNewRoute: AuthenticatedReimbursementsNewRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(

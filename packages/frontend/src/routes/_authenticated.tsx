@@ -1,6 +1,12 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 
-import { useAuth } from '@/contexts/auth.context.tsx';
+import { AppSidebar } from '@/components/app-sidebar.tsx';
+import { Separator } from '@/components/ui/separator.tsx';
+import {
+    SidebarInset,
+    SidebarProvider,
+    SidebarTrigger,
+} from '@/components/ui/sidebar.tsx';
 import { cookieStorage } from '@/lib/cookies.ts';
 
 export const Route = createFileRoute('/_authenticated')({
@@ -13,33 +19,23 @@ export const Route = createFileRoute('/_authenticated')({
 });
 
 function AuthenticatedLayout() {
-    const { logout, user } = useAuth();
-
     return (
-        <div className="flex min-h-screen flex-col">
-            <header className="border-b">
-                <div className="container mx-auto flex h-16 items-center justify-between px-4">
-                    <div>
-                        <span className="font-semibold">
-                            Reimbursement Control
-                        </span>
-                        {user && (
-                            <span className="text-muted-foreground ml-4 text-sm">
-                                {user.name} ({user.role})
-                            </span>
-                        )}
+        <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset>
+                <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+                    <div className="flex items-center gap-2 px-4">
+                        <SidebarTrigger className="-ml-1" />
+                        <Separator
+                            className="mr-2 data-[orientation=vertical]:h-4"
+                            orientation="vertical"
+                        />
                     </div>
-                    <button
-                        className="text-muted-foreground hover:text-foreground text-sm"
-                        onClick={logout}
-                    >
-                        Sign out
-                    </button>
-                </div>
-            </header>
-            <main className="container mx-auto flex-1 px-4 py-8">
-                <Outlet />
-            </main>
-        </div>
+                </header>
+                <main className="flex-1 p-4 pt-0">
+                    <Outlet />
+                </main>
+            </SidebarInset>
+        </SidebarProvider>
     );
 }
