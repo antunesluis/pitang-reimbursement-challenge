@@ -1,4 +1,4 @@
-import { Link, useMatchRoute } from "@tanstack/react-router";
+import { Link, useMatchRoute } from '@tanstack/react-router';
 import {
     ChevronsUpDown,
     LayoutDashboard,
@@ -142,7 +142,9 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
                                 <SidebarMenuItem key={item.label}>
                                     <SidebarMenuButton
                                         asChild
-                                        isActive={!!matchRoute({ to: item.path })}
+                                        isActive={
+                                            !!matchRoute({ to: item.path })
+                                        }
                                         tooltip={item.label}
                                     >
                                         <Link to={item.path}>

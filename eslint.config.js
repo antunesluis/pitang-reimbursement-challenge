@@ -137,14 +137,11 @@ export default tseslint.config(
             'react-refresh/only-export-components': 'off',
         },
     },
-    // Shadcn UI components may export variants
+    // Shadcn UI components may export variants and hooks
     {
         files: ['packages/frontend/src/components/ui/**/*.tsx'],
         rules: {
-            'react-refresh/only-export-components': [
-                'warn',
-                { allowExportNames: ['buttonVariants'] },
-            ],
+            'react-refresh/only-export-components': 'off',
         },
     },
 

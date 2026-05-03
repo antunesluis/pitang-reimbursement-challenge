@@ -31,7 +31,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const logout = useCallback(() => {
         cookieStorage.removeToken();
         setUser(null);
-        window.location.href = "/";
+        window.location.href = '/';
     }, []);
 
     // Redirect to login on 401
