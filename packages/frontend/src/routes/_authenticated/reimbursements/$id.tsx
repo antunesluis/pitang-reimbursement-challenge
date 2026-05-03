@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Download } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
+import { AttachmentUpload } from "@/components/AttachmentUpload.tsx";
 import { RejectDialog } from "@/components/RejectDialog.tsx";
 import { StatusBadge } from "@/components/StatusBadge.tsx";
 import { Button } from "@/components/ui/button.tsx";
@@ -102,6 +103,7 @@ function ReimbursementDetailPage() {
   const canApprove = role === "MANAGER" && data.status === "SUBMITTED";
   const canReject = role === "MANAGER" && data.status === "SUBMITTED";
   const canPay = role === "FINANCE" && data.status === "APPROVED";
+  const canUpload = isOwner;
 
   return (
     <div className="space-y-6">
@@ -145,7 +147,9 @@ function ReimbursementDetailPage() {
             <Separator />
             <div>
               <span className="text-muted-foreground text-sm font-medium">Status</span>
-              <p><StatusBadge status={data.status} /></p>
+              <p>
+                <StatusBadge status={data.status} />
+              </p>
             </div>
             {data.rejectionReason && (
               <>
@@ -254,7 +258,7 @@ function ReimbursementDetailPage() {
         <CardHeader>
           <CardTitle className="text-lg">Attachments ({attachments.length})</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           {attachments.length === 0 ? (
             <p className="text-muted-foreground text-sm">No attachments</p>
           ) : (
@@ -277,6 +281,19 @@ function ReimbursementDetailPage() {
                 </div>
               ))}
             </div>
+          )}
+
+          {canUpload && (
+            <AttachmentUpload
+              onUpload={async (formData) => {
+                await attachmentService.create(id, {
+                  fileName: formData.fileName,
+                  fileType: formData.fileType,
+                  fileUrl: formData.fileUrl,
+                });
+                await fetchData();
+              }}
+            />
           )}
         </CardContent>
       </Card>
