@@ -79,7 +79,7 @@ function EditReimbursementPage() {
     });
 
     // eslint-disable-next-line react-hooks/incompatible-library
-  const categoryId = watch("categoryId");
+    const categoryId = watch('categoryId');
 
     async function onSubmit(formData: UpdateReimbursementFormData) {
         try {

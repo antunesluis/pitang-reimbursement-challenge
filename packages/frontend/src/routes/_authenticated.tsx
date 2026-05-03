@@ -7,6 +7,8 @@ import {
     SidebarProvider,
     SidebarTrigger,
 } from '@/components/ui/sidebar.tsx';
+import { Skeleton } from '@/components/ui/skeleton.tsx';
+import { useAuth } from '@/contexts/auth.context.tsx';
 import { cookieStorage } from '@/lib/cookies.ts';
 
 export const Route = createFileRoute('/_authenticated')({
@@ -19,9 +21,15 @@ export const Route = createFileRoute('/_authenticated')({
 });
 
 function AuthenticatedLayout() {
+    const { isLoading } = useAuth();
+
     return (
         <SidebarProvider>
-            <AppSidebar />
+            {isLoading ? (
+                <Skeleton className="h-screen w-60 rounded-none" />
+            ) : (
+                <AppSidebar />
+            )}
             <SidebarInset>
                 <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
                     <div className="flex items-center gap-2 px-4">

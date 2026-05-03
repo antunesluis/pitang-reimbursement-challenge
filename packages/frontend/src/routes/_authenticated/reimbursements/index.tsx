@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { Plus } from 'lucide-react';
+import { Plus, Receipt } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+import { EmptyState } from '@/components/EmptyState.tsx';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
 import { StatusBadge } from '@/components/StatusBadge.tsx';
 import { Button } from '@/components/ui/button.tsx';
@@ -78,9 +79,19 @@ function ReimbursementListPage() {
                         </Button>
                     )}
                 </div>
-                <div className="text-muted-foreground py-12 text-center">
-                    No reimbursements found.
-                </div>
+                <EmptyState
+                    action={
+                        isEmployee
+                            ? {
+                                  href: '/reimbursements/new',
+                                  label: 'Create Reimbursement',
+                              }
+                            : undefined
+                    }
+                    description="You have no reimbursements yet."
+                    icon={Receipt}
+                    title="No reimbursements"
+                />
             </div>
         );
     }
