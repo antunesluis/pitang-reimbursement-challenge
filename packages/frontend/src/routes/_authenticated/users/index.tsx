@@ -2,7 +2,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
 import { FieldError } from '@/components/FieldError.tsx';
@@ -78,7 +79,8 @@ function UsersPage() {
     async function onSubmit(data: CreateUserFormData) {
         try {
             await userService.create(data);
-            reset({ role: 'EMPLOYEE' });
+            toast.success("User created");
+            reset({ role: "EMPLOYEE" });
             setShowForm(false);
             await fetchUsers();
         } catch (err) {

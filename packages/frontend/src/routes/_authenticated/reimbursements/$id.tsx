@@ -1,7 +1,8 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { Download } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Download } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import { AttachmentUpload } from '@/components/AttachmentUpload.tsx';
 import { BackButton } from '@/components/BackButton.tsx';
@@ -61,13 +62,15 @@ function ReimbursementDetailPage() {
         fetchData();
     }, [fetchData]);
 
-    async function handleAction(action: () => Promise<unknown>) {
+    async function handleAction(action: () => Promise<unknown>, label: string) {
         setActionLoading(true);
         try {
             await action();
             await fetchData();
+            toast.success(label);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Action failed');
+            setError(err instanceof Error ? err.message : "Action failed");
+            toast.error(err instanceof Error ? err.message : "Action failed");
         } finally {
             setActionLoading(false);
         }
@@ -236,8 +239,9 @@ function ReimbursementDetailPage() {
                             <Button
                                 disabled={actionLoading}
                                 onClick={() =>
-                                    handleAction(() =>
-                                        reimbursementService.submit(id),
+                                    handleAction(
+                                        () => reimbursementService.submit(id),
+                                        "Reimbursement submitted",
                                     )
                                 }
                             >
@@ -248,8 +252,9 @@ function ReimbursementDetailPage() {
                             <Button
                                 disabled={actionLoading}
                                 onClick={() =>
-                                    handleAction(() =>
-                                        reimbursementService.approve(id),
+                                    handleAction(
+                                        () => reimbursementService.approve(id),
+                                        "Reimbursement approved",
                                     )
                                 }
                                 variant="default"
@@ -270,8 +275,9 @@ function ReimbursementDetailPage() {
                             <Button
                                 disabled={actionLoading}
                                 onClick={() =>
-                                    handleAction(() =>
-                                        reimbursementService.pay(id),
+                                    handleAction(
+                                        () => reimbursementService.pay(id),
+                                        "Payment marked as paid",
                                     )
                                 }
                                 variant="default"
@@ -283,8 +289,9 @@ function ReimbursementDetailPage() {
                             <Button
                                 disabled={actionLoading}
                                 onClick={() =>
-                                    handleAction(() =>
-                                        reimbursementService.cancel(id),
+                                    handleAction(
+                                        () => reimbursementService.cancel(id),
+                                        "Reimbursement cancelled",
                                     )
                                 }
                                 variant="outline"
@@ -341,12 +348,17 @@ function ReimbursementDetailPage() {
                     {canUpload && (
                         <AttachmentUpload
                             onUpload={async (formData) => {
-                                await attachmentService.create(id, {
-                                    fileName: formData.fileName,
-                                    fileType: formData.fileType,
-                                    fileUrl: formData.fileUrl,
-                                });
-                                await fetchData();
+                                try {
+                                    await attachmentService.create(id, {
+                                        fileName: formData.fileName,
+                                        fileType: formData.fileType,
+                                        fileUrl: formData.fileUrl,
+                                    });
+                                    await fetchData();
+                                    toast.success("Attachment added");
+                                } catch (err) {
+                                    toast.error(err instanceof Error ? err.message : "Upload failed");
+                                }
                             }}
                         />
                     )}
@@ -405,11 +417,13 @@ function ReimbursementDetailPage() {
             <RejectDialog
                 onClose={() => setRejectOpen(false)}
                 onSubmit={async (formData) => {
-                    await handleAction(() =>
-                        reimbursementService.reject(
-                            id,
-                            formData.rejectionReason,
-                        ),
+                    await handleAction(
+                        () =>
+                            reimbursementService.reject(
+                                id,
+                                formData.rejectionReason,
+                            ),
+                        "Reimbursement rejected",
                     );
                     setRejectOpen(false);
                 }}
