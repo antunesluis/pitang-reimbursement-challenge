@@ -11,11 +11,14 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedUsersRouteImport } from './routes/_authenticated/users'
 import { Route as AuthenticatedReimbursementsRouteImport } from './routes/_authenticated/reimbursements'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedCategoriesRouteImport } from './routes/_authenticated/categories'
 import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
 import { Route as AuthenticatedReimbursementsIndexRouteImport } from './routes/_authenticated/reimbursements/index'
 import { Route as AuthenticatedCategoriesIndexRouteImport } from './routes/_authenticated/categories/index'
+import { Route as AuthenticatedUsersNewRouteImport } from './routes/_authenticated/users/new'
 import { Route as AuthenticatedReimbursementsNewRouteImport } from './routes/_authenticated/reimbursements/new'
 import { Route as AuthenticatedReimbursementsIdIndexRouteImport } from './routes/_authenticated/reimbursements/$id/index'
 import { Route as AuthenticatedReimbursementsIdEditRouteImport } from './routes/_authenticated/reimbursements/$id/edit'
@@ -29,6 +32,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedUsersRoute = AuthenticatedUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedReimbursementsRoute =
   AuthenticatedReimbursementsRouteImport.update({
     id: '/reimbursements',
@@ -40,10 +48,15 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedUsersIndexRoute = AuthenticatedUsersIndexRouteImport.update({
-  id: '/users/',
-  path: '/users/',
+const AuthenticatedCategoriesRoute = AuthenticatedCategoriesRouteImport.update({
+  id: '/categories',
+  path: '/categories',
   getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedUsersIndexRoute = AuthenticatedUsersIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedUsersRoute,
 } as any)
 const AuthenticatedReimbursementsIndexRoute =
   AuthenticatedReimbursementsIndexRouteImport.update({
@@ -53,10 +66,15 @@ const AuthenticatedReimbursementsIndexRoute =
   } as any)
 const AuthenticatedCategoriesIndexRoute =
   AuthenticatedCategoriesIndexRouteImport.update({
-    id: '/categories/',
-    path: '/categories/',
-    getParentRoute: () => AuthenticatedRoute,
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedCategoriesRoute,
   } as any)
+const AuthenticatedUsersNewRoute = AuthenticatedUsersNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AuthenticatedUsersRoute,
+} as any)
 const AuthenticatedReimbursementsNewRoute =
   AuthenticatedReimbursementsNewRouteImport.update({
     id: '/new',
@@ -78,9 +96,12 @@ const AuthenticatedReimbursementsIdEditRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/categories': typeof AuthenticatedCategoriesRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/reimbursements': typeof AuthenticatedReimbursementsRouteWithChildren
+  '/users': typeof AuthenticatedUsersRouteWithChildren
   '/reimbursements/new': typeof AuthenticatedReimbursementsNewRoute
+  '/users/new': typeof AuthenticatedUsersNewRoute
   '/categories/': typeof AuthenticatedCategoriesIndexRoute
   '/reimbursements/': typeof AuthenticatedReimbursementsIndexRoute
   '/users/': typeof AuthenticatedUsersIndexRoute
@@ -91,6 +112,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/reimbursements/new': typeof AuthenticatedReimbursementsNewRoute
+  '/users/new': typeof AuthenticatedUsersNewRoute
   '/categories': typeof AuthenticatedCategoriesIndexRoute
   '/reimbursements': typeof AuthenticatedReimbursementsIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
@@ -101,9 +123,12 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/_authenticated/categories': typeof AuthenticatedCategoriesRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/reimbursements': typeof AuthenticatedReimbursementsRouteWithChildren
+  '/_authenticated/users': typeof AuthenticatedUsersRouteWithChildren
   '/_authenticated/reimbursements/new': typeof AuthenticatedReimbursementsNewRoute
+  '/_authenticated/users/new': typeof AuthenticatedUsersNewRoute
   '/_authenticated/categories/': typeof AuthenticatedCategoriesIndexRoute
   '/_authenticated/reimbursements/': typeof AuthenticatedReimbursementsIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
@@ -114,9 +139,12 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/categories'
     | '/dashboard'
     | '/reimbursements'
+    | '/users'
     | '/reimbursements/new'
+    | '/users/new'
     | '/categories/'
     | '/reimbursements/'
     | '/users/'
@@ -127,6 +155,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/reimbursements/new'
+    | '/users/new'
     | '/categories'
     | '/reimbursements'
     | '/users'
@@ -136,9 +165,12 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/_authenticated/categories'
     | '/_authenticated/dashboard'
     | '/_authenticated/reimbursements'
+    | '/_authenticated/users'
     | '/_authenticated/reimbursements/new'
+    | '/_authenticated/users/new'
     | '/_authenticated/categories/'
     | '/_authenticated/reimbursements/'
     | '/_authenticated/users/'
@@ -167,6 +199,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/users': {
+      id: '/_authenticated/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof AuthenticatedUsersRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/reimbursements': {
       id: '/_authenticated/reimbursements'
       path: '/reimbursements'
@@ -181,12 +220,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/categories': {
+      id: '/_authenticated/categories'
+      path: '/categories'
+      fullPath: '/categories'
+      preLoaderRoute: typeof AuthenticatedCategoriesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/users/': {
       id: '/_authenticated/users/'
-      path: '/users'
+      path: '/'
       fullPath: '/users/'
       preLoaderRoute: typeof AuthenticatedUsersIndexRouteImport
-      parentRoute: typeof AuthenticatedRoute
+      parentRoute: typeof AuthenticatedUsersRoute
     }
     '/_authenticated/reimbursements/': {
       id: '/_authenticated/reimbursements/'
@@ -197,10 +243,17 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/categories/': {
       id: '/_authenticated/categories/'
-      path: '/categories'
+      path: '/'
       fullPath: '/categories/'
       preLoaderRoute: typeof AuthenticatedCategoriesIndexRouteImport
-      parentRoute: typeof AuthenticatedRoute
+      parentRoute: typeof AuthenticatedCategoriesRoute
+    }
+    '/_authenticated/users/new': {
+      id: '/_authenticated/users/new'
+      path: '/new'
+      fullPath: '/users/new'
+      preLoaderRoute: typeof AuthenticatedUsersNewRouteImport
+      parentRoute: typeof AuthenticatedUsersRoute
     }
     '/_authenticated/reimbursements/new': {
       id: '/_authenticated/reimbursements/new'
@@ -226,6 +279,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedCategoriesRouteChildren {
+  AuthenticatedCategoriesIndexRoute: typeof AuthenticatedCategoriesIndexRoute
+}
+
+const AuthenticatedCategoriesRouteChildren: AuthenticatedCategoriesRouteChildren =
+  {
+    AuthenticatedCategoriesIndexRoute: AuthenticatedCategoriesIndexRoute,
+  }
+
+const AuthenticatedCategoriesRouteWithChildren =
+  AuthenticatedCategoriesRoute._addFileChildren(
+    AuthenticatedCategoriesRouteChildren,
+  )
+
 interface AuthenticatedReimbursementsRouteChildren {
   AuthenticatedReimbursementsNewRoute: typeof AuthenticatedReimbursementsNewRoute
   AuthenticatedReimbursementsIndexRoute: typeof AuthenticatedReimbursementsIndexRoute
@@ -249,19 +316,32 @@ const AuthenticatedReimbursementsRouteWithChildren =
     AuthenticatedReimbursementsRouteChildren,
   )
 
-interface AuthenticatedRouteChildren {
-  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedReimbursementsRoute: typeof AuthenticatedReimbursementsRouteWithChildren
-  AuthenticatedCategoriesIndexRoute: typeof AuthenticatedCategoriesIndexRoute
+interface AuthenticatedUsersRouteChildren {
+  AuthenticatedUsersNewRoute: typeof AuthenticatedUsersNewRoute
   AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
 }
 
+const AuthenticatedUsersRouteChildren: AuthenticatedUsersRouteChildren = {
+  AuthenticatedUsersNewRoute: AuthenticatedUsersNewRoute,
+  AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
+}
+
+const AuthenticatedUsersRouteWithChildren =
+  AuthenticatedUsersRoute._addFileChildren(AuthenticatedUsersRouteChildren)
+
+interface AuthenticatedRouteChildren {
+  AuthenticatedCategoriesRoute: typeof AuthenticatedCategoriesRouteWithChildren
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedReimbursementsRoute: typeof AuthenticatedReimbursementsRouteWithChildren
+  AuthenticatedUsersRoute: typeof AuthenticatedUsersRouteWithChildren
+}
+
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedCategoriesRoute: AuthenticatedCategoriesRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedReimbursementsRoute:
     AuthenticatedReimbursementsRouteWithChildren,
-  AuthenticatedCategoriesIndexRoute: AuthenticatedCategoriesIndexRoute,
-  AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
+  AuthenticatedUsersRoute: AuthenticatedUsersRouteWithChildren,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(

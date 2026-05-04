@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { BackButton } from '@/components/BackButton.tsx';
 import { CategorySelect } from '@/components/CategorySelect.tsx';
 import { Delayed } from '@/components/Delayed.tsx';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
@@ -124,7 +123,6 @@ function EditReimbursementPage() {
     if (loadError) {
         return (
             <div className="mx-auto max-w-lg space-y-4">
-                <BackButton params={{ id }} to="/reimbursements/$id" />
                 <ErrorAlert message={loadError} />
             </div>
         );
@@ -132,10 +130,7 @@ function EditReimbursementPage() {
 
     return (
         <div className="mx-auto max-w-lg space-y-6">
-            <div className="flex items-center gap-4">
-                <BackButton params={{ id }} to="/reimbursements/$id" />
-                <h1 className="text-2xl font-bold">Edit Reimbursement</h1>
-            </div>
+            <h1 className="text-2xl font-bold">Edit Reimbursement</h1>
 
             <Card>
                 <CardHeader>

@@ -4,7 +4,6 @@ import {
     LayoutDashboard,
     LogOut,
     Receipt,
-    ShieldCheck,
     Tags,
     Users,
 } from 'lucide-react';

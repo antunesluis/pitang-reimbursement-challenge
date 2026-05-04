@@ -5,7 +5,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 import { AttachmentUpload } from '@/components/AttachmentUpload.tsx';
-import { BackButton } from '@/components/BackButton.tsx';
 import { Delayed } from '@/components/Delayed.tsx';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
 import { HistoryTimeline } from '@/components/HistoryTimeline.tsx';
@@ -98,7 +97,6 @@ function ReimbursementDetailPage() {
     if (error || !data) {
         return (
             <div className="space-y-4">
-                <BackButton label="Back to list" to="/reimbursements" />
                 <ErrorAlert message={error ?? 'Reimbursement not found'} />
             </div>
         );
@@ -115,7 +113,6 @@ function ReimbursementDetailPage() {
     return (
         <div className="space-y-6">
             <div className="flex items-center gap-4">
-                <BackButton to="/reimbursements" />
                 <h1 className="text-2xl font-bold">{data.description}</h1>
                 <StatusBadge status={data.status} />
             </div>

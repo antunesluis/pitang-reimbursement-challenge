@@ -37,7 +37,6 @@ import type { Category } from '@/types/index.ts';
 
 export const Route = createFileRoute('/_authenticated/categories/')({
     component: CategoriesPage,
-    staticData: { breadcrumb: 'Categories' },
 });
 
 function CategoriesPage() {
