@@ -25,8 +25,8 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table.tsx';
-import { usePermissions } from "@/hooks/use-permissions.ts";
-import { categoryService } from "@/services/category.service.ts";
+import { usePermissions } from '@/hooks/use-permissions.ts';
+import { categoryService } from '@/services/category.service.ts';
 import { reimbursementService } from '@/services/reimbursement.service.ts';
 import { userService } from '@/services/user.service.ts';
 

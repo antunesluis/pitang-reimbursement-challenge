@@ -18,9 +18,9 @@ import {
 } from '@/components/ui/card.tsx';
 import { Separator } from '@/components/ui/separator.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
-import { usePermissions } from "@/hooks/use-permissions.ts";
-import { getFileUrl } from "@/lib/api.ts";
-import { attachmentService } from "@/services/attachment.service.ts";
+import { usePermissions } from '@/hooks/use-permissions.ts';
+import { getFileUrl } from '@/lib/api.ts';
+import { attachmentService } from '@/services/attachment.service.ts';
 import { reimbursementService } from '@/services/reimbursement.service.ts';
 
 import type { Reimbursement } from '@/types/index.ts';
@@ -82,13 +82,13 @@ function ReimbursementDetailPage() {
         return (
             <Delayed>
                 <div className="space-y-4">
-                <Skeleton className="h-8 w-48" />
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <Skeleton className="h-32" />
-                    <Skeleton className="h-32" />
-                </div>
-                <Skeleton className="h-24" />
-                <Skeleton className="h-48" />
+                    <Skeleton className="h-8 w-48" />
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <Skeleton className="h-32" />
+                        <Skeleton className="h-32" />
+                    </div>
+                    <Skeleton className="h-24" />
+                    <Skeleton className="h-48" />
                 </div>
             </Delayed>
         );

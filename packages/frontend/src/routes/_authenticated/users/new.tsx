@@ -3,9 +3,9 @@ import { createFileRoute, Link, useRouter } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { ErrorAlert } from "@/components/ErrorAlert.tsx";
-import { FieldError } from "@/components/FieldError.tsx";
-import { Button } from "@/components/ui/button.tsx";
+import { ErrorAlert } from '@/components/ErrorAlert.tsx';
+import { FieldError } from '@/components/FieldError.tsx';
+import { Button } from '@/components/ui/button.tsx';
 import {
     Card,
     CardContent,
@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/card.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Label } from '@/components/ui/label.tsx';
-import { usePermissions } from "@/hooks/use-permissions.ts";
+import { usePermissions } from '@/hooks/use-permissions.ts';
 import {
     type CreateUserFormData,
     createUserSchema,

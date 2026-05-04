@@ -10,21 +10,21 @@ bun install
 
 ## Commands
 
-| What            | Command (from root)                              |
-| --------------- | ------------------------------------------------ |
-| Backend dev     | `bun run --cwd packages/backend dev`             |
-| Backend test    | `bun run --cwd packages/backend test`            |
+| What            | Command (from root)                                      |
+| --------------- | -------------------------------------------------------- |
+| Backend dev     | `bun run --cwd packages/backend dev`                     |
+| Backend test    | `bun run --cwd packages/backend test`                    |
 | Single test     | `bun run --cwd packages/backend test tests/auth.test.ts` |
-| Backend lint    | `bun run --cwd packages/backend lint`            |
-| Frontend dev    | `bun run --cwd packages/frontend dev`            |
-| Frontend build  | `bun run --cwd packages/frontend build`          |
-| Frontend lint   | `bun run --cwd packages/frontend lint`           |
-| Root lint       | `bun run lint` (runs eslint from root config)    |
-| Root format     | `bun run format`                                 |
-| Prisma migrate  | `bun run --cwd packages/backend prisma:migrate`  |
-| Prisma generate | `bun run --cwd packages/backend prisma:generate` |
-| Prisma studio   | `bun run --cwd packages/backend prisma:studio`   |
-| Prisma seed     | `bun run --cwd packages/backend prisma:seed`     |
+| Backend lint    | `bun run --cwd packages/backend lint`                    |
+| Frontend dev    | `bun run --cwd packages/frontend dev`                    |
+| Frontend build  | `bun run --cwd packages/frontend build`                  |
+| Frontend lint   | `bun run --cwd packages/frontend lint`                   |
+| Root lint       | `bun run lint` (runs eslint from root config)            |
+| Root format     | `bun run format`                                         |
+| Prisma migrate  | `bun run --cwd packages/backend prisma:migrate`          |
+| Prisma generate | `bun run --cwd packages/backend prisma:generate`         |
+| Prisma studio   | `bun run --cwd packages/backend prisma:studio`           |
+| Prisma seed     | `bun run --cwd packages/backend prisma:seed`             |
 
 Root-level `index.ts` is a `bun init` leftover — not a real entrypoint.
 

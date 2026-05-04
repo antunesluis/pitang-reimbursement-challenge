@@ -11,7 +11,10 @@ export function errorFallbackMiddleware(
     console.error(error.stack);
 
     // File upload errors (multer) → 400
-    if (error.message?.includes("File type") || error.message?.includes("File too large")) {
+    if (
+        error.message?.includes('File type') ||
+        error.message?.includes('File too large')
+    ) {
         response.status(400).json({ message: error.message, statusCode: 400 });
         return;
     }

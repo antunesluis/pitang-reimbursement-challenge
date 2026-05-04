@@ -31,8 +31,8 @@ import {
     SidebarRail,
     useSidebar,
 } from '@/components/ui/sidebar.tsx';
-import { useAuth } from "@/contexts/auth.context.tsx";
-import { usePermissions } from "@/hooks/use-permissions.ts";
+import { useAuth } from '@/contexts/auth.context.tsx';
+import { usePermissions } from '@/hooks/use-permissions.ts';
 
 import type { Role } from '@/types/index.ts';
 

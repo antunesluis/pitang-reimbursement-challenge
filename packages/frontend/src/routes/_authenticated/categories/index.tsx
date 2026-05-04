@@ -26,7 +26,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table.tsx';
-import { usePermissions } from "@/hooks/use-permissions.ts";
+import { usePermissions } from '@/hooks/use-permissions.ts';
 import {
     type CreateCategoryFormData,
     createCategorySchema,
@@ -42,11 +42,11 @@ export const Route = createFileRoute('/_authenticated/categories/')({
 function CategoriesPage() {
     const { isAdmin } = usePermissions();
     const [categories, setCategories] = useState<Category[]>([]);
-    const [error, setError] = useState("");
+    const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [editingId, setEditingId] = useState<null | string>(null);
-    const [editName, setEditName] = useState("");
+    const [editName, setEditName] = useState('');
 
     const {
         formState: { errors, isSubmitting },

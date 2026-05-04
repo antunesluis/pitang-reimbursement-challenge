@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { AttachmentUpload } from "@/components/AttachmentUpload.tsx";
+import { AttachmentUpload } from '@/components/AttachmentUpload.tsx';
 import { CategorySelect } from '@/components/CategorySelect.tsx';
 import { Delayed } from '@/components/Delayed.tsx';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
@@ -23,8 +23,8 @@ import {
     type UpdateReimbursementFormData,
     updateReimbursementSchema,
 } from '@/schemas/reimbursement.schema.ts';
-import { attachmentService } from "@/services/attachment.service.ts";
-import { reimbursementService } from "@/services/reimbursement.service.ts";
+import { attachmentService } from '@/services/attachment.service.ts';
+import { reimbursementService } from '@/services/reimbursement.service.ts';
 
 import type { Reimbursement } from '@/types/index.ts';
 
@@ -115,7 +115,7 @@ function EditReimbursementPage() {
     if (loading) {
         return (
             <Delayed>
-                <div className="mx-auto max-w-lg space-y-6">
+                <div className="mx-auto max-w-xl space-y-6">
                     <Skeleton className="h-8 w-48" />
                     <Skeleton className="h-64" />
                 </div>
@@ -125,14 +125,14 @@ function EditReimbursementPage() {
 
     if (loadError) {
         return (
-            <div className="mx-auto max-w-lg space-y-4">
+            <div className="mx-auto max-w-xl space-y-4">
                 <ErrorAlert message={loadError} />
             </div>
         );
     }
 
     return (
-        <div className="mx-auto max-w-lg space-y-6">
+        <div className="mx-auto max-w-xl space-y-6">
             <h1 className="text-2xl font-bold">Edit Reimbursement</h1>
 
             <Card>
@@ -208,7 +208,7 @@ function EditReimbursementPage() {
                     <AttachmentUpload
                         onUpload={async (file) => {
                             await attachmentService.create(id, file);
-                            toast.success("Attachment added");
+                            toast.success('Attachment added');
                         }}
                     />
                 </CardContent>

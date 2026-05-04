@@ -144,9 +144,7 @@ function UsersPage() {
                                     </span>
                                 </TableCell>
                                 <TableCell className="text-muted-foreground">
-                                    {new Date(
-                                        u.createdAt,
-                                    ).toLocaleDateString()}
+                                    {new Date(u.createdAt).toLocaleDateString()}
                                 </TableCell>
                             </TableRow>
                         ))}
