@@ -15,8 +15,8 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table.tsx';
-import { usePermissions } from "@/hooks/use-permissions.ts";
-import { reimbursementService } from "@/services/reimbursement.service.ts";
+import { usePermissions } from '@/hooks/use-permissions.ts';
+import { reimbursementService } from '@/services/reimbursement.service.ts';
 
 import type { Reimbursement } from '@/types/index.ts';
 
@@ -27,7 +27,7 @@ export const Route = createFileRoute('/_authenticated/reimbursements/')({
 function ReimbursementListPage() {
     const { isEmployee } = usePermissions();
     const [data, setData] = useState<Reimbursement[]>([]);
-    const [error, setError] = useState("");
+    const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -66,32 +66,32 @@ function ReimbursementListPage() {
 
     if (data.length === 0) {
         return (
-            <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-bold">Reimbursements</h1>
-                    {isEmployee && (
-                        <Button asChild>
-                            <Link to="/reimbursements/new">
-                                <Plus className="mr-2 size-4" />
-                                New Reimbursement
-                            </Link>
-                        </Button>
-                    )}
-                </div>
-                <EmptyState
-                    action={
-                        isEmployee
-                            ? {
-                                  href: '/reimbursements/new',
-                                  label: 'Create Reimbursement',
-                              }
-                            : undefined
-                    }
-                    description="You have no reimbursements yet."
-                    icon={Receipt}
-                    title="No reimbursements"
-                />
-            </div>
+            // <div className="space-y-4">
+            //     <div className="flex items-center justify-between">
+            //         <h1 className="text-2xl font-bold">Reimbursements</h1>
+            //         {isEmployee && (
+            //             <Button asChild>
+            //                 <Link to="/reimbursements/new">
+            //                     <Plus className="mr-2 size-4" />
+            //                     New Reimbursement
+            //                 </Link>
+            //             </Button>
+            //         )}
+            //     </div>
+            <EmptyState
+                action={
+                    isEmployee
+                        ? {
+                              href: '/reimbursements/new',
+                              label: 'Create Reimbursement',
+                          }
+                        : undefined
+                }
+                description="You have no reimbursements yet."
+                icon={Receipt}
+                title="No reimbursements"
+            />
+            // </div>
         );
     }
 

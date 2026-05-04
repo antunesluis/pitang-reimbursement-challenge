@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { AttachmentUpload } from '@/components/AttachmentUpload.tsx';
 import { BackButton } from '@/components/BackButton.tsx';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
+import { HistoryTimeline } from '@/components/HistoryTimeline.tsx';
 import { RejectDialog } from '@/components/RejectDialog.tsx';
 import { StatusBadge } from '@/components/StatusBadge.tsx';
 import { Button } from '@/components/ui/button.tsx';
@@ -18,8 +19,8 @@ import {
 } from '@/components/ui/card.tsx';
 import { Separator } from '@/components/ui/separator.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
-import { usePermissions } from "@/hooks/use-permissions.ts";
-import { attachmentService } from "@/services/attachment.service.ts";
+import { usePermissions } from '@/hooks/use-permissions.ts';
+import { attachmentService } from '@/services/attachment.service.ts';
 import { reimbursementService } from '@/services/reimbursement.service.ts';
 
 import type { Reimbursement } from '@/types/index.ts';
@@ -368,53 +369,7 @@ function ReimbursementDetailPage() {
             </Card>
 
             {/* History */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-lg">History</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    {history.length === 0 ? (
-                        <p className="text-muted-foreground text-sm">
-                            No history entries
-                        </p>
-                    ) : (
-                        <div className="space-y-3">
-                            {history.map((entry) => (
-                                <div
-                                    className="flex items-start gap-3"
-                                    key={entry.id}
-                                >
-                                    <div className="bg-muted flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-medium">
-                                        {entry.user.name
-                                            .charAt(0)
-                                            .toUpperCase()}
-                                    </div>
-                                    <div>
-                                        <p className="text-sm">
-                                            <span className="font-medium">
-                                                {entry.user.name}
-                                            </span>{' '}
-                                            <span className="text-muted-foreground">
-                                                {entry.action}
-                                            </span>
-                                        </p>
-                                        {entry.observation && (
-                                            <p className="text-muted-foreground text-sm">
-                                                {entry.observation}
-                                            </p>
-                                        )}
-                                        <p className="text-muted-foreground text-xs">
-                                            {new Date(
-                                                entry.createdAt,
-                                            ).toLocaleString()}
-                                        </p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
+            <HistoryTimeline entries={history} />
 
             <RejectDialog
                 onClose={() => setRejectOpen(false)}
