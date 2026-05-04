@@ -21,6 +21,7 @@ export function AttachmentUpload({ onUpload }: Props) {
         register,
         reset,
     } = useForm<CreateAttachmentFormData>({
+        mode: 'onBlur',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         resolver: zodResolver(createAttachmentSchema) as any,
     });

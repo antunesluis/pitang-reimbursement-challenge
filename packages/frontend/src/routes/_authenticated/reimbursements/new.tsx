@@ -47,6 +47,7 @@ function NewReimbursementPage() {
         setError,
         setValue,
     } = useForm<CreateReimbursementFormData>({
+        mode: 'onBlur',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         resolver: zodResolver(createReimbursementSchema) as any,
     });

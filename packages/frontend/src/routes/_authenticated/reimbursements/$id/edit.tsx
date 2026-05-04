@@ -68,6 +68,7 @@ function EditReimbursementPage() {
         setValue,
         watch,
     } = useForm<UpdateReimbursementFormData>({
+        mode: 'onBlur',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         resolver: zodResolver(updateReimbursementSchema) as any,
         values: data

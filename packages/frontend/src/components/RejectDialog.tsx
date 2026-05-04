@@ -30,6 +30,7 @@ export function RejectDialog({ onClose, onSubmit, open }: Props) {
         handleSubmit,
         register,
     } = useForm<RejectReimbursementFormData>({
+        mode: 'onBlur',
         resolver: zodResolver(rejectReimbursementSchema),
     });
 
