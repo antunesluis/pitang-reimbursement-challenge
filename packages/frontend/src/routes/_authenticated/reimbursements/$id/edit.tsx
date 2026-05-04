@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 
 import { BackButton } from '@/components/BackButton.tsx';
 import { CategorySelect } from '@/components/CategorySelect.tsx';
+import { Delayed } from '@/components/Delayed.tsx';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
 import { FieldError } from '@/components/FieldError.tsx';
 import { Button } from '@/components/ui/button.tsx';
@@ -111,10 +112,12 @@ function EditReimbursementPage() {
 
     if (loading) {
         return (
-            <div className="mx-auto max-w-lg space-y-6">
-                <Skeleton className="h-8 w-48" />
-                <Skeleton className="h-64" />
-            </div>
+            <Delayed>
+                <div className="mx-auto max-w-lg space-y-6">
+                    <Skeleton className="h-8 w-48" />
+                    <Skeleton className="h-64" />
+                </div>
+            </Delayed>
         );
     }
 

@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 
 import { AttachmentUpload } from '@/components/AttachmentUpload.tsx';
 import { BackButton } from '@/components/BackButton.tsx';
+import { Delayed } from '@/components/Delayed.tsx';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
 import { HistoryTimeline } from '@/components/HistoryTimeline.tsx';
 import { RejectDialog } from '@/components/RejectDialog.tsx';
@@ -80,7 +81,8 @@ function ReimbursementDetailPage() {
 
     if (loading) {
         return (
-            <div className="space-y-4">
+            <Delayed>
+                <div className="space-y-4">
                 <Skeleton className="h-8 w-48" />
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <Skeleton className="h-32" />
@@ -88,7 +90,8 @@ function ReimbursementDetailPage() {
                 </div>
                 <Skeleton className="h-24" />
                 <Skeleton className="h-48" />
-            </div>
+                </div>
+            </Delayed>
         );
     }
 

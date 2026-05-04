@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+import { Delayed } from '@/components/Delayed.tsx';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
 import { StatsCard } from '@/components/StatsCard.tsx';
 import { StatusBadge } from '@/components/StatusBadge.tsx';
@@ -85,15 +86,17 @@ function DashboardPage() {
 
     if (loading) {
         return (
-            <div className="space-y-6">
-                <h1 className="text-2xl font-bold">Dashboard</h1>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    {Array.from({ length: 4 }).map((_, i) => (
-                        <Skeleton className="h-24" key={i} />
-                    ))}
+            <Delayed>
+                <div className="space-y-6">
+                    <h1 className="text-2xl font-bold">Dashboard</h1>
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                        {Array.from({ length: 4 }).map((_, i) => (
+                            <Skeleton className="h-24" key={i} />
+                        ))}
+                    </div>
+                    <Skeleton className="h-48" />
                 </div>
-                <Skeleton className="h-48" />
-            </div>
+            </Delayed>
         );
     }
 

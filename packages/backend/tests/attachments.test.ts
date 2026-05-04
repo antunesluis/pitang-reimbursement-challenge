@@ -108,11 +108,34 @@ describe('Attachments', () => {
         expect(res.body.length).toBeGreaterThanOrEqual(1);
     });
 
-    it('GET /reimbursements/:id/attachments accessible by manager', async () => {
+    it('GET /reimbursements/:id/attachments accessible by manager when SUBMITTED', async () => {
+        await request(app)
+            .post(`/reimbursements/${reimbursementId}/submit`)
+            .set('Authorization', `Bearer ${empToken}`);
+
         const res = await request(app)
             .get(`/reimbursements/${reimbursementId}/attachments`)
             .set('Authorization', `Bearer ${mgrToken}`);
 
         expect(res.status).toBe(200);
+    });
+
+    it('GET /reimbursements/:id/attachments returns 403 for manager when DRAFT', async () => {
+        const createRes = await request(app)
+            .post('/reimbursements')
+            .set('Authorization', `Bearer ${empToken}`)
+            .send({
+                amount: 50,
+                categoryId: (await createCategory(await getAdminToken(), 'Att-Cat-2')).id,
+                description: 'Draft attachments',
+                expenseDate: '2026-05-01T00:00:00Z',
+            });
+        const draftId = createRes.body.id;
+
+        const res = await request(app)
+            .get(`/reimbursements/${draftId}/attachments`)
+            .set('Authorization', `Bearer ${mgrToken}`);
+
+        expect(res.status).toBe(403);
     });
 });

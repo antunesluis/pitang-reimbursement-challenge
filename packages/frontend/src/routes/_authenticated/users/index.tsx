@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
+import { Delayed } from '@/components/Delayed.tsx';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
 import { FieldError } from '@/components/FieldError.tsx';
 import { Button } from '@/components/ui/button.tsx';
@@ -103,12 +104,14 @@ function UsersPage() {
 
     if (loading) {
         return (
-            <div className="space-y-4">
-                <h1 className="text-2xl font-bold">Users</h1>
-                {Array.from({ length: 4 }).map((_, i) => (
-                    <Skeleton className="h-12 w-full" key={i} />
-                ))}
-            </div>
+            <Delayed>
+                <div className="space-y-4">
+                    <h1 className="text-2xl font-bold">Users</h1>
+                    {Array.from({ length: 4 }).map((_, i) => (
+                        <Skeleton className="h-12 w-full" key={i} />
+                    ))}
+                </div>
+            </Delayed>
         );
     }
 

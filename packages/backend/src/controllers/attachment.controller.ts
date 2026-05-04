@@ -47,7 +47,7 @@ export async function listAttachments(req: Request, res: Response) {
         const id = req.params.id as string;
 
         const reimbursement = await prisma.reimbursement.findUnique({
-            select: { requesterId: true },
+            select: { requesterId: true, status: true },
             where: { id },
         });
 
@@ -60,9 +60,17 @@ export async function listAttachments(req: Request, res: Response) {
         }
 
         const isOwner = req.user!.id === reimbursement.requesterId;
-        const isStaff = req.user!.role !== 'EMPLOYEE';
+        const role = req.user!.role;
 
-        if (!isOwner && !isStaff) {
+        let canView = false;
+        if (isOwner) canView = true;
+        else if (role === 'ADMIN') canView = true;
+        else if (role === 'MANAGER' && reimbursement.status === 'SUBMITTED')
+            canView = true;
+        else if (role === 'FINANCE' && reimbursement.status === 'APPROVED')
+            canView = true;
+
+        if (!canView) {
             res.status(403).json({ message: 'Access denied', statusCode: 403 });
             return;
         }

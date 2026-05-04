@@ -2,6 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { Plus, Receipt } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+import { Delayed } from '@/components/Delayed.tsx';
 import { EmptyState } from '@/components/EmptyState.tsx';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
 import { StatusBadge } from '@/components/StatusBadge.tsx';
@@ -42,16 +43,18 @@ function ReimbursementListPage() {
 
     if (loading) {
         return (
-            <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-bold">Reimbursements</h1>
+            <Delayed>
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <h1 className="text-2xl font-bold">Reimbursements</h1>
+                    </div>
+                    <div className="space-y-2">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                            <Skeleton className="h-12 w-full" key={i} />
+                        ))}
+                    </div>
                 </div>
-                <div className="space-y-2">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                        <Skeleton className="h-12 w-full" key={i} />
-                    ))}
-                </div>
-            </div>
+            </Delayed>
         );
     }
 

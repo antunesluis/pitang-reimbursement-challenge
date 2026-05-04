@@ -14,6 +14,7 @@ bun install
 | --------------- | ------------------------------------------------ |
 | Backend dev     | `bun run --cwd packages/backend dev`             |
 | Backend test    | `bun run --cwd packages/backend test`            |
+| Single test     | `bun run --cwd packages/backend test tests/auth.test.ts` |
 | Backend lint    | `bun run --cwd packages/backend lint`            |
 | Frontend dev    | `bun run --cwd packages/frontend dev`            |
 | Frontend build  | `bun run --cwd packages/frontend build`          |
@@ -41,6 +42,7 @@ packages/backend/               — Express 5 + Prisma 7 + SQLite (libsql)
   src/middlewares/              —   auth, role, validate, error fallback
   prisma/schema.prisma          —   data model
   prisma.config.ts              —   Prisma 7 config (datasource URL from env)
+  prisma/seed.ts                —   creates admin user from env vars
   tests/setup.ts                —   cleanupDatabase() + seedAdmin() + helpers
 packages/frontend/              — Vite 8 + React 19 + TanStack Router + Shadcn UI
   src/main.tsx                  —   entrypoint
@@ -120,7 +122,7 @@ Every status transition must create a History record (action + userId + observat
 - **`verbatimModuleSyntax: true`** everywhere — type imports must use `import type { ... }`.
 - **Frontend uses TS project references** — `tsc -b` via `tsconfig.json` → `tsconfig.app.json` + `tsconfig.node.json`.
 - **Frontend `erasableSyntaxOnly: true`** — no enums, namespaces, or parameter properties. Prisma enum values are used as string literals instead.
-- **Two TS versions**: root/lock has TS 5.9.3; frontend workspace has TS ~6.0.2.
+- **Backend package.json declares `typescript: ^5`** as a peerDependency, but the workspace root installs **6.0.3**, which is what actually runs. All code is compatible with TS 6.
 
 ## ESLint + Prettier
 
@@ -141,12 +143,14 @@ Root `eslint.config.js` applies to the whole monorepo:
 - **Cookies** (`js-cookie`) for token storage, not localStorage.
 - **Path alias** `@/` → `src/` in both Vite and tsconfig.
 - `VITE_API_URL` env var sets backend URL (defaults to `http://localhost:3000`).
+- **Build runs `tsc -b && vite build`** — type errors block the production build.
 
 ## Backend patterns
 
 - Validation: Zod schemas in `src/schemas/`, applied via `validate()` middleware supporting `body`, `params`, `query`. Validation errors return `{ errors: [...], message, statusCode: 400 }`.
 - Auth: JWT middleware at `src/middlewares/auth.middleware.ts`, role guard at `src/middlewares/role.middleware.ts`.
 - Env vars: validated at startup via Zod in `src/lib/env.vars.ts` (PORT, DATABASE_URL, JWT_SECRET, NODE_ENV).
+- **Important**: `ADMIN_EMAIL` and `ADMIN_PASSWORD` in `.env-example` are **NOT** validated by `env.vars.ts`; they are only consumed by `prisma/seed.ts` and fall back to defaults (`admin@example.com` / `admin123`).
 - Port defaults to 3000.
 - Error responses always include `{ message, statusCode }`. Validation errors add `{ errors: [...] }`.
 
@@ -154,15 +158,16 @@ Root `eslint.config.js` applies to the whole monorepo:
 
 - **Bun test runner** (`bun:test`) + **supertest** against the Express app (`app` export from `src/app.ts`).
 - Run: `bun run --cwd packages/backend test` (or `bun test` from the backend dir).
+- Run single file: `bun run --cwd packages/backend test tests/auth.test.ts`.
 - 36 tests across 5 files: `tests/{auth,users,categories,reimbursements,attachments}.test.ts`.
 - Tests share `dev.db` — `cleanupDatabase()` deletes all rows in order (history → attachments → reimbursements → categories → users); `seedAdmin()` creates admin user.
 - Admin credentials in tests: `admin@example.com` / `admin123` (role: ADMIN).
 - Helpers in `tests/setup.ts`: `getAdminToken()`, `loginAs()`, `createCategory()`.
 - All API field names in tests are English (e.g. `amount`, `description`, `categoryId`, `expenseDate`, `rejectionReason`).
 
-## Vite 8
+## CI / automation
 
-Vite 8 uses **Rolldown** (not esbuild). The React plugin (`@vitejs/plugin-react`) uses Oxc, not Babel/SWC.
+No GitHub Actions, pre-commit hooks, or task runners are configured. Lint, format, and test must be run manually.
 
 ## Environment
 

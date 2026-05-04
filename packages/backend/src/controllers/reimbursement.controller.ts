@@ -57,13 +57,15 @@ function isAdmin(req: Request) {
     return req.user!.role === 'ADMIN';
 }
 
-function canView(req: Request, reimbursement: { requesterId: string }) {
-    return (
-        isOwner(req, reimbursement) ||
-        isManager(req) ||
-        isFinance(req) ||
-        isAdmin(req)
-    );
+function canView(
+    req: Request,
+    reimbursement: { requesterId: string; status: string },
+) {
+    if (isOwner(req, reimbursement)) return true;
+    if (isAdmin(req)) return true;
+    if (isManager(req) && reimbursement.status === 'SUBMITTED') return true;
+    if (isFinance(req) && reimbursement.status === 'APPROVED') return true;
+    return false;
 }
 
 export async function create(req: Request, res: Response) {
@@ -438,7 +440,7 @@ export async function getHistory(req: Request, res: Response) {
         const id = req.params.id as string;
 
         const reimbursement = await prisma.reimbursement.findUnique({
-            select: { requesterId: true },
+            select: { requesterId: true, status: true },
             where: { id },
         });
 

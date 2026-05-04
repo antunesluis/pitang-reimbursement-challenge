@@ -324,4 +324,156 @@ describe('Reimbursements', () => {
 
         expect(res.status).toBe(404);
     });
+
+    describe('view restrictions by role and status', () => {
+        it('MANAGER cannot view DRAFT reimbursement', async () => {
+            const createRes = await request(app)
+                .post('/reimbursements')
+                .set('Authorization', `Bearer ${empToken}`)
+                .send({
+                    amount: 10,
+                    categoryId: activeCatId,
+                    description: 'Draft only',
+                    expenseDate: '2026-05-01T00:00:00Z',
+                });
+            const id = createRes.body.id;
+
+            const res = await request(app)
+                .get(`/reimbursements/${id}`)
+                .set('Authorization', `Bearer ${mgrToken}`);
+
+            expect(res.status).toBe(403);
+        });
+
+        it('FINANCE cannot view SUBMITTED reimbursement', async () => {
+            const createRes = await request(app)
+                .post('/reimbursements')
+                .set('Authorization', `Bearer ${empToken}`)
+                .send({
+                    amount: 20,
+                    categoryId: activeCatId,
+                    description: 'Submitted only',
+                    expenseDate: '2026-05-01T00:00:00Z',
+                });
+            const id = createRes.body.id;
+
+            await request(app)
+                .post(`/reimbursements/${id}/submit`)
+                .set('Authorization', `Bearer ${empToken}`);
+
+            const res = await request(app)
+                .get(`/reimbursements/${id}`)
+                .set('Authorization', `Bearer ${finToken}`);
+
+            expect(res.status).toBe(403);
+        });
+
+        it('MANAGER can view SUBMITTED reimbursement', async () => {
+            const createRes = await request(app)
+                .post('/reimbursements')
+                .set('Authorization', `Bearer ${empToken}`)
+                .send({
+                    amount: 25,
+                    categoryId: activeCatId,
+                    description: 'For manager view',
+                    expenseDate: '2026-05-01T00:00:00Z',
+                });
+            const id = createRes.body.id;
+
+            await request(app)
+                .post(`/reimbursements/${id}/submit`)
+                .set('Authorization', `Bearer ${empToken}`);
+
+            const res = await request(app)
+                .get(`/reimbursements/${id}`)
+                .set('Authorization', `Bearer ${mgrToken}`);
+
+            expect(res.status).toBe(200);
+            expect(res.body.status).toBe('SUBMITTED');
+        });
+
+        it('FINANCE can view APPROVED reimbursement', async () => {
+            const createRes = await request(app)
+                .post('/reimbursements')
+                .set('Authorization', `Bearer ${empToken}`)
+                .send({
+                    amount: 30,
+                    categoryId: activeCatId,
+                    description: 'For finance view',
+                    expenseDate: '2026-05-01T00:00:00Z',
+                });
+            const id = createRes.body.id;
+
+            await request(app)
+                .post(`/reimbursements/${id}/submit`)
+                .set('Authorization', `Bearer ${empToken}`);
+            await request(app)
+                .post(`/reimbursements/${id}/approve`)
+                .set('Authorization', `Bearer ${mgrToken}`);
+
+            const res = await request(app)
+                .get(`/reimbursements/${id}`)
+                .set('Authorization', `Bearer ${finToken}`);
+
+            expect(res.status).toBe(200);
+            expect(res.body.status).toBe('APPROVED');
+        });
+    });
+
+    describe('invalid transitions', () => {
+        it('cannot pay a REJECTED reimbursement', async () => {
+            const createRes = await request(app)
+                .post('/reimbursements')
+                .set('Authorization', `Bearer ${empToken}`)
+                .send({
+                    amount: 15,
+                    categoryId: activeCatId,
+                    description: 'To be rejected',
+                    expenseDate: '2026-05-01T00:00:00Z',
+                });
+            const id = createRes.body.id;
+
+            await request(app)
+                .post(`/reimbursements/${id}/submit`)
+                .set('Authorization', `Bearer ${empToken}`);
+            await request(app)
+                .post(`/reimbursements/${id}/reject`)
+                .set('Authorization', `Bearer ${mgrToken}`)
+                .send({ rejectionReason: 'Not allowed' });
+
+            const res = await request(app)
+                .post(`/reimbursements/${id}/pay`)
+                .set('Authorization', `Bearer ${finToken}`);
+
+            expect(res.status).toBe(400);
+            expect(res.body.message).toBe('Invalid status transition');
+        });
+
+        it('cannot edit a CANCELLED reimbursement', async () => {
+            const createRes = await request(app)
+                .post('/reimbursements')
+                .set('Authorization', `Bearer ${empToken}`)
+                .send({
+                    amount: 10,
+                    categoryId: activeCatId,
+                    description: 'To be cancelled',
+                    expenseDate: '2026-05-01T00:00:00Z',
+                });
+            const id = createRes.body.id;
+
+            await request(app)
+                .post(`/reimbursements/${id}/cancel`)
+                .set('Authorization', `Bearer ${empToken}`);
+
+            const res = await request(app)
+                .put(`/reimbursements/${id}`)
+                .set('Authorization', `Bearer ${empToken}`)
+                .send({ description: 'Hacked' });
+
+            expect(res.status).toBe(400);
+            expect(res.body.message).toBe(
+                'Only DRAFT reimbursements can be edited',
+            );
+        });
+    });
 });

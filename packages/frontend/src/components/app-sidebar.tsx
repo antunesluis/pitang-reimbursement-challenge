@@ -85,12 +85,6 @@ const NAV_ITEMS: {
         path: '/categories',
         roles: ['ADMIN'],
     },
-    {
-        icon: ShieldCheck,
-        label: 'Approvals',
-        path: '/approvals',
-        roles: ['MANAGER'],
-    },
 ];
 
 const ROLE_LABELS: Record<Role, string> = {
