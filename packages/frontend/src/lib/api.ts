@@ -34,7 +34,9 @@ async function request<T>(
 
     if (response.status === 401) {
         cookieStorage.removeToken();
-        onUnauthorized?.();
+        if (path !== '/auth/login') {
+            onUnauthorized?.();
+        }
     }
 
     const data = await response.json();

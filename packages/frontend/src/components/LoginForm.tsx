@@ -27,6 +27,7 @@ export function LoginForm() {
         setError,
     } = useForm<LoginFormData>({
         defaultValues: { email: 'admin@example.com', password: 'admin123' },
+        mode: 'onBlur',
         resolver: zodResolver(loginSchema),
     });
 
