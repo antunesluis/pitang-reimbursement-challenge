@@ -1,4 +1,6 @@
-import { prisma } from '../lib/prisma.ts';
+import dayjs from "dayjs";
+
+import { prisma } from "../lib/prisma.ts";
 
 import type {
     Action,
@@ -488,5 +490,70 @@ export async function getHistory(req: Request, res: Response) {
             message: 'Internal server error',
             statusCode: 500,
         });
+    }
+}
+
+export async function getStats(req: Request, res: Response) {
+    try {
+        const { id: userId, role } = req.user!;
+        const startOfMonth = dayjs().startOf("month").toDate();
+        const endOfMonth = dayjs().endOf("month").toDate();
+
+        if (role === "EMPLOYEE") {
+            const where = { requesterId: userId };
+            const [total, draft, submitted, approved, paid] = await Promise.all([
+                prisma.reimbursement.count({ where }),
+                prisma.reimbursement.count({ where: { ...where, status: "DRAFT" } }),
+                prisma.reimbursement.count({ where: { ...where, status: "SUBMITTED" } }),
+                prisma.reimbursement.count({ where: { ...where, status: "APPROVED" } }),
+                prisma.reimbursement.count({ where: { ...where, status: "PAID" } }),
+            ]);
+            res.json({ approved, draft, paid, submitted, total });
+            return;
+        }
+
+        if (role === "MANAGER") {
+            const [pending, approvedThisMonth, rejectedThisMonth] = await Promise.all([
+                prisma.reimbursement.count({ where: { status: "SUBMITTED" } }),
+                prisma.reimbursement.count({
+                    where: { status: "APPROVED", updatedAt: { gte: startOfMonth, lte: endOfMonth } },
+                }),
+                prisma.reimbursement.count({
+                    where: { status: "REJECTED", updatedAt: { gte: startOfMonth, lte: endOfMonth } },
+                }),
+            ]);
+            res.json({ approvedThisMonth, pending, rejectedThisMonth });
+            return;
+        }
+
+        if (role === "FINANCE") {
+            const [pending, paidThisMonth, volumeThisMonth] = await Promise.all([
+                prisma.reimbursement.count({ where: { status: "APPROVED" } }),
+                prisma.reimbursement.count({
+                    where: { status: "PAID", updatedAt: { gte: startOfMonth, lte: endOfMonth } },
+                }),
+                prisma.reimbursement.count({
+                    where: { createdAt: { gte: startOfMonth, lte: endOfMonth } },
+                }),
+            ]);
+            res.json({ paidThisMonth, pending, volumeThisMonth });
+            return;
+        }
+
+        if (role === "ADMIN") {
+            const [reimbursements, pendingReview, users, categories] = await Promise.all([
+                prisma.reimbursement.count(),
+                prisma.reimbursement.count({ where: { status: "SUBMITTED" } }),
+                prisma.user.count(),
+                prisma.category.count(),
+            ]);
+            res.json({ categories, pendingReview, reimbursements, users });
+            return;
+        }
+
+        res.json({});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error", statusCode: 500 });
     }
 }

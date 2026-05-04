@@ -535,4 +535,59 @@ describe('Reimbursements', () => {
             expect(res.body.status).toBe('PAID');
         });
     });
+
+    describe('stats', () => {
+        it('GET /reimbursements/stats returns employee stats', async () => {
+            const res = await request(app)
+                .get('/reimbursements/stats')
+                .set('Authorization', `Bearer ${empToken}`);
+
+            expect(res.status).toBe(200);
+            expect(res.body.total).toBeGreaterThanOrEqual(0);
+            expect(res.body.draft).toBeGreaterThanOrEqual(0);
+            expect(res.body.submitted).toBeGreaterThanOrEqual(0);
+            expect(res.body.approved).toBeGreaterThanOrEqual(0);
+            expect(res.body.paid).toBeGreaterThanOrEqual(0);
+        });
+
+        it('GET /reimbursements/stats returns manager stats', async () => {
+            const res = await request(app)
+                .get('/reimbursements/stats')
+                .set('Authorization', `Bearer ${mgrToken}`);
+
+            expect(res.status).toBe(200);
+            expect(res.body.pending).toBeGreaterThanOrEqual(0);
+            expect(typeof res.body.approvedThisMonth).toBe('number');
+            expect(typeof res.body.rejectedThisMonth).toBe('number');
+        });
+
+        it('GET /reimbursements/stats returns finance stats', async () => {
+            const res = await request(app)
+                .get('/reimbursements/stats')
+                .set('Authorization', `Bearer ${finToken}`);
+
+            expect(res.status).toBe(200);
+            expect(res.body.pending).toBeGreaterThanOrEqual(0);
+            expect(typeof res.body.paidThisMonth).toBe('number');
+            expect(typeof res.body.volumeThisMonth).toBe('number');
+        });
+
+        it('GET /reimbursements/stats returns admin stats', async () => {
+            const res = await request(app)
+                .get('/reimbursements/stats')
+                .set('Authorization', `Bearer ${adminToken}`);
+
+            expect(res.status).toBe(200);
+            expect(res.body.reimbursements).toBeGreaterThanOrEqual(0);
+            expect(res.body.users).toBeGreaterThanOrEqual(1);
+            expect(res.body.categories).toBeGreaterThanOrEqual(1);
+            expect(res.body.pendingReview).toBeGreaterThanOrEqual(0);
+        });
+
+        it('GET /reimbursements/stats returns 401 without auth', async () => {
+            const res = await request(app).get('/reimbursements/stats');
+
+            expect(res.status).toBe(401);
+        });
+    });
 });

@@ -11,12 +11,13 @@ import {
     create,
     getById,
     getHistory,
+    getStats,
     list,
     pay,
     reject,
     submit,
     update,
-} from '../controllers/reimbursement.controller.ts';
+} from "../controllers/reimbursement.controller.ts";
 import { upload } from '../lib/upload.ts';
 import { authMiddleware } from '../middlewares/auth.middleware.ts';
 import { roleMiddleware } from '../middlewares/role.middleware.ts';
@@ -33,6 +34,8 @@ export const reimbursementRoutes = Router();
 reimbursementRoutes.use(authMiddleware);
 
 reimbursementRoutes.get('/', list);
+
+reimbursementRoutes.get('/stats', getStats);
 
 reimbursementRoutes.post(
     '/',

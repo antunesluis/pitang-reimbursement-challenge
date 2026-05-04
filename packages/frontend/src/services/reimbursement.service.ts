@@ -1,6 +1,9 @@
-import { api } from '@/lib/api.ts';
+import { api } from "@/lib/api.ts";
 
-import type { HistoryEntry, Reimbursement } from '@/types/index.ts';
+import type { Reimbursement, ReimbursementStats } from "@/types/index.ts";
+import type { HistoryEntry } from "@/types/index.ts";
+
+export type { ReimbursementStats };
 
 export const reimbursementService = {
     approve: (id: string) =>
@@ -14,14 +17,16 @@ export const reimbursementService = {
         categoryId: string;
         description: string;
         expenseDate: string;
-    }) => api.post<Reimbursement>('/reimbursements', data),
+    }) => api.post<Reimbursement>("/reimbursements", data),
 
     getById: (id: string) => api.get<Reimbursement>(`/reimbursements/${id}`),
 
     getHistory: (id: string) =>
         api.get<HistoryEntry[]>(`/reimbursements/${id}/history`),
 
-    list: () => api.get<Reimbursement[]>('/reimbursements'),
+    getStats: () => api.get<ReimbursementStats>("/reimbursements/stats"),
+
+    list: () => api.get<Reimbursement[]>("/reimbursements"),
 
     pay: (id: string) => api.post<Reimbursement>(`/reimbursements/${id}/pay`),
 

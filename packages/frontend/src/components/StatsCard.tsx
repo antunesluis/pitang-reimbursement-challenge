@@ -9,7 +9,7 @@ type Props = {
 
 export function StatsCard({ className, icon: Icon, label, value }: Props) {
     return (
-        <div className={cn('rounded-lg border p-4', className)}>
+        <div className={cn('flex-1 rounded-lg border p-4', className)}>
             <div className="flex items-center gap-2">
                 <Icon className="text-muted-foreground size-4" />
                 <span className="text-muted-foreground text-sm font-medium">

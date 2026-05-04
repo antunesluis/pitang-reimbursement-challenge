@@ -67,14 +67,14 @@ export function LoginForm() {
             <div className="relative w-full max-w-sm space-y-6 px-4 sm:max-w-md sm:px-0">
                 {/* Logo & Title */}
                 <div className="flex flex-col items-center gap-2">
-                    <img
+                    {/* <img
                         alt="Logo"
                         className="size-12"
                         src="/logo_sem_texto_pitang.png"
-                    />
+                    /> */}
                     <div className="text-center">
                         <h1 className="text-xl font-bold tracking-tight">
-                            Reimbursement Control
+                            Pitang Reimbursement Control
                         </h1>
                         <p className="text-muted-foreground text-sm">
                             Sign in to your account

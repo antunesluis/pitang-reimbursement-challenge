@@ -73,3 +73,20 @@ export type LoginResponse = {
     token: string;
     user: User;
 };
+
+export type ReimbursementStats = {
+    approved?: number;
+    approvedThisMonth?: number;
+    categories?: number;
+    draft?: number;
+    paid?: number;
+    paidThisMonth?: number;
+    pending?: number;
+    pendingReview?: number;
+    reimbursements?: number;
+    rejectedThisMonth?: number;
+    submitted?: number;
+    total?: number;
+    users?: number;
+    volumeThisMonth?: number;
+};
