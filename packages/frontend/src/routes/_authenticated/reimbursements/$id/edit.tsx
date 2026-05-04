@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
+import { AttachmentUpload } from "@/components/AttachmentUpload.tsx";
 import { CategorySelect } from '@/components/CategorySelect.tsx';
 import { Delayed } from '@/components/Delayed.tsx';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
@@ -22,7 +23,8 @@ import {
     type UpdateReimbursementFormData,
     updateReimbursementSchema,
 } from '@/schemas/reimbursement.schema.ts';
-import { reimbursementService } from '@/services/reimbursement.service.ts';
+import { attachmentService } from "@/services/attachment.service.ts";
+import { reimbursementService } from "@/services/reimbursement.service.ts";
 
 import type { Reimbursement } from '@/types/index.ts';
 
@@ -195,6 +197,20 @@ function EditReimbursementPage() {
                             {isSubmitting ? 'Saving...' : 'Save Changes'}
                         </Button>
                     </form>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-lg">Attachments</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <AttachmentUpload
+                        onUpload={async (file) => {
+                            await attachmentService.create(id, file);
+                            toast.success("Attachment added");
+                        }}
+                    />
                 </CardContent>
             </Card>
         </div>

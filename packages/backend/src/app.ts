@@ -1,7 +1,8 @@
+import path from "node:path";
+
 import cors from "cors";
 import express from "express";
 import helmet from "helmet";
-import path from "node:path";
 
 import { errorFallbackMiddleware } from "./middlewares/error.fallback.middleware.ts";
 import { authRoutes } from "./routes/auth.routes.ts";

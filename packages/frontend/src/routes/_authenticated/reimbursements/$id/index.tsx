@@ -4,7 +4,6 @@ import { Download } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-import { AttachmentUpload } from '@/components/AttachmentUpload.tsx';
 import { Delayed } from '@/components/Delayed.tsx';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
 import { HistoryTimeline } from '@/components/HistoryTimeline.tsx';
@@ -109,7 +108,6 @@ function ReimbursementDetailPage() {
     const canApprove = perm.canApprove(data.status);
     const canReject = perm.canReject(data.status);
     const canPay = perm.canPay(data.status);
-    const canUpload = perm.canUpload(data.requesterId);
 
     return (
         <div className="space-y-6">
@@ -343,24 +341,6 @@ function ReimbursementDetailPage() {
                                 </div>
                             ))}
                         </div>
-                    )}
-
-                    {canUpload && (
-                        <AttachmentUpload
-                            onUpload={async (file) => {
-                                try {
-                                    await attachmentService.create(id, file);
-                                    await fetchData();
-                                    toast.success("Attachment added");
-                                } catch (err) {
-                                    toast.error(
-                                        err instanceof Error
-                                            ? err.message
-                                            : "Upload failed",
-                                    );
-                                }
-                            }}
-                        />
                     )}
                 </CardContent>
             </Card>
