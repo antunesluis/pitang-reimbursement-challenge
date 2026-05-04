@@ -25,7 +25,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table.tsx';
-import { useAuth } from '@/contexts/auth.context.tsx';
+import { usePermissions } from "@/hooks/use-permissions.ts";
 import {
     type CreateUserFormData,
     createUserSchema,
@@ -41,13 +41,11 @@ export const Route = createFileRoute('/_authenticated/users/')({
 });
 
 function UsersPage() {
-    const { user } = useAuth();
+    const { isAdmin } = usePermissions();
     const [users, setUsers] = useState<User[]>([]);
-    const [error, setError] = useState('');
+    const [error, setError] = useState("");
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
-
-    const isAdmin = user?.role === 'ADMIN';
 
     const {
         formState: { errors, isSubmitting },

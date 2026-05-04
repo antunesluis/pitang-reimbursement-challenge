@@ -18,8 +18,8 @@ import {
 } from '@/components/ui/card.tsx';
 import { Separator } from '@/components/ui/separator.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
-import { useAuth } from '@/contexts/auth.context.tsx';
-import { attachmentService } from '@/services/attachment.service.ts';
+import { usePermissions } from "@/hooks/use-permissions.ts";
+import { attachmentService } from "@/services/attachment.service.ts";
 import { reimbursementService } from '@/services/reimbursement.service.ts';
 
 import type { Reimbursement } from '@/types/index.ts';
@@ -32,7 +32,7 @@ export const Route = createFileRoute('/_authenticated/reimbursements/$id/')({
 
 function ReimbursementDetailPage() {
     const { id } = Route.useParams();
-    const { user } = useAuth();
+    const perm = usePermissions();
     const [data, setData] = useState<null | Reimbursement>(null);
     const [history, setHistory] = useState<HistoryEntry[]>([]);
     const [attachments, setAttachments] = useState<Attachment[]>([]);
@@ -100,16 +100,13 @@ function ReimbursementDetailPage() {
         );
     }
 
-    const role = user?.role;
-    const isOwner = user?.id === data.requesterId;
-    const canEdit = isOwner && data.status === 'DRAFT';
-    const canSubmit = isOwner && data.status === 'DRAFT';
-    const canCancel =
-        isOwner && (data.status === 'DRAFT' || data.status === 'SUBMITTED');
-    const canApprove = role === 'MANAGER' && data.status === 'SUBMITTED';
-    const canReject = role === 'MANAGER' && data.status === 'SUBMITTED';
-    const canPay = role === 'FINANCE' && data.status === 'APPROVED';
-    const canUpload = isOwner;
+    const canEdit = perm.canEdit(data.status, data.requesterId);
+    const canSubmit = perm.canSubmit(data.status, data.requesterId);
+    const canCancel = perm.canCancel(data.status, data.requesterId);
+    const canApprove = perm.canApprove(data.status);
+    const canReject = perm.canReject(data.status);
+    const canPay = perm.canPay(data.status);
+    const canUpload = perm.canUpload(data.requesterId);
 
     return (
         <div className="space-y-6">

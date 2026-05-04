@@ -32,7 +32,8 @@ import {
     SidebarRail,
     useSidebar,
 } from '@/components/ui/sidebar.tsx';
-import { useAuth } from '@/contexts/auth.context.tsx';
+import { useAuth } from "@/contexts/auth.context.tsx";
+import { usePermissions } from "@/hooks/use-permissions.ts";
 
 import type { Role } from '@/types/index.ts';
 
@@ -103,8 +104,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
     const { logout, user } = useAuth();
     const { isMobile } = useSidebar();
     const matchRoute = useMatchRoute();
-
-    const role = user?.role;
+    const { role } = usePermissions();
     const filtered = NAV_ITEMS.filter((item) =>
         role ? item.roles.includes(role) : false,
     );

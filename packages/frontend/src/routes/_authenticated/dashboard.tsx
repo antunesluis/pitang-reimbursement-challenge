@@ -24,8 +24,8 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table.tsx';
-import { useAuth } from '@/contexts/auth.context.tsx';
-import { categoryService } from '@/services/category.service.ts';
+import { usePermissions } from "@/hooks/use-permissions.ts";
+import { categoryService } from "@/services/category.service.ts";
 import { reimbursementService } from '@/services/reimbursement.service.ts';
 import { userService } from '@/services/user.service.ts';
 
@@ -37,9 +37,7 @@ export const Route = createFileRoute('/_authenticated/dashboard')({
 });
 
 function DashboardPage() {
-    const { user } = useAuth();
-    const role = user?.role;
-    const isEmployee = role === 'EMPLOYEE';
+    const perm = usePermissions();
 
     const [reimbursements, setReimbursements] = useState<Reimbursement[]>([]);
     const [userCount, setUserCount] = useState(0);
@@ -56,7 +54,7 @@ function DashboardPage() {
 
                 setReimbursements(reimbs);
 
-                if (role === 'ADMIN') {
+                if (perm.isAdmin) {
                     const [users, cats] = await Promise.all([
                         userService.list(),
                         categoryService.list(),
@@ -71,7 +69,7 @@ function DashboardPage() {
             }
         }
         load();
-    }, [role]);
+    }, [perm.isAdmin]);
 
     const draftCount = reimbursements.filter(
         (r) => r.status === 'DRAFT',
@@ -103,7 +101,7 @@ function DashboardPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-bold">Dashboard</h1>
-                {isEmployee && (
+                {perm.isEmployee && (
                     <Button asChild>
                         <Link to="/reimbursements/new">
                             <Plus className="mr-2 size-4" />
@@ -117,7 +115,7 @@ function DashboardPage() {
 
             {/* Stats */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {role === 'EMPLOYEE' && (
+                {perm.isEmployee && (
                     <>
                         <StatsCard
                             icon={Receipt}
@@ -145,7 +143,7 @@ function DashboardPage() {
                     </>
                 )}
 
-                {role === 'MANAGER' && (
+                {perm.isManager && (
                     <>
                         <StatsCard
                             icon={Receipt}
@@ -172,7 +170,7 @@ function DashboardPage() {
                     </>
                 )}
 
-                {role === 'FINANCE' && (
+                {perm.isFinance && (
                     <>
                         <StatsCard
                             icon={Receipt}
@@ -199,7 +197,7 @@ function DashboardPage() {
                     </>
                 )}
 
-                {role === 'ADMIN' && (
+                {perm.isAdmin && (
                     <>
                         <StatsCard
                             icon={Receipt}

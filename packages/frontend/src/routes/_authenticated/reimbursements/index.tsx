@@ -15,8 +15,8 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table.tsx';
-import { useAuth } from '@/contexts/auth.context.tsx';
-import { reimbursementService } from '@/services/reimbursement.service.ts';
+import { usePermissions } from "@/hooks/use-permissions.ts";
+import { reimbursementService } from "@/services/reimbursement.service.ts";
 
 import type { Reimbursement } from '@/types/index.ts';
 
@@ -25,11 +25,10 @@ export const Route = createFileRoute('/_authenticated/reimbursements/')({
 });
 
 function ReimbursementListPage() {
-    const { user } = useAuth();
+    const { isEmployee } = usePermissions();
     const [data, setData] = useState<Reimbursement[]>([]);
-    const [error, setError] = useState('');
+    const [error, setError] = useState("");
     const [loading, setLoading] = useState(true);
-    const isEmployee = user?.role === 'EMPLOYEE';
 
     useEffect(() => {
         reimbursementService
