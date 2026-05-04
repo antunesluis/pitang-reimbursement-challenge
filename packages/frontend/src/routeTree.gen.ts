@@ -11,13 +11,14 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedReimbursementsRouteImport } from './routes/_authenticated/reimbursements'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
 import { Route as AuthenticatedReimbursementsIndexRouteImport } from './routes/_authenticated/reimbursements/index'
 import { Route as AuthenticatedCategoriesIndexRouteImport } from './routes/_authenticated/categories/index'
 import { Route as AuthenticatedReimbursementsNewRouteImport } from './routes/_authenticated/reimbursements/new'
-import { Route as AuthenticatedReimbursementsIdRouteImport } from './routes/_authenticated/reimbursements/$id'
-import { Route as AuthenticatedReimbursementsIdEditRouteImport } from './routes/_authenticated/reimbursements/$id.edit'
+import { Route as AuthenticatedReimbursementsIdIndexRouteImport } from './routes/_authenticated/reimbursements/$id/index'
+import { Route as AuthenticatedReimbursementsIdEditRouteImport } from './routes/_authenticated/reimbursements/$id/edit'
 
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
@@ -28,6 +29,12 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedReimbursementsRoute =
+  AuthenticatedReimbursementsRouteImport.update({
+    id: '/reimbursements',
+    path: '/reimbursements',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -40,9 +47,9 @@ const AuthenticatedUsersIndexRoute = AuthenticatedUsersIndexRouteImport.update({
 } as any)
 const AuthenticatedReimbursementsIndexRoute =
   AuthenticatedReimbursementsIndexRouteImport.update({
-    id: '/reimbursements/',
-    path: '/reimbursements/',
-    getParentRoute: () => AuthenticatedRoute,
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedReimbursementsRoute,
   } as any)
 const AuthenticatedCategoriesIndexRoute =
   AuthenticatedCategoriesIndexRouteImport.update({
@@ -52,87 +59,91 @@ const AuthenticatedCategoriesIndexRoute =
   } as any)
 const AuthenticatedReimbursementsNewRoute =
   AuthenticatedReimbursementsNewRouteImport.update({
-    id: '/reimbursements/new',
-    path: '/reimbursements/new',
-    getParentRoute: () => AuthenticatedRoute,
+    id: '/new',
+    path: '/new',
+    getParentRoute: () => AuthenticatedReimbursementsRoute,
   } as any)
-const AuthenticatedReimbursementsIdRoute =
-  AuthenticatedReimbursementsIdRouteImport.update({
-    id: '/reimbursements/$id',
-    path: '/reimbursements/$id',
-    getParentRoute: () => AuthenticatedRoute,
+const AuthenticatedReimbursementsIdIndexRoute =
+  AuthenticatedReimbursementsIdIndexRouteImport.update({
+    id: '/$id/',
+    path: '/$id/',
+    getParentRoute: () => AuthenticatedReimbursementsRoute,
   } as any)
 const AuthenticatedReimbursementsIdEditRoute =
   AuthenticatedReimbursementsIdEditRouteImport.update({
-    id: '/edit',
-    path: '/edit',
-    getParentRoute: () => AuthenticatedReimbursementsIdRoute,
+    id: '/$id/edit',
+    path: '/$id/edit',
+    getParentRoute: () => AuthenticatedReimbursementsRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/reimbursements/$id': typeof AuthenticatedReimbursementsIdRouteWithChildren
+  '/reimbursements': typeof AuthenticatedReimbursementsRouteWithChildren
   '/reimbursements/new': typeof AuthenticatedReimbursementsNewRoute
   '/categories/': typeof AuthenticatedCategoriesIndexRoute
   '/reimbursements/': typeof AuthenticatedReimbursementsIndexRoute
   '/users/': typeof AuthenticatedUsersIndexRoute
   '/reimbursements/$id/edit': typeof AuthenticatedReimbursementsIdEditRoute
+  '/reimbursements/$id/': typeof AuthenticatedReimbursementsIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/reimbursements/$id': typeof AuthenticatedReimbursementsIdRouteWithChildren
   '/reimbursements/new': typeof AuthenticatedReimbursementsNewRoute
   '/categories': typeof AuthenticatedCategoriesIndexRoute
   '/reimbursements': typeof AuthenticatedReimbursementsIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
   '/reimbursements/$id/edit': typeof AuthenticatedReimbursementsIdEditRoute
+  '/reimbursements/$id': typeof AuthenticatedReimbursementsIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
-  '/_authenticated/reimbursements/$id': typeof AuthenticatedReimbursementsIdRouteWithChildren
+  '/_authenticated/reimbursements': typeof AuthenticatedReimbursementsRouteWithChildren
   '/_authenticated/reimbursements/new': typeof AuthenticatedReimbursementsNewRoute
   '/_authenticated/categories/': typeof AuthenticatedCategoriesIndexRoute
   '/_authenticated/reimbursements/': typeof AuthenticatedReimbursementsIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
   '/_authenticated/reimbursements/$id/edit': typeof AuthenticatedReimbursementsIdEditRoute
+  '/_authenticated/reimbursements/$id/': typeof AuthenticatedReimbursementsIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/dashboard'
-    | '/reimbursements/$id'
+    | '/reimbursements'
     | '/reimbursements/new'
     | '/categories/'
     | '/reimbursements/'
     | '/users/'
     | '/reimbursements/$id/edit'
+    | '/reimbursements/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/dashboard'
-    | '/reimbursements/$id'
     | '/reimbursements/new'
     | '/categories'
     | '/reimbursements'
     | '/users'
     | '/reimbursements/$id/edit'
+    | '/reimbursements/$id'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/_authenticated/dashboard'
-    | '/_authenticated/reimbursements/$id'
+    | '/_authenticated/reimbursements'
     | '/_authenticated/reimbursements/new'
     | '/_authenticated/categories/'
     | '/_authenticated/reimbursements/'
     | '/_authenticated/users/'
     | '/_authenticated/reimbursements/$id/edit'
+    | '/_authenticated/reimbursements/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -156,6 +167,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/reimbursements': {
+      id: '/_authenticated/reimbursements'
+      path: '/reimbursements'
+      fullPath: '/reimbursements'
+      preLoaderRoute: typeof AuthenticatedReimbursementsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -172,10 +190,10 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/reimbursements/': {
       id: '/_authenticated/reimbursements/'
-      path: '/reimbursements'
+      path: '/'
       fullPath: '/reimbursements/'
       preLoaderRoute: typeof AuthenticatedReimbursementsIndexRouteImport
-      parentRoute: typeof AuthenticatedRoute
+      parentRoute: typeof AuthenticatedReimbursementsRoute
     }
     '/_authenticated/categories/': {
       id: '/_authenticated/categories/'
@@ -186,59 +204,63 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/reimbursements/new': {
       id: '/_authenticated/reimbursements/new'
-      path: '/reimbursements/new'
+      path: '/new'
       fullPath: '/reimbursements/new'
       preLoaderRoute: typeof AuthenticatedReimbursementsNewRouteImport
-      parentRoute: typeof AuthenticatedRoute
+      parentRoute: typeof AuthenticatedReimbursementsRoute
     }
-    '/_authenticated/reimbursements/$id': {
-      id: '/_authenticated/reimbursements/$id'
-      path: '/reimbursements/$id'
-      fullPath: '/reimbursements/$id'
-      preLoaderRoute: typeof AuthenticatedReimbursementsIdRouteImport
-      parentRoute: typeof AuthenticatedRoute
+    '/_authenticated/reimbursements/$id/': {
+      id: '/_authenticated/reimbursements/$id/'
+      path: '/$id'
+      fullPath: '/reimbursements/$id/'
+      preLoaderRoute: typeof AuthenticatedReimbursementsIdIndexRouteImport
+      parentRoute: typeof AuthenticatedReimbursementsRoute
     }
     '/_authenticated/reimbursements/$id/edit': {
       id: '/_authenticated/reimbursements/$id/edit'
-      path: '/edit'
+      path: '/$id/edit'
       fullPath: '/reimbursements/$id/edit'
       preLoaderRoute: typeof AuthenticatedReimbursementsIdEditRouteImport
-      parentRoute: typeof AuthenticatedReimbursementsIdRoute
+      parentRoute: typeof AuthenticatedReimbursementsRoute
     }
   }
 }
 
-interface AuthenticatedReimbursementsIdRouteChildren {
+interface AuthenticatedReimbursementsRouteChildren {
+  AuthenticatedReimbursementsNewRoute: typeof AuthenticatedReimbursementsNewRoute
+  AuthenticatedReimbursementsIndexRoute: typeof AuthenticatedReimbursementsIndexRoute
   AuthenticatedReimbursementsIdEditRoute: typeof AuthenticatedReimbursementsIdEditRoute
+  AuthenticatedReimbursementsIdIndexRoute: typeof AuthenticatedReimbursementsIdIndexRoute
 }
 
-const AuthenticatedReimbursementsIdRouteChildren: AuthenticatedReimbursementsIdRouteChildren =
+const AuthenticatedReimbursementsRouteChildren: AuthenticatedReimbursementsRouteChildren =
   {
+    AuthenticatedReimbursementsNewRoute: AuthenticatedReimbursementsNewRoute,
+    AuthenticatedReimbursementsIndexRoute:
+      AuthenticatedReimbursementsIndexRoute,
     AuthenticatedReimbursementsIdEditRoute:
       AuthenticatedReimbursementsIdEditRoute,
+    AuthenticatedReimbursementsIdIndexRoute:
+      AuthenticatedReimbursementsIdIndexRoute,
   }
 
-const AuthenticatedReimbursementsIdRouteWithChildren =
-  AuthenticatedReimbursementsIdRoute._addFileChildren(
-    AuthenticatedReimbursementsIdRouteChildren,
+const AuthenticatedReimbursementsRouteWithChildren =
+  AuthenticatedReimbursementsRoute._addFileChildren(
+    AuthenticatedReimbursementsRouteChildren,
   )
 
 interface AuthenticatedRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedReimbursementsIdRoute: typeof AuthenticatedReimbursementsIdRouteWithChildren
-  AuthenticatedReimbursementsNewRoute: typeof AuthenticatedReimbursementsNewRoute
+  AuthenticatedReimbursementsRoute: typeof AuthenticatedReimbursementsRouteWithChildren
   AuthenticatedCategoriesIndexRoute: typeof AuthenticatedCategoriesIndexRoute
-  AuthenticatedReimbursementsIndexRoute: typeof AuthenticatedReimbursementsIndexRoute
   AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
-  AuthenticatedReimbursementsIdRoute:
-    AuthenticatedReimbursementsIdRouteWithChildren,
-  AuthenticatedReimbursementsNewRoute: AuthenticatedReimbursementsNewRoute,
+  AuthenticatedReimbursementsRoute:
+    AuthenticatedReimbursementsRouteWithChildren,
   AuthenticatedCategoriesIndexRoute: AuthenticatedCategoriesIndexRoute,
-  AuthenticatedReimbursementsIndexRoute: AuthenticatedReimbursementsIndexRoute,
   AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
 }
 

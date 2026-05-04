@@ -31,6 +31,7 @@ type PendingAttachment = {
 
 export const Route = createFileRoute('/_authenticated/reimbursements/new')({
     component: NewReimbursementPage,
+    staticData: { breadcrumb: 'New' },
 });
 
 function NewReimbursementPage() {

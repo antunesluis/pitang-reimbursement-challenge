@@ -25,8 +25,9 @@ import { reimbursementService } from '@/services/reimbursement.service.ts';
 import type { Reimbursement } from '@/types/index.ts';
 import type { Attachment, HistoryEntry } from '@/types/index.ts';
 
-export const Route = createFileRoute('/_authenticated/reimbursements/$id')({
+export const Route = createFileRoute('/_authenticated/reimbursements/$id/')({
     component: ReimbursementDetailPage,
+    staticData: { breadcrumb: 'Detail' },
 });
 
 function ReimbursementDetailPage() {

@@ -29,6 +29,7 @@ import type { Reimbursement } from '@/types/index.ts';
 export const Route = createFileRoute('/_authenticated/reimbursements/$id/edit')(
     {
         component: EditReimbursementPage,
+        staticData: { breadcrumb: 'Edit' },
     },
 );
 

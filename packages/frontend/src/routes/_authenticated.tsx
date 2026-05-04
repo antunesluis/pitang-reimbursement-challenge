@@ -1,12 +1,8 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 
 import { AppSidebar } from '@/components/app-sidebar.tsx';
-import { Separator } from '@/components/ui/separator.tsx';
-import {
-    SidebarInset,
-    SidebarProvider,
-    SidebarTrigger,
-} from '@/components/ui/sidebar.tsx';
+import { AppHeader } from '@/components/AppHeader';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { useAuth } from '@/contexts/auth.context.tsx';
 import { cookieStorage } from '@/lib/cookies.ts';
@@ -31,16 +27,8 @@ function AuthenticatedLayout() {
                 <AppSidebar />
             )}
             <SidebarInset>
-                <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-                    <div className="flex items-center gap-2 px-4">
-                        <SidebarTrigger className="-ml-1" />
-                        <Separator
-                            className="mr-2 data-[orientation=vertical]:h-4"
-                            orientation="vertical"
-                        />
-                    </div>
-                </header>
-                <main className="flex-1 p-4 pt-0">
+                <AppHeader />
+                <main className="flex-1 p-4">
                     <Outlet />
                 </main>
             </SidebarInset>

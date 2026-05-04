@@ -33,6 +33,7 @@ import type { Reimbursement } from '@/types/index.ts';
 
 export const Route = createFileRoute('/_authenticated/dashboard')({
     component: DashboardPage,
+    staticData: { breadcrumb: 'Dashboard' },
 });
 
 function DashboardPage() {

@@ -37,6 +37,7 @@ import type { User } from '@/types/index.ts';
 
 export const Route = createFileRoute('/_authenticated/users/')({
     component: UsersPage,
+    staticData: { breadcrumb: 'Users' },
 });
 
 function UsersPage() {
