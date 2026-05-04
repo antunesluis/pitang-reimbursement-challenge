@@ -19,8 +19,9 @@ import {
 } from '@/components/ui/card.tsx';
 import { Separator } from '@/components/ui/separator.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
-import { usePermissions } from '@/hooks/use-permissions.ts';
-import { attachmentService } from '@/services/attachment.service.ts';
+import { usePermissions } from "@/hooks/use-permissions.ts";
+import { getFileUrl } from "@/lib/api.ts";
+import { attachmentService } from "@/services/attachment.service.ts";
 import { reimbursementService } from '@/services/reimbursement.service.ts';
 
 import type { Reimbursement } from '@/types/index.ts';
@@ -331,7 +332,7 @@ function ReimbursementDetailPage() {
                                     </div>
                                     <Button asChild size="sm" variant="ghost">
                                         <a
-                                            href={att.fileUrl}
+                                            href={getFileUrl(att.fileUrl)}
                                             rel="noreferrer"
                                             target="_blank"
                                         >
@@ -346,20 +347,16 @@ function ReimbursementDetailPage() {
 
                     {canUpload && (
                         <AttachmentUpload
-                            onUpload={async (formData) => {
+                            onUpload={async (file) => {
                                 try {
-                                    await attachmentService.create(id, {
-                                        fileName: formData.fileName,
-                                        fileType: formData.fileType,
-                                        fileUrl: formData.fileUrl,
-                                    });
+                                    await attachmentService.create(id, file);
                                     await fetchData();
-                                    toast.success('Attachment added');
+                                    toast.success("Attachment added");
                                 } catch (err) {
                                     toast.error(
                                         err instanceof Error
                                             ? err.message
-                                            : 'Upload failed',
+                                            : "Upload failed",
                                     );
                                 }
                             }}

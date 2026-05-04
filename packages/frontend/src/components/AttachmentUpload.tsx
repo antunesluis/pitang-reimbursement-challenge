@@ -1,98 +1,84 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Plus } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { Plus } from "lucide-react";
+import { useState } from "react";
 
-import { Button } from '@/components/ui/button.tsx';
-import { Input } from '@/components/ui/input.tsx';
-import { Label } from '@/components/ui/label.tsx';
-import {
-    type CreateAttachmentFormData,
-    createAttachmentSchema,
-} from '@/schemas/attachment.schema.ts';
+import { Button } from "@/components/ui/button.tsx";
+import { Input } from "@/components/ui/input.tsx";
+import { Label } from "@/components/ui/label.tsx";
+
+const ALLOWED_TYPES = ["application/pdf", "image/jpeg", "image/png"];
+const ALLOWED_EXTENSIONS = ".pdf,.jpg,.jpeg,.png";
 
 type Props = {
-    onUpload: (data: CreateAttachmentFormData) => Promise<void>;
+  onUpload: (file: File) => Promise<void>;
 };
 
 export function AttachmentUpload({ onUpload }: Props) {
-    const {
-        formState: { errors, isSubmitting },
-        handleSubmit,
-        register,
-        reset,
-    } = useForm<CreateAttachmentFormData>({
-        mode: 'onBlur',
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        resolver: zodResolver(createAttachmentSchema) as any,
-    });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-    async function onSubmit(data: CreateAttachmentFormData) {
-        await onUpload(data);
-        reset();
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!selectedFile) return;
+
+    if (!ALLOWED_TYPES.includes(selectedFile.type)) {
+      setError("Invalid file type. Allowed: PDF, JPG, PNG");
+      return;
     }
 
-    return (
-        <form
-            className="space-y-3 rounded-md border p-4"
-            onSubmit={handleSubmit(onSubmit)}
-        >
-            <p className="text-sm font-medium">Add Attachment</p>
+    if (selectedFile.size > 5 * 1024 * 1024) {
+      setError("File too large. Maximum size is 5MB");
+      return;
+    }
 
-            <div className="flex flex-wrap gap-3">
-                <div className="min-w-[200px] flex-1 space-y-1">
-                    <Label htmlFor="att-fileName">File Name</Label>
-                    <Input
-                        id="att-fileName"
-                        placeholder="receipt.pdf"
-                        {...register('fileName')}
-                    />
-                    {errors.fileName && (
-                        <p className="text-destructive text-xs">
-                            {errors.fileName.message}
-                        </p>
-                    )}
-                </div>
+    setError("");
+    setLoading(true);
+    try {
+      await onUpload(selectedFile);
+      setSelectedFile(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setLoading(false);
+    }
+  }
 
-                <div className="w-32 space-y-1">
-                    <Label htmlFor="att-fileType">Type</Label>
-                    <select
-                        className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-                        id="att-fileType"
-                        {...register('fileType')}
-                    >
-                        <option value="">Select</option>
-                        <option value="application/pdf">PDF</option>
-                        <option value="image/jpeg">JPG</option>
-                        <option value="image/png">PNG</option>
-                    </select>
-                    {errors.fileType && (
-                        <p className="text-destructive text-xs">
-                            {errors.fileType.message}
-                        </p>
-                    )}
-                </div>
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setError("");
+    }
+  }
 
-                <div className="min-w-[200px] flex-1 space-y-1">
-                    <Label htmlFor="att-fileUrl">URL</Label>
-                    <Input
-                        id="att-fileUrl"
-                        placeholder="https://example.com/receipt.pdf"
-                        {...register('fileUrl')}
-                    />
-                    {errors.fileUrl && (
-                        <p className="text-destructive text-xs">
-                            {errors.fileUrl.message}
-                        </p>
-                    )}
-                </div>
+  return (
+    <form className="rounded-md border p-4" onSubmit={handleSubmit}>
+      <p className="mb-3 text-sm font-medium">Add Attachment</p>
 
-                <div className="flex items-end pb-0.5">
-                    <Button disabled={isSubmitting} size="sm" type="submit">
-                        <Plus className="mr-1 size-4" />
-                        {isSubmitting ? 'Uploading...' : 'Add'}
-                    </Button>
-                </div>
-            </div>
-        </form>
-    );
+      <div className="flex items-end gap-3">
+        <div className="flex-1 space-y-1">
+          <Label htmlFor="att-file">File</Label>
+          <Input
+            accept={ALLOWED_EXTENSIONS}
+            id="att-file"
+            onChange={handleFileChange}
+            type="file"
+          />
+        </div>
+
+        <Button disabled={!selectedFile || loading} size="sm" type="submit">
+          <Plus className="mr-1 size-4" />
+          {loading ? "Uploading..." : "Add"}
+        </Button>
+      </div>
+
+      {selectedFile && (
+        <p className="text-muted-foreground mt-2 text-xs">
+          Selected: {selectedFile.name} ({(selectedFile.size / 1024).toFixed(1)} KB)
+        </p>
+      )}
+
+      {error && <p className="text-destructive mt-1 text-xs">{error}</p>}
+    </form>
+  );
 }

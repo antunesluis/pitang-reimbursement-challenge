@@ -39,3 +39,7 @@ package-lock.json
 /prisma/src/generated/prisma
 
 dev.db
+
+# uploaded files (keep directory, ignore contents)
+/uploads/*
+!/uploads/.gitkeep

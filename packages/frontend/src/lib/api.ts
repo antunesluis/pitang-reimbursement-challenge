@@ -2,6 +2,10 @@ import { cookieStorage } from '@/lib/cookies.ts';
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
 
+export function getFileUrl(path: string) {
+    return `${BASE_URL}${path}`;
+}
+
 type RequestOptions = Omit<RequestInit, 'body'> & {
     body?: unknown;
 };
@@ -77,5 +81,31 @@ export const api = {
     },
     put<T>(path: string, body?: unknown, options?: RequestOptions) {
         return request<T>(path, { ...options, body, method: 'PUT' });
+    },
+    uploadFile<T>(path: string, formData: FormData): Promise<T> {
+        const token = cookieStorage.getToken();
+        const headers: Record<string, string> = {};
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+        return fetch(`${BASE_URL}${path}`, {
+            body: formData,
+            headers,
+            method: 'POST',
+        }).then(async (response) => {
+            if (response.status === 401) {
+                cookieStorage.removeToken();
+                if (path !== '/auth/login') onUnauthorized?.();
+            }
+            const data = await response.json();
+            if (!response.ok) {
+                throw new ApiError(
+                    data.message ?? 'Upload failed',
+                    response.status,
+                    data.errors,
+                );
+            }
+            return data as T;
+        });
     },
 };
