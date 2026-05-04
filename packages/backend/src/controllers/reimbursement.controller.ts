@@ -61,10 +61,16 @@ function canView(
     req: Request,
     reimbursement: { requesterId: string; status: string },
 ) {
+    // Owner and admin see everything
     if (isOwner(req, reimbursement)) return true;
     if (isAdmin(req)) return true;
-    if (isManager(req) && reimbursement.status === 'SUBMITTED') return true;
-    if (isFinance(req) && reimbursement.status === 'APPROVED') return true;
+    // Manager sees submitted + everything downstream (approved/pay flow)
+    if (isManager(req) && reimbursement.status !== 'DRAFT' &&
+        reimbursement.status !== 'CANCELLED') return true;
+    // Finance sees approved + paid (their queue + what they processed)
+    if (isFinance(req) &&
+        (reimbursement.status === 'APPROVED' || reimbursement.status === 'PAID'))
+        return true;
     return false;
 }
 

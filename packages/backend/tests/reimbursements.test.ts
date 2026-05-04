@@ -476,4 +476,63 @@ describe('Reimbursements', () => {
             );
         });
     });
+
+    describe('view after processing', () => {
+        it('MANAGER can still view APPROVED reimbursement after approving', async () => {
+            const createRes = await request(app)
+                .post('/reimbursements')
+                .set('Authorization', `Bearer ${empToken}`)
+                .send({
+                    amount: 60,
+                    categoryId: activeCatId,
+                    description: 'Manager approved this',
+                    expenseDate: '2026-05-01T00:00:00Z',
+                });
+            const id = createRes.body.id;
+
+            await request(app)
+                .post(`/reimbursements/${id}/submit`)
+                .set('Authorization', `Bearer ${empToken}`);
+            await request(app)
+                .post(`/reimbursements/${id}/approve`)
+                .set('Authorization', `Bearer ${mgrToken}`);
+
+            const res = await request(app)
+                .get(`/reimbursements/${id}`)
+                .set('Authorization', `Bearer ${mgrToken}`);
+
+            expect(res.status).toBe(200);
+            expect(res.body.status).toBe('APPROVED');
+        });
+
+        it('FINANCE can still view PAID reimbursement after paying', async () => {
+            const createRes = await request(app)
+                .post('/reimbursements')
+                .set('Authorization', `Bearer ${empToken}`)
+                .send({
+                    amount: 70,
+                    categoryId: activeCatId,
+                    description: 'Finance paid this',
+                    expenseDate: '2026-05-01T00:00:00Z',
+                });
+            const id = createRes.body.id;
+
+            await request(app)
+                .post(`/reimbursements/${id}/submit`)
+                .set('Authorization', `Bearer ${empToken}`);
+            await request(app)
+                .post(`/reimbursements/${id}/approve`)
+                .set('Authorization', `Bearer ${mgrToken}`);
+            await request(app)
+                .post(`/reimbursements/${id}/pay`)
+                .set('Authorization', `Bearer ${finToken}`);
+
+            const res = await request(app)
+                .get(`/reimbursements/${id}`)
+                .set('Authorization', `Bearer ${finToken}`);
+
+            expect(res.status).toBe(200);
+            expect(res.body.status).toBe('PAID');
+        });
+    });
 });

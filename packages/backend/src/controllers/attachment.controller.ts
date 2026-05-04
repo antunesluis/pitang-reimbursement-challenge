@@ -61,13 +61,16 @@ export async function listAttachments(req: Request, res: Response) {
 
         const isOwner = req.user!.id === reimbursement.requesterId;
         const role = req.user!.role;
+        const status = reimbursement.status;
 
-        let canView = false;
-        if (isOwner) canView = true;
-        else if (role === 'ADMIN') canView = true;
-        else if (role === 'MANAGER' && reimbursement.status === 'SUBMITTED')
+        // Owner and admin see everything
+        let canView = isOwner || role === 'ADMIN';
+        // Manager sees submitted + everything downstream
+        if (!canView && role === 'MANAGER' && status !== 'DRAFT' && status !== 'CANCELLED')
             canView = true;
-        else if (role === 'FINANCE' && reimbursement.status === 'APPROVED')
+        // Finance sees approved + paid
+        if (!canView && role === 'FINANCE' &&
+            (status === 'APPROVED' || status === 'PAID'))
             canView = true;
 
         if (!canView) {
