@@ -4,7 +4,7 @@ import { createRouter, RouterProvider } from '@tanstack/react-router';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
-import { NotFound } from '@/components/NotFound.tsx';
+import { NotFound } from '@/components/layout/NotFound.tsx';
 import { AuthProvider } from '@/contexts/auth.context.tsx';
 import { routeTree } from '@/routeTree.gen.ts';
 

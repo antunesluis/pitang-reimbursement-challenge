@@ -4,11 +4,11 @@ import { Download } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-import { Delayed } from '@/components/Delayed.tsx';
-import { ErrorAlert } from '@/components/ErrorAlert.tsx';
-import { HistoryTimeline } from '@/components/HistoryTimeline.tsx';
-import { RejectDialog } from '@/components/RejectDialog.tsx';
-import { StatusBadge } from '@/components/StatusBadge.tsx';
+import { HistoryTimeline } from '@/components/reimbursements/HistoryTimeline.tsx';
+import { RejectDialog } from '@/components/reimbursements/RejectDialog.tsx';
+import { StatusBadge } from '@/components/reimbursements/StatusBadge.tsx';
+import { Delayed } from '@/components/shared/Delayed.tsx';
+import { ErrorAlert } from '@/components/shared/ErrorAlert.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import {
     Card,

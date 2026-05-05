@@ -3,10 +3,10 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { Plus, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-import { Delayed } from '@/components/Delayed.tsx';
-import { EmptyState } from '@/components/EmptyState.tsx';
-import { ErrorAlert } from '@/components/ErrorAlert.tsx';
-import { Pagination } from "@/components/Pagination.tsx";
+import { Delayed } from '@/components/shared/Delayed.tsx';
+import { EmptyState } from '@/components/shared/EmptyState.tsx';
+import { ErrorAlert } from '@/components/shared/ErrorAlert.tsx';
+import { Pagination } from "@/components/shared/Pagination.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import {

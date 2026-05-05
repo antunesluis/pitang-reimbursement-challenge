@@ -3,8 +3,8 @@ import { createFileRoute, Link, useRouter } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { ErrorAlert } from '@/components/ErrorAlert.tsx';
-import { FieldError } from '@/components/FieldError.tsx';
+import { ErrorAlert } from '@/components/shared/ErrorAlert.tsx';
+import { FieldError } from '@/components/shared/FieldError.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import {
     Card,

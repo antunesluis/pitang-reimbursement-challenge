@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 
-import { AppSidebar } from '@/components/app-sidebar.tsx';
-import { AppHeader } from '@/components/AppHeader';
+import { AppHeader } from '@/components/layout/AppHeader';
+import { AppSidebar } from '@/components/layout/AppSidebar.tsx';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { useAuth } from '@/contexts/auth.context.tsx';

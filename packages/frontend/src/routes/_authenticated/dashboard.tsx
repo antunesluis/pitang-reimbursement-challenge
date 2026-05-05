@@ -11,10 +11,10 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { Delayed } from "@/components/Delayed.tsx";
-import { ErrorAlert } from "@/components/ErrorAlert.tsx";
-import { StatsCard } from "@/components/StatsCard.tsx";
-import { StatusBadge } from "@/components/StatusBadge.tsx";
+import { StatusBadge } from "@/components/reimbursements/StatusBadge.tsx";
+import { Delayed } from "@/components/shared/Delayed.tsx";
+import { ErrorAlert } from "@/components/shared/ErrorAlert.tsx";
+import { StatsCard } from "@/components/shared/StatsCard.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Skeleton } from "@/components/ui/skeleton.tsx";
 import {

@@ -4,7 +4,7 @@ import { Eye, EyeOff, Lock, Mail } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { FieldError } from '@/components/FieldError.tsx';
+import { FieldError } from '@/components/shared/FieldError.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import {
     Card,

@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
-import { FieldError } from '@/components/FieldError.tsx';
+import { FieldError } from '@/components/shared/FieldError.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import {
     Dialog,
