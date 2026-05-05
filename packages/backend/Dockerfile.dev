@@ -6,6 +6,7 @@ COPY packages/backend/package.json ./
 RUN bun install
 
 COPY packages/backend/tsconfig.json ./
+COPY packages/backend/prisma.config.ts ./
 COPY packages/backend/prisma/ ./prisma/
 RUN bunx --bun prisma generate
 
