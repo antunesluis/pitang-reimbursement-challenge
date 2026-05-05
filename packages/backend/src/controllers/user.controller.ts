@@ -43,13 +43,13 @@ export async function create(req: Request, res: Response) {
 
 export async function list(req: Request, res: Response) {
     try {
-        const page = parseInt((req.query.page as string) ?? "1");
-        const limit = parseInt((req.query.limit as string) ?? "10");
+        const page = parseInt((req.query.page as string) ?? '1');
+        const limit = parseInt((req.query.limit as string) ?? '10');
         const skip = (page - 1) * limit;
 
         const [data, total] = await Promise.all([
             prisma.user.findMany({
-                orderBy: { createdAt: "desc" },
+                orderBy: { createdAt: 'desc' },
                 select: {
                     createdAt: true,
                     email: true,
@@ -73,7 +73,7 @@ export async function list(req: Request, res: Response) {
         });
     } catch {
         res.status(500).json({
-            message: "Internal server error",
+            message: 'Internal server error',
             statusCode: 500,
         });
     }

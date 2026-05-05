@@ -27,7 +27,7 @@ export const Route = createFileRoute('/_authenticated/reimbursements/new')({
     staticData: { breadcrumb: 'New' },
 });
 
-function NewReimbursementPage() {
+export function NewReimbursementPage() {
     const router = useRouter();
     const [pendingFiles, setPendingFiles] = useState<File[]>([]);
 
@@ -111,8 +111,8 @@ function NewReimbursementPage() {
                         <div className="space-y-2">
                             <Label>Category</Label>
                             <CategorySelect
-                                onChange={(v) => setValue("categoryId", v)}
-                                value={watch("categoryId") ?? ""}
+                                onChange={(v) => setValue('categoryId', v)}
+                                value={watch('categoryId') ?? ''}
                             />
                             <FieldError message={errors.categoryId?.message} />
                         </div>

@@ -1,23 +1,27 @@
-import { JSDOM } from "jsdom";
+import { JSDOM } from 'jsdom';
 
-const dom = new JSDOM("<!DOCTYPE html><html><body></body></html>", {
-  url: "http://localhost:3000",
+const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
+    url: 'http://localhost:3000',
 });
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const win = dom.window as any;
+
 Object.assign(globalThis, {
-  CustomEvent: dom.window.CustomEvent,
-  document: dom.window.document,
-  Element: dom.window.Element,
-  Event: dom.window.Event,
-  getComputedStyle: dom.window.getComputedStyle,
-  HTMLAnchorElement: dom.window.HTMLAnchorElement,
-  HTMLButtonElement: dom.window.HTMLButtonElement,
-  HTMLElement: dom.window.HTMLElement,
-  HTMLInputElement: dom.window.HTMLInputElement,
-  HTMLOptionElement: dom.window.HTMLOptionElement,
-  HTMLSelectElement: dom.window.HTMLSelectElement,
-  HTMLTextAreaElement: dom.window.HTMLTextAreaElement,
-  MouseEvent: dom.window.MouseEvent,
-  Node: dom.window.Node,
-  window: dom.window,
+    CustomEvent: win.CustomEvent,
+    document: win.document,
+    Element: win.Element,
+    Event: win.Event,
+    getComputedStyle: win.getComputedStyle,
+    HTMLAnchorElement: win.HTMLAnchorElement,
+    HTMLButtonElement: win.HTMLButtonElement,
+    HTMLElement: win.HTMLElement,
+    HTMLInputElement: win.HTMLInputElement,
+    HTMLOptionElement: win.HTMLOptionElement,
+    HTMLSelectElement: win.HTMLSelectElement,
+    HTMLTextAreaElement: win.HTMLTextAreaElement,
+    MouseEvent: win.MouseEvent,
+    MutationObserver: win.MutationObserver,
+    Node: win.Node,
+    window: win,
 });

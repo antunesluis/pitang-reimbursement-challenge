@@ -1,15 +1,15 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Plus, Receipt } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { Plus, Receipt } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 
-import { StatusBadge } from "@/components/reimbursements/StatusBadge.tsx";
-import { Delayed } from "@/components/shared/Delayed.tsx";
-import { EmptyState } from "@/components/shared/EmptyState.tsx";
-import { ErrorAlert } from "@/components/shared/ErrorAlert.tsx";
-import { Pagination } from "@/components/shared/Pagination.tsx";
-import { Button } from "@/components/ui/button.tsx";
-import { Skeleton } from "@/components/ui/skeleton.tsx";
+import { StatusBadge } from '@/components/reimbursements/StatusBadge.tsx';
+import { Delayed } from '@/components/shared/Delayed.tsx';
+import { EmptyState } from '@/components/shared/EmptyState.tsx';
+import { ErrorAlert } from '@/components/shared/ErrorAlert.tsx';
+import { Pagination } from '@/components/shared/Pagination.tsx';
+import { Button } from '@/components/ui/button.tsx';
+import { Skeleton } from '@/components/ui/skeleton.tsx';
 import {
     Table,
     TableBody,
@@ -17,13 +17,13 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "@/components/ui/table.tsx";
-import { usePermissions } from "@/hooks/use-permissions.ts";
-import { reimbursementService } from "@/services/reimbursement.service.ts";
+} from '@/components/ui/table.tsx';
+import { usePermissions } from '@/hooks/use-permissions.ts';
+import { reimbursementService } from '@/services/reimbursement.service.ts';
 
-import type { Reimbursement } from "@/types/index.ts";
+import type { Reimbursement } from '@/types/index.ts';
 
-export const Route = createFileRoute("/_authenticated/reimbursements/")({
+export const Route = createFileRoute('/_authenticated/reimbursements/')({
     component: ReimbursementListPage,
 });
 
@@ -33,7 +33,7 @@ function ReimbursementListPage() {
     const [page, setPage] = useState(1);
     const [total, setTotal] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
-    const [error, setError] = useState("");
+    const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
 
     const fetchPage = useCallback(async (p: number) => {
@@ -45,7 +45,7 @@ function ReimbursementListPage() {
             setTotal(res.total);
             setTotalPages(res.totalPages);
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Failed to load");
+            setError(err instanceof Error ? err.message : 'Failed to load');
         } finally {
             setLoading(false);
         }
@@ -99,9 +99,9 @@ function ReimbursementListPage() {
                     action={
                         isEmployee
                             ? {
-                                href: "/reimbursements/new",
-                                label: "Create Reimbursement",
-                            }
+                                  href: '/reimbursements/new',
+                                  label: 'Create Reimbursement',
+                              }
                             : undefined
                     }
                     description="You have no reimbursements yet."
@@ -115,9 +115,7 @@ function ReimbursementListPage() {
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold">
-                    Reimbursements ({total})
-                </h1>
+                <h1 className="text-2xl font-bold">Reimbursements ({total})</h1>
                 {isEmployee && (
                     <Button asChild>
                         <Link to="/reimbursements/new">

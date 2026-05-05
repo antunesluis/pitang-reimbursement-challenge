@@ -6,8 +6,8 @@ import { useEffect, useState } from 'react';
 import { Delayed } from '@/components/shared/Delayed.tsx';
 import { EmptyState } from '@/components/shared/EmptyState.tsx';
 import { ErrorAlert } from '@/components/shared/ErrorAlert.tsx';
-import { Pagination } from "@/components/shared/Pagination.tsx";
-import { Button } from "@/components/ui/button.tsx";
+import { Pagination } from '@/components/shared/Pagination.tsx';
+import { Button } from '@/components/ui/button.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import {
     Table,
@@ -32,7 +32,7 @@ function UsersPage() {
     const [page, setPage] = useState(1);
     const [total, setTotal] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
-    const [error, setError] = useState("");
+    const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
 
     async function fetchUsers(p = 1) {
@@ -45,7 +45,7 @@ function UsersPage() {
             setTotalPages(res.totalPages);
         } catch (err) {
             setError(
-                err instanceof Error ? err.message : "Failed to load users",
+                err instanceof Error ? err.message : 'Failed to load users',
             );
         } finally {
             setLoading(false);

@@ -1,8 +1,8 @@
-import "@testing-library/jest-dom";
+import '@testing-library/jest-dom';
 
-import { cleanup } from "@testing-library/react";
-import { afterEach } from "bun:test";
+import { cleanup } from '@testing-library/react';
+import { afterEach } from 'bun:test';
 
 afterEach(() => {
-  cleanup();
+    cleanup();
 });

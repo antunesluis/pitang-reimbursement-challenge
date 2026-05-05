@@ -28,7 +28,7 @@ export const Route = createFileRoute('/_authenticated/users/new')({
     staticData: { breadcrumb: 'New' },
 });
 
-function NewUserPage() {
+export function NewUserPage() {
     const router = useRouter();
     const { isAdmin } = usePermissions();
 

@@ -35,7 +35,7 @@ export const Route = createFileRoute('/_authenticated/reimbursements/$id/edit')(
     },
 );
 
-function EditReimbursementPage() {
+export function EditReimbursementPage() {
     const { id } = Route.useParams();
     const router = useRouter();
     const [data, setData] = useState<null | Reimbursement>(null);

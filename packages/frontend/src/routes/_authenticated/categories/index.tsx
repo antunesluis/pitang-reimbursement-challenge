@@ -39,7 +39,7 @@ export const Route = createFileRoute('/_authenticated/categories/')({
     component: CategoriesPage,
 });
 
-function CategoriesPage() {
+export function CategoriesPage() {
     const { isAdmin } = usePermissions();
     const [categories, setCategories] = useState<Category[]>([]);
     const [error, setError] = useState('');
