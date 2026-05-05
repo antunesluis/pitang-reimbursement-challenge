@@ -148,8 +148,8 @@ RASCUNHO ──enviar──▶ ENVIADO ──aprovar──▶ APROVADO ──pag
     └─cancelar──┐       ├──rejeitar─▶ REJEITADO
                 │       │
                 │       └─cancelar──┐
-                ▼                    ▼
-             CANCELADO ◀───────────┘
+                ▼                   ▼
+              CANCELADO ◀───────────┘
 ```
 
 Toda transição gera um registro de histórico (ação, usuário, observação, data).
