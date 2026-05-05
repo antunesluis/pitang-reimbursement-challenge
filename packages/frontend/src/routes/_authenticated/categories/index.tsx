@@ -30,6 +30,8 @@ import { usePermissions } from '@/hooks/use-permissions.ts';
 import {
     type CreateCategoryFormData,
     createCategorySchema,
+    type UpdateCategoryFormData,
+    updateCategorySchema,
 } from '@/schemas/category.schema.ts';
 import { categoryService } from '@/services/category.service.ts';
 
@@ -47,6 +49,7 @@ export function CategoriesPage() {
     const [showForm, setShowForm] = useState(false);
     const [editingId, setEditingId] = useState<null | string>(null);
     const [editName, setEditName] = useState('');
+    const [editError, setEditError] = useState('');
 
     const {
         formState: { errors, isSubmitting },
@@ -101,7 +104,13 @@ export function CategoriesPage() {
     }
 
     async function saveEdit(id: string) {
-        if (!editName.trim()) return;
+        const result = updateCategorySchema.safeParse({
+            name: editName.trim(),
+        } satisfies UpdateCategoryFormData);
+        if (!result.success) {
+            setEditError(result.error.issues[0]?.message ?? 'Invalid name');
+            return;
+        }
         try {
             await categoryService.update(id, { name: editName.trim() });
             toast.success('Category renamed');
@@ -209,19 +218,25 @@ export function CategoriesPage() {
                                 <TableRow key={cat.id}>
                                     <TableCell className="font-medium">
                                         {editingId === cat.id ? (
-                                            <Input
-                                                className="h-8 w-48"
-                                                onChange={(e) =>
-                                                    setEditName(e.target.value)
-                                                }
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter')
-                                                        saveEdit(cat.id);
-                                                    if (e.key === 'Escape')
-                                                        setEditingId(null);
-                                                }}
-                                                value={editName}
-                                            />
+                                            <div>
+                                                <Input
+                                                    className="h-8 w-48"
+                                                    onChange={(e) => {
+                                                        setEditName(e.target.value);
+                                                        setEditError('');
+                                                    }}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter')
+                                                            saveEdit(cat.id);
+                                                        if (e.key === 'Escape') {
+                                                            setEditingId(null);
+                                                            setEditError('');
+                                                        }
+                                                    }}
+                                                    value={editName}
+                                                />
+                                                <FieldError message={editError} />
+                                            </div>
                                         ) : (
                                             cat.name
                                         )}

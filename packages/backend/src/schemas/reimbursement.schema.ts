@@ -5,18 +5,18 @@ export const createReimbursementSchema = z.object({
     categoryId: z.string().min(1, 'Category is required'),
     description: z.string().min(1, 'Description is required'),
     expenseDate: z.coerce.date({ message: 'Invalid expense date' }),
-});
+}).strict();
 
 export const updateReimbursementSchema = z.object({
     amount: z.number().positive('Amount must be greater than zero').optional(),
     categoryId: z.string().min(1).optional(),
     description: z.string().min(1).optional(),
     expenseDate: z.coerce.date().optional(),
-});
+}).strict();
 
 export const rejectReimbursementSchema = z.object({
     rejectionReason: z.string().min(1, 'Rejection reason is required'),
-});
+}).strict();
 
 export type CreateReimbursementInput = z.infer<
     typeof createReimbursementSchema

@@ -114,7 +114,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
                             <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                                 <img
                                     alt="Logo"
-                                    className="size-5"
+                                    className="size-7"
                                     src="/logo_sem_texto_pitang.png"
                                 />
                             </div>
