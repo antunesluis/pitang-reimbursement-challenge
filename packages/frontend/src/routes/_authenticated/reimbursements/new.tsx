@@ -37,6 +37,7 @@ function NewReimbursementPage() {
         register,
         setError,
         setValue,
+        watch,
     } = useForm<CreateReimbursementFormData>({
         mode: 'onBlur',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -110,10 +111,8 @@ function NewReimbursementPage() {
                         <div className="space-y-2">
                             <Label>Category</Label>
                             <CategorySelect
-                                onChange={(value) =>
-                                    setValue('categoryId', value)
-                                }
-                                value=""
+                                onChange={(v) => setValue("categoryId", v)}
+                                value={watch("categoryId") ?? ""}
                             />
                             <FieldError message={errors.categoryId?.message} />
                         </div>

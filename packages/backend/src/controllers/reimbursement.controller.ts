@@ -82,10 +82,22 @@ function canView(
     return false;
 }
 
+function isFutureDate(date: Date): boolean {
+    return dayjs(date).isAfter(dayjs(), "day");
+}
+
 export async function create(req: Request, res: Response) {
     try {
         const { amount, categoryId, description, expenseDate } =
             req.body as CreateReimbursementInput;
+
+        if (isFutureDate(expenseDate)) {
+            res.status(400).json({
+                message: "Expense date cannot be in the future",
+                statusCode: 400,
+            });
+            return;
+        }
 
         const category = await prisma.category.findUnique({
             where: { id: categoryId },
@@ -234,9 +246,17 @@ export async function update(req: Request, res: Response) {
             return;
         }
 
-        if (reimbursement.status !== 'DRAFT') {
+        if (reimbursement.status !== "DRAFT") {
             res.status(400).json({
-                message: 'Only DRAFT reimbursements can be edited',
+                message: "Only DRAFT reimbursements can be edited",
+                statusCode: 400,
+            });
+            return;
+        }
+
+        if (data.expenseDate && isFutureDate(data.expenseDate)) {
+            res.status(400).json({
+                message: "Expense date cannot be in the future",
                 statusCode: 400,
             });
             return;

@@ -101,7 +101,22 @@ describe('Reimbursements', () => {
             });
 
         expect(res.status).toBe(400);
-        expect(res.body.message).toBe('Category not found or inactive');
+        expect(res.body.message).toBe("Category not found or inactive");
+    });
+
+    it("POST /reimbursements returns 400 for future expense date", async () => {
+        const res = await request(app)
+            .post("/reimbursements")
+            .set("Authorization", `Bearer ${empToken}`)
+            .send({
+                amount: 50,
+                categoryId: activeCatId,
+                description: "Future expense",
+                expenseDate: "2099-01-01T00:00:00Z",
+            });
+
+        expect(res.status).toBe(400);
+        expect(res.body.message).toBe("Expense date cannot be in the future");
     });
 
     it('POST /reimbursements returns 403 for MANAGER', async () => {
