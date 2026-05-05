@@ -1,6 +1,6 @@
-import { api } from '@/lib/api.ts';
+import { api } from "@/lib/api.ts";
 
-import type { User } from '@/types/index.ts';
+import type { PaginatedResponse, User } from "@/types/index.ts";
 
 export const userService = {
     create: (data: {
@@ -8,7 +8,8 @@ export const userService = {
         name: string;
         password: string;
         role?: string;
-    }) => api.post<User>('/users', data),
+    }) => api.post<User>("/users", data),
 
-    list: () => api.get<User[]>('/users'),
+    list: (page = 1, limit = 10) =>
+        api.get<PaginatedResponse<User>>(`/users?page=${page}&limit=${limit}`),
 };

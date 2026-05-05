@@ -74,6 +74,14 @@ export type LoginResponse = {
     user: User;
 };
 
+export type PaginatedResponse<T> = {
+    data: T[];
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+};
+
 export type ReimbursementStats = {
     approved?: number;
     approvedThisMonth?: number;

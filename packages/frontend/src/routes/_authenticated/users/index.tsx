@@ -6,7 +6,8 @@ import { useEffect, useState } from 'react';
 import { Delayed } from '@/components/Delayed.tsx';
 import { EmptyState } from '@/components/EmptyState.tsx';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
-import { Button } from '@/components/ui/button.tsx';
+import { Pagination } from "@/components/Pagination.tsx";
+import { Button } from "@/components/ui/button.tsx";
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import {
     Table,
@@ -28,15 +29,23 @@ export const Route = createFileRoute('/_authenticated/users/')({
 function UsersPage() {
     const { isAdmin } = usePermissions();
     const [users, setUsers] = useState<User[]>([]);
-    const [error, setError] = useState('');
+    const [page, setPage] = useState(1);
+    const [total, setTotal] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const [error, setError] = useState("");
     const [loading, setLoading] = useState(true);
 
-    async function fetchUsers() {
+    async function fetchUsers(p = 1) {
+        setLoading(true);
         try {
-            setUsers(await userService.list());
+            const res = await userService.list(p);
+            setUsers(res.data);
+            setPage(res.page);
+            setTotal(res.total);
+            setTotalPages(res.totalPages);
         } catch (err) {
             setError(
-                err instanceof Error ? err.message : 'Failed to load users',
+                err instanceof Error ? err.message : "Failed to load users",
             );
         } finally {
             setLoading(false);
@@ -110,7 +119,7 @@ function UsersPage() {
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold">Users ({users.length})</h1>
+                <h1 className="text-2xl font-bold">Users ({total})</h1>
                 <Button asChild>
                     <Link to="/users/new">
                         <Plus className="mr-2 size-4" />
@@ -151,6 +160,12 @@ function UsersPage() {
                     </TableBody>
                 </Table>
             </div>
+
+            <Pagination
+                onPageChange={fetchUsers}
+                page={page}
+                totalPages={totalPages}
+            />
         </div>
     );
 }

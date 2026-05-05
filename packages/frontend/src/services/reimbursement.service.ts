@@ -1,6 +1,6 @@
 import { api } from "@/lib/api.ts";
 
-import type { Reimbursement, ReimbursementStats } from "@/types/index.ts";
+import type { PaginatedResponse, Reimbursement, ReimbursementStats } from "@/types/index.ts";
 import type { HistoryEntry } from "@/types/index.ts";
 
 export type { ReimbursementStats };
@@ -26,7 +26,10 @@ export const reimbursementService = {
 
     getStats: () => api.get<ReimbursementStats>("/reimbursements/stats"),
 
-    list: () => api.get<Reimbursement[]>("/reimbursements"),
+    list: (page = 1, limit = 10) =>
+        api.get<PaginatedResponse<Reimbursement>>(
+            `/reimbursements?page=${page}&limit=${limit}`,
+        ),
 
     pay: (id: string) => api.post<Reimbursement>(`/reimbursements/${id}/pay`),
 

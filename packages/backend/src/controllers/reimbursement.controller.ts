@@ -130,28 +130,42 @@ export async function create(req: Request, res: Response) {
 export async function list(req: Request, res: Response) {
     try {
         const { id: userId, role } = req.user!;
+        const page = parseInt((req.query.page as string) ?? "1");
+        const limit = parseInt((req.query.limit as string) ?? "10");
+        const skip = (page - 1) * limit;
 
         const where: Record<string, unknown> = {};
 
-        if (role === 'EMPLOYEE') {
+        if (role === "EMPLOYEE") {
             where.requesterId = userId;
-        } else if (role === 'MANAGER') {
-            where.status = 'SUBMITTED';
-        } else if (role === 'FINANCE') {
-            where.status = 'APPROVED';
+        } else if (role === "MANAGER") {
+            where.status = "SUBMITTED";
+        } else if (role === "FINANCE") {
+            where.status = "APPROVED";
         }
 
-        const reimbursements = await prisma.reimbursement.findMany({
-            orderBy: { createdAt: 'desc' },
-            select: selectReimbursement,
-            where,
-        });
+        const [data, total] = await Promise.all([
+            prisma.reimbursement.findMany({
+                orderBy: { createdAt: "desc" },
+                select: selectReimbursement,
+                skip,
+                take: limit,
+                where,
+            }),
+            prisma.reimbursement.count({ where }),
+        ]);
 
-        res.json(reimbursements);
+        res.json({
+            data,
+            limit,
+            page,
+            total,
+            totalPages: Math.ceil(total / limit),
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({
-            message: 'Internal server error',
+            message: "Internal server error",
             statusCode: 500,
         });
     }

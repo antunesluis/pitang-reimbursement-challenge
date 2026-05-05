@@ -254,7 +254,7 @@ describe('Reimbursements', () => {
                 .set('Authorization', `Bearer ${empToken}`);
 
             expect(res.status).toBe(200);
-            for (const r of res.body) {
+            for (const r of res.body.data) {
                 expect(r.requester.email).toBe('r-emp@test.com');
             }
         });
@@ -280,7 +280,7 @@ describe('Reimbursements', () => {
                 .set('Authorization', `Bearer ${mgrToken}`);
 
             expect(res.status).toBe(200);
-            for (const r of res.body) {
+            for (const r of res.body.data) {
                 expect(r.status).toBe('SUBMITTED');
             }
         });
@@ -310,8 +310,8 @@ describe('Reimbursements', () => {
                 .set('Authorization', `Bearer ${finToken}`);
 
             expect(res.status).toBe(200);
-            expect(res.body.length).toBeGreaterThanOrEqual(1);
-            for (const r of res.body) {
+            expect(res.body.data.length).toBeGreaterThanOrEqual(1);
+            for (const r of res.body.data) {
                 expect(r.status).toBe('APPROVED');
             }
         });

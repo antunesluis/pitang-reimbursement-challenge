@@ -49,10 +49,10 @@ function DashboardPage() {
             try {
                 const [statsData, reimbs] = await Promise.all([
                     reimbursementService.getStats(),
-                    reimbursementService.list(),
+                    reimbursementService.list(1, 5),
                 ]);
                 setStats(statsData);
-                setReimbursements(reimbs);
+                setReimbursements(reimbs.data);
             } catch (err) {
                 setError(err instanceof Error ? err.message : "Failed to load");
             } finally {

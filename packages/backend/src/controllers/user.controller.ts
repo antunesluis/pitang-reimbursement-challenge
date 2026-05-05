@@ -41,24 +41,39 @@ export async function create(req: Request, res: Response) {
     }
 }
 
-export async function list(_req: Request, res: Response) {
+export async function list(req: Request, res: Response) {
     try {
-        const users = await prisma.user.findMany({
-            orderBy: { createdAt: 'desc' },
-            select: {
-                createdAt: true,
-                email: true,
-                id: true,
-                name: true,
-                role: true,
-                updatedAt: true,
-            },
-        });
+        const page = parseInt((req.query.page as string) ?? "1");
+        const limit = parseInt((req.query.limit as string) ?? "10");
+        const skip = (page - 1) * limit;
 
-        res.json(users);
+        const [data, total] = await Promise.all([
+            prisma.user.findMany({
+                orderBy: { createdAt: "desc" },
+                select: {
+                    createdAt: true,
+                    email: true,
+                    id: true,
+                    name: true,
+                    role: true,
+                    updatedAt: true,
+                },
+                skip,
+                take: limit,
+            }),
+            prisma.user.count(),
+        ]);
+
+        res.json({
+            data,
+            limit,
+            page,
+            total,
+            totalPages: Math.ceil(total / limit),
+        });
     } catch {
         res.status(500).json({
-            message: 'Internal server error',
+            message: "Internal server error",
             statusCode: 500,
         });
     }
