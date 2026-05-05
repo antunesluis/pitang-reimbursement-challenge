@@ -1,0 +1,17 @@
+FROM oven/bun:1
+
+WORKDIR /app
+
+COPY packages/backend/package.json ./
+RUN bun install
+
+COPY packages/backend/tsconfig.json ./
+COPY packages/backend/prisma/ ./prisma/
+RUN bunx --bun prisma generate
+
+COPY packages/backend/src/ ./src/
+RUN mkdir -p /app/data /app/uploads
+
+EXPOSE 3000
+
+CMD sh -c "bunx --bun prisma migrate deploy && bun run prisma/seed.ts && exec bun run --watch src/index.ts"

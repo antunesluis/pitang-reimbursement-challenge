@@ -1,0 +1,36 @@
+services:
+    backend:
+        build:
+            context: .
+            dockerfile: packages/backend/Dockerfile.dev
+        container_name: reimbursements-backend
+        ports:
+            - '3000:3000'
+        environment:
+            - DATABASE_URL=file:/app/data/dev.db
+            - JWT_SECRET=dev-secret-change-in-production
+            - ADMIN_EMAIL=admin@example.com
+            - ADMIN_PASSWORD=admin123
+        volumes:
+            - ./packages/backend/src:/app/src
+            - ./packages/backend/prisma/schema.prisma:/app/prisma/schema.prisma
+            - backend-db:/app/data
+            - backend-uploads:/app/uploads
+
+    frontend:
+        build:
+            context: .
+            dockerfile: packages/frontend/Dockerfile.dev
+        container_name: reimbursements-frontend
+        ports:
+            - '5173:5173'
+        environment:
+            - VITE_API_URL=http://localhost:3000
+        volumes:
+            - ./packages/frontend/src:/app/src
+        depends_on:
+            - backend
+
+volumes:
+    backend-db:
+    backend-uploads:

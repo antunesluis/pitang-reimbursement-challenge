@@ -16,7 +16,20 @@ usuários e categorias.
 
 ## Início Rápido
 
-**Pré-requisitos:** [Bun](https://bun.com) >= 1.3
+**Pré-requisitos:** [Bun](https://bun.com) >= 1.3 **ou** [Docker](https://docker.com)
+
+### Com Docker (recomendado para testar)
+
+```bash
+docker compose up --build
+```
+
+- Backend: http://localhost:3000
+- Frontend: http://localhost:5173
+- Hot-reload ativo (alterações em `src/` refletem automaticamente)
+- Banco SQLite e uploads persistem em volumes Docker
+
+### Com Bun (desenvolvimento local)
 
 ```bash
 # 1. Instalar dependências
@@ -69,6 +82,9 @@ e execute `prisma:seed` novamente.
 | Prisma studio            | `bun run --cwd packages/backend prisma:studio`         |
 | Root lint                | `bun run lint`                                         |
 | Root format              | `bun run format`                                       |
+| Docker up                | `docker compose up --build`                            |
+| Docker down              | `docker compose down`                                  |
+| Docker rebuild           | `docker compose up --build --force-recreate`           |
 
 ## Arquitetura
 
