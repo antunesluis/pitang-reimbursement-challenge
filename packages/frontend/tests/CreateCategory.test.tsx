@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'bun:test';
 
-import { CategoriesPage } from '@/routes/_authenticated/categories/index.tsx';
+import { CategoriesPage } from '@/components/categories/CategoriesPage.tsx';
 
 import { mockAuthProvider } from './helpers';
 

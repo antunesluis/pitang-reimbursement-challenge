@@ -6,12 +6,12 @@ usuários e categorias.
 
 ## Stack
 
-| Camada   | Tecnologia                                            |
-| -------- | ----------------------------------------------------- |
-| Backend  | Express 5 + Prisma 7 + SQLite (libsql) + Zod          |
-| Frontend | React 19 + TanStack Router + Shadcn UI + Tailwind     |
-| Runtime  | Bun (gerenciador de pacotes + runtime)                |
-| Autent.  | JWT (jsonwebtoken) + bcryptjs                         |
+| Camada   | Tecnologia                                               |
+| -------- | -------------------------------------------------------- |
+| Backend  | Express 5 + Prisma 7 + SQLite (libsql) + Zod             |
+| Frontend | React 19 + TanStack Router + Shadcn UI + Tailwind        |
+| Runtime  | Bun (gerenciador de pacotes + runtime)                   |
+| Autent.  | JWT (jsonwebtoken) + bcryptjs                            |
 | Testes   | bun:test + supertest (BE) / jsdom + testing-library (FE) |
 
 ## Início Rápido
@@ -54,12 +54,12 @@ bun run --cwd packages/frontend dev
 
 ### Usuários do Seed
 
-| Perfil     | Email                 | Senha      |
-| ---------- | --------------------- | ---------- |
-| ADMIN      | admin@example.com     | admin123   |
-| COLABORADOR| employee@example.com  | secret123  |
-| GESTOR     | manager@example.com   | secret123  |
-| FINANCEIRO | finance@example.com   | secret123  |
+| Perfil      | Email                | Senha     |
+| ----------- | -------------------- | --------- |
+| ADMIN       | admin@example.com    | admin123  |
+| COLABORADOR | employee@example.com | secret123 |
+| GESTOR      | manager@example.com  | secret123 |
+| FINANCEIRO  | finance@example.com  | secret123 |
 
 Para alterar as credenciais, edite as variáveis no `.env` (`ADMIN_EMAIL`,
 `ADMIN_PASSWORD`, `EMPLOYEE_PASSWORD`, `MANAGER_PASSWORD`, `FINANCE_PASSWORD`)
@@ -67,24 +67,24 @@ e execute `prisma:seed` novamente.
 
 ## Comandos
 
-| O que                    | Comando (da raiz)                                      |
-| ------------------------ | ------------------------------------------------------ |
-| Backend dev              | `bun run --cwd packages/backend dev`                   |
-| Backend test             | `bun run --cwd packages/backend test`                  |
-| Backend lint             | `bun run --cwd packages/backend lint`                  |
-| Frontend dev             | `bun run --cwd packages/frontend dev`                  |
-| Frontend build           | `bun run --cwd packages/frontend build`                |
-| Frontend test            | `bun run --cwd packages/frontend test`                 |
-| Frontend lint            | `bun run --cwd packages/frontend lint`                 |
-| Prisma migrate           | `bun run --cwd packages/backend prisma:migrate`        |
-| Prisma generate          | `bun run --cwd packages/backend prisma:generate`       |
-| Prisma seed              | `bun run --cwd packages/backend prisma:seed`           |
-| Prisma studio            | `bun run --cwd packages/backend prisma:studio`         |
-| Root lint                | `bun run lint`                                         |
-| Root format              | `bun run format`                                       |
-| Docker up                | `docker compose up --build`                            |
-| Docker down              | `docker compose down`                                  |
-| Docker rebuild           | `docker compose up --build --force-recreate`           |
+| O que           | Comando (da raiz)                                |
+| --------------- | ------------------------------------------------ |
+| Backend dev     | `bun run --cwd packages/backend dev`             |
+| Backend test    | `bun run --cwd packages/backend test`            |
+| Backend lint    | `bun run --cwd packages/backend lint`            |
+| Frontend dev    | `bun run --cwd packages/frontend dev`            |
+| Frontend build  | `bun run --cwd packages/frontend build`          |
+| Frontend test   | `bun run --cwd packages/frontend test`           |
+| Frontend lint   | `bun run --cwd packages/frontend lint`           |
+| Prisma migrate  | `bun run --cwd packages/backend prisma:migrate`  |
+| Prisma generate | `bun run --cwd packages/backend prisma:generate` |
+| Prisma seed     | `bun run --cwd packages/backend prisma:seed`     |
+| Prisma studio   | `bun run --cwd packages/backend prisma:studio`   |
+| Root lint       | `bun run lint`                                   |
+| Root format     | `bun run format`                                 |
+| Docker up       | `docker compose up --build`                      |
+| Docker down     | `docker compose down`                            |
+| Docker rebuild  | `docker compose up --build --force-recreate`     |
 
 ## Arquitetura
 
@@ -118,27 +118,27 @@ packages/frontend/
 
 ## Endpoints da API
 
-| Método | Caminho                                        | Perfil      | Descrição                     |
-| ------ | ---------------------------------------------- | ----------- | ----------------------------- |
-| POST   | `/auth/login`                                  | Público     | Login, retorna JWT            |
-| GET    | `/auth/me`                                     | Autenticado | Dados do usuário logado       |
-| POST   | `/users`                                       | ADMIN       | Criar usuário                 |
-| GET    | `/users`                                       | ADMIN       | Listar usuários (paginado)    |
-| POST   | `/categories`                                  | ADMIN       | Criar categoria               |
-| PUT    | `/categories/:id`                              | ADMIN       | Atualizar categoria           |
-| GET    | `/categories`                                  | Autenticado | Listar categorias             |
-| POST   | `/reimbursements`                              | Autenticado | Criar reembolso               |
-| GET    | `/reimbursements`                              | Autenticado | Listar (filtrado por perfil)  |
-| GET    | `/reimbursements/stats`                        | Autenticado | Estatísticas do dashboard     |
-| GET    | `/reimbursements/:id`                          | Autenticado | Buscar por ID                 |
-| PUT    | `/reimbursements/:id`                          | Autenticado | Editar (DRAFT próprio)        |
-| POST   | `/reimbursements/:id/submit`                   | COLABORADOR | Enviar para aprovação         |
-| POST   | `/reimbursements/:id/approve`                  | GESTOR      | Aprovar                       |
-| POST   | `/reimbursements/:id/reject`                   | GESTOR      | Rejeitar (justificativa obrig.)|
-| POST   | `/reimbursements/:id/pay`                      | FINANCEIRO  | Marcar como pago              |
-| POST   | `/reimbursements/:id/cancel`                   | COLABORADOR | Cancelar próprio              |
-| POST   | `/reimbursements/:id/attachments`              | Autenticado | Fazer upload de arquivo       |
-| GET    | `/reimbursements/:id/attachments/:attachmentId`| Autenticado | Baixar arquivo                |
+| Método | Caminho                                         | Perfil      | Descrição                       |
+| ------ | ----------------------------------------------- | ----------- | ------------------------------- |
+| POST   | `/auth/login`                                   | Público     | Login, retorna JWT              |
+| GET    | `/auth/me`                                      | Autenticado | Dados do usuário logado         |
+| POST   | `/users`                                        | ADMIN       | Criar usuário                   |
+| GET    | `/users`                                        | ADMIN       | Listar usuários (paginado)      |
+| POST   | `/categories`                                   | ADMIN       | Criar categoria                 |
+| PUT    | `/categories/:id`                               | ADMIN       | Atualizar categoria             |
+| GET    | `/categories`                                   | Autenticado | Listar categorias               |
+| POST   | `/reimbursements`                               | Autenticado | Criar reembolso                 |
+| GET    | `/reimbursements`                               | Autenticado | Listar (filtrado por perfil)    |
+| GET    | `/reimbursements/stats`                         | Autenticado | Estatísticas do dashboard       |
+| GET    | `/reimbursements/:id`                           | Autenticado | Buscar por ID                   |
+| PUT    | `/reimbursements/:id`                           | Autenticado | Editar (DRAFT próprio)          |
+| POST   | `/reimbursements/:id/submit`                    | COLABORADOR | Enviar para aprovação           |
+| POST   | `/reimbursements/:id/approve`                   | GESTOR      | Aprovar                         |
+| POST   | `/reimbursements/:id/reject`                    | GESTOR      | Rejeitar (justificativa obrig.) |
+| POST   | `/reimbursements/:id/pay`                       | FINANCEIRO  | Marcar como pago                |
+| POST   | `/reimbursements/:id/cancel`                    | COLABORADOR | Cancelar próprio                |
+| POST   | `/reimbursements/:id/attachments`               | Autenticado | Fazer upload de arquivo         |
+| GET    | `/reimbursements/:id/attachments/:attachmentId` | Autenticado | Baixar arquivo                  |
 
 ## Máquina de Estados
 

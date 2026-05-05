@@ -27,7 +27,7 @@ export const Route = createFileRoute('/_authenticated/reimbursements/new')({
     staticData: { breadcrumb: 'New' },
 });
 
-export function NewReimbursementPage() {
+function NewReimbursementPage() {
     const router = useRouter();
     const [pendingFiles, setPendingFiles] = useState<File[]>([]);
 

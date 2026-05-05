@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'bun:test';
 
-import { NewUserPage } from '@/routes/_authenticated/users/new.tsx';
+import { NewUserPage } from '@/components/users/NewUserPage.tsx';
 
 import { mockAuthProvider } from './helpers';
 
