@@ -1,162 +1,165 @@
-# Reimbursement Control System
+# Sistema de Controle de Reembolsos
 
-Fullstack reimbursement management app — employees submit expenses, managers
-approve/reject, finance marks as paid, and admins manage users and categories.
+Aplicação fullstack de gestão de reembolsos — colaboradores enviam despesas,
+gestores aprovam/rejeitam, financeiro marca como pago e admins gerenciam
+usuários e categorias.
 
-## Tech Stack
+## Stack
 
-| Layer    | Technology                                               |
-| -------- | -------------------------------------------------------- |
-| Backend  | Express 5 + Prisma 7 + SQLite (libsql) + Zod             |
-| Frontend | React 19 + TanStack Router + Shadcn UI + Tailwind        |
-| Runtime  | Bun (package manager + runtime)                          |
-| Auth     | JWT (jsonwebtoken) + bcryptjs                            |
-| Testing  | bun:test + supertest (BE) / jsdom + testing-library (FE) |
+| Camada   | Tecnologia                                            |
+| -------- | ----------------------------------------------------- |
+| Backend  | Express 5 + Prisma 7 + SQLite (libsql) + Zod          |
+| Frontend | React 19 + TanStack Router + Shadcn UI + Tailwind     |
+| Runtime  | Bun (gerenciador de pacotes + runtime)                |
+| Autent.  | JWT (jsonwebtoken) + bcryptjs                         |
+| Testes   | bun:test + supertest (BE) / jsdom + testing-library (FE) |
 
-## Quick Start
+## Início Rápido
 
-**Prerequisites:** [Bun](https://bun.com) >= 1.3
+**Pré-requisitos:** [Bun](https://bun.com) >= 1.3
 
 ```bash
-# 1. Install dependencies
+# 1. Instalar dependências
 bun install
 
-# 2. Configure backend environment
+# 2. Configurar variáveis de ambiente do backend
 cp packages/backend/.env-example packages/backend/.env
 
-# 3. Create database and run migrations
+# 3. Criar banco de dados e rodar migrations
 bun run --cwd packages/backend prisma:migrate
 bun run --cwd packages/backend prisma:generate
 
-# 4. Seed the database (test users + categories)
+# 4. Popular o banco (usuários de teste + categorias)
 bun run --cwd packages/backend prisma:seed
 
-# 5. Start backend (http://localhost:3000)
+# 5. Iniciar backend (http://localhost:3000)
 bun run --cwd packages/backend dev
 
-# 6. Start frontend (http://localhost:5173)
+# 6. Iniciar frontend (http://localhost:5173)
 bun run --cwd packages/frontend dev
 ```
 
-### Seed Users
+### Usuários do Seed
 
-| Role     | Email                | Password  |
-| -------- | -------------------- | --------- |
-| ADMIN    | admin@example.com    | admin123  |
-| EMPLOYEE | employee@example.com | secret123 |
-| MANAGER  | manager@example.com  | secret123 |
-| FINANCE  | finance@example.com  | secret123 |
+| Perfil     | Email                 | Senha      |
+| ---------- | --------------------- | ---------- |
+| ADMIN      | admin@example.com     | admin123   |
+| COLABORADOR| employee@example.com  | secret123  |
+| GESTOR     | manager@example.com   | secret123  |
+| FINANCEIRO | finance@example.com   | secret123  |
 
-Override credentials via `.env` (`ADMIN_EMAIL`, `ADMIN_PASSWORD`, `EMPLOYEE_PASSWORD`,
-`MANAGER_PASSWORD`, `FINANCE_PASSWORD`) and re-run `prisma:seed`.
+Para alterar as credenciais, edite as variáveis no `.env` (`ADMIN_EMAIL`,
+`ADMIN_PASSWORD`, `EMPLOYEE_PASSWORD`, `MANAGER_PASSWORD`, `FINANCE_PASSWORD`)
+e execute `prisma:seed` novamente.
 
-## Commands
+## Comandos
 
-| What            | Command (from root)                              |
-| --------------- | ------------------------------------------------ |
-| Backend dev     | `bun run --cwd packages/backend dev`             |
-| Backend test    | `bun run --cwd packages/backend test`            |
-| Backend lint    | `bun run --cwd packages/backend lint`            |
-| Frontend dev    | `bun run --cwd packages/frontend dev`            |
-| Frontend build  | `bun run --cwd packages/frontend build`          |
-| Frontend test   | `bun run --cwd packages/frontend test`           |
-| Frontend lint   | `bun run --cwd packages/frontend lint`           |
-| Prisma migrate  | `bun run --cwd packages/backend prisma:migrate`  |
-| Prisma generate | `bun run --cwd packages/backend prisma:generate` |
-| Prisma seed     | `bun run --cwd packages/backend prisma:seed`     |
-| Prisma studio   | `bun run --cwd packages/backend prisma:studio`   |
-| Root lint       | `bun run lint`                                   |
-| Root format     | `bun run format`                                 |
+| O que                    | Comando (da raiz)                                      |
+| ------------------------ | ------------------------------------------------------ |
+| Backend dev              | `bun run --cwd packages/backend dev`                   |
+| Backend test             | `bun run --cwd packages/backend test`                  |
+| Backend lint             | `bun run --cwd packages/backend lint`                  |
+| Frontend dev             | `bun run --cwd packages/frontend dev`                  |
+| Frontend build           | `bun run --cwd packages/frontend build`                |
+| Frontend test            | `bun run --cwd packages/frontend test`                 |
+| Frontend lint            | `bun run --cwd packages/frontend lint`                 |
+| Prisma migrate           | `bun run --cwd packages/backend prisma:migrate`        |
+| Prisma generate          | `bun run --cwd packages/backend prisma:generate`       |
+| Prisma seed              | `bun run --cwd packages/backend prisma:seed`           |
+| Prisma studio            | `bun run --cwd packages/backend prisma:studio`         |
+| Root lint                | `bun run lint`                                         |
+| Root format              | `bun run format`                                       |
 
-## Architecture
+## Arquitetura
 
 ```
 packages/backend/
   src/
-    index.ts                    Entrypoint (starts server)
-    app.ts                      Express app (exported for supertest)
-    controllers/                Route handlers (auth, user, category, reimbursement, attachment)
-    routes/                     Route wiring
-    schemas/                    Zod validation schemas
-    middlewares/                Auth JWT, role guard, validation, error fallback
-    lib/                        Prisma client, env vars, upload config, date utils
+    index.ts                    Ponto de entrada (inicia o servidor)
+    app.ts                      App Express (exportada para supertest)
+    controllers/                Handlers (auth, user, category, reimbursement, attachment)
+    routes/                     Rotas
+    schemas/                    Schemas de validação Zod
+    middlewares/                Auth JWT, verificação de role, validação, tratamento de erros
+    lib/                        Cliente Prisma, env vars, upload, utilitários de data
   prisma/
-    schema.prisma               Data model (User, Category, Reimbursement, Attachment, History)
-    seed.ts                     Seeds users + categories + sample reimbursement
-  tests/                        Integration tests (52 tests, 5 files)
+    schema.prisma               Modelo de dados (User, Category, Reimbursement, Attachment, History)
+    seed.ts                     Popula usuários + categorias + reembolso de exemplo
+  tests/                        Testes de integração (52 testes, 5 arquivos)
 
 packages/frontend/
   src/
-    main.tsx                    Entrypoint
-    routes/                     File-based routing (_authenticated.tsx layout, dashboard, reimbursements, users, categories)
-    components/                 domain-based: auth/, layout/, reimbursements/, categories/, shared/, ui/
-    contexts/                   AuthContext (cookie-based JWT, /me validation)
+    main.tsx                    Ponto de entrada
+    routes/                     Rotas baseadas em arquivos (_authenticated.tsx, dashboard, reimbursements, users, categories)
+    components/                 Componentes por domínio: auth/, layout/, reimbursements/, categories/, shared/, ui/
+    contexts/                   AuthContext (JWT em cookie, validação /me)
     hooks/                      use-permissions.ts, use-breadcrumb.ts
-    lib/                        api.ts (Fetch wrapper with 401 redirect)
-    services/                   API service functions
-    types/                      Shared types and constants
-  tests/                        45 component/form/permission tests (11 files)
+    lib/                        api.ts (wrapper Fetch com redirect 401)
+    services/                   Funções de serviço da API
+    types/                      Tipos e constantes compartilhados
+  tests/                        45 testes de componentes/formulários/permissões (11 arquivos)
 ```
 
-## API Endpoints
+## Endpoints da API
 
-| Method | Path                                            | Role     | Description            |
-| ------ | ----------------------------------------------- | -------- | ---------------------- |
-| POST   | `/auth/login`                                   | Public   | Login, returns JWT     |
-| GET    | `/auth/me`                                      | Auth     | Current user info      |
-| POST   | `/users`                                        | ADMIN    | Create user            |
-| GET    | `/users`                                        | ADMIN    | List users (paginated) |
-| POST   | `/categories`                                   | ADMIN    | Create category        |
-| PUT    | `/categories/:id`                               | ADMIN    | Update category        |
-| GET    | `/categories`                                   | Auth     | List categories        |
-| POST   | `/reimbursements`                               | Auth     | Create reimbursement   |
-| GET    | `/reimbursements`                               | Auth     | List (role-filtered)   |
-| GET    | `/reimbursements/stats`                         | Auth     | Dashboard statistics   |
-| GET    | `/reimbursements/:id`                           | Auth     | Get by ID              |
-| PUT    | `/reimbursements/:id`                           | Auth     | Update (own DRAFT)     |
-| POST   | `/reimbursements/:id/submit`                    | EMPLOYEE | Submit for approval    |
-| POST   | `/reimbursements/:id/approve`                   | MANAGER  | Approve                |
-| POST   | `/reimbursements/:id/reject`                    | MANAGER  | Reject (reason needed) |
-| POST   | `/reimbursements/:id/pay`                       | FINANCE  | Mark as paid           |
-| POST   | `/reimbursements/:id/cancel`                    | EMPLOYEE | Cancel own             |
-| POST   | `/reimbursements/:id/attachments`               | Auth     | Upload file            |
-| GET    | `/reimbursements/:id/attachments/:attachmentId` | Auth     | Download file          |
+| Método | Caminho                                        | Perfil      | Descrição                     |
+| ------ | ---------------------------------------------- | ----------- | ----------------------------- |
+| POST   | `/auth/login`                                  | Público     | Login, retorna JWT            |
+| GET    | `/auth/me`                                     | Autenticado | Dados do usuário logado       |
+| POST   | `/users`                                       | ADMIN       | Criar usuário                 |
+| GET    | `/users`                                       | ADMIN       | Listar usuários (paginado)    |
+| POST   | `/categories`                                  | ADMIN       | Criar categoria               |
+| PUT    | `/categories/:id`                              | ADMIN       | Atualizar categoria           |
+| GET    | `/categories`                                  | Autenticado | Listar categorias             |
+| POST   | `/reimbursements`                              | Autenticado | Criar reembolso               |
+| GET    | `/reimbursements`                              | Autenticado | Listar (filtrado por perfil)  |
+| GET    | `/reimbursements/stats`                        | Autenticado | Estatísticas do dashboard     |
+| GET    | `/reimbursements/:id`                          | Autenticado | Buscar por ID                 |
+| PUT    | `/reimbursements/:id`                          | Autenticado | Editar (DRAFT próprio)        |
+| POST   | `/reimbursements/:id/submit`                   | COLABORADOR | Enviar para aprovação         |
+| POST   | `/reimbursements/:id/approve`                  | GESTOR      | Aprovar                       |
+| POST   | `/reimbursements/:id/reject`                   | GESTOR      | Rejeitar (justificativa obrig.)|
+| POST   | `/reimbursements/:id/pay`                      | FINANCEIRO  | Marcar como pago              |
+| POST   | `/reimbursements/:id/cancel`                   | COLABORADOR | Cancelar próprio              |
+| POST   | `/reimbursements/:id/attachments`              | Autenticado | Fazer upload de arquivo       |
+| GET    | `/reimbursements/:id/attachments/:attachmentId`| Autenticado | Baixar arquivo                |
 
-## Status Machine
+## Máquina de Estados
 
 ```
-DRAFT ──submit─▶ SUBMITTED ──approve─▶ APPROVED ──pay─▶ PAID
-  │                 │
-  └─cancel──┐       ├──reject─▶ REJECTED
-            │       │
-            │       └─cancel──┐
-            ▼                 ▼
-          CANCELLED ◀────────┘
+RASCUNHO ──enviar──▶ ENVIADO ──aprovar──▶ APROVADO ──pagar──▶ PAGO
+    │                   │
+    └─cancelar──┐       ├──rejeitar─▶ REJEITADO
+                │       │
+                │       └─cancelar──┐
+                ▼                    ▼
+             CANCELADO ◀───────────┘
 ```
 
-Every transition creates an audit history record (action, user, observation, timestamp).
+Toda transição gera um registro de histórico (ação, usuário, observação, data).
 
-## Business Rules
+## Regras de Negócio
 
-- **EMPLOYEE**: create, edit own DRAFT, submit, cancel own DRAFT/SUBMITTED, view own, upload attachments
-- **MANAGER**: view SUBMITTED, approve, reject (with mandatory reason)
-- **FINANCE**: view APPROVED, mark as PAID
-- **ADMIN**: manage users, manage categories, view any reimbursement by ID
-- **Validation**: amount > 0, category must be active, future expense dates blocked, rejection reason required
-- **Pagination**: `?page=1&limit=10` on `/reimbursements` and `/users`
+- **COLABORADOR**: criar, editar RASCUNHO próprio, enviar, cancelar RASCUNHO/ENVIADO próprio, ver seus reembolsos, anexar arquivos
+- **GESTOR**: ver ENVIADOS, aprovar, rejeitar (com justificativa obrigatória)
+- **FINANCEIRO**: ver APROVADOS, marcar como PAGO
+- **ADMIN**: gerenciar usuários, gerenciar categorias, ver qualquer reembolso por ID
+- **Validações**: valor > 0, categoria deve estar ativa, data futura bloqueada, justificativa obrigatória na rejeição
+- **Paginação**: `?page=1&limit=10` em `/reimbursements` e `/users`
 
-## Testing
+## Testes
 
 ```bash
-# Backend — 52 integration tests
+# Backend — 52 testes de integração
 bun run --cwd packages/backend test
 
-# Frontend — 45 component/form/permission tests
+# Frontend — 45 testes de componentes/formulários/permissões
 bun run --cwd packages/frontend test
 
-# Run a single backend test file
+# Rodar um único arquivo de teste do backend
 bun run --cwd packages/backend test tests/auth.test.ts
 ```
 
-Backend tests share the dev database — each test cleans up and re-seeds admin.
-Frontend tests run against jsdom with preload scripts for DOM globals and React helpers.
+Os testes do backend compartilham o banco de desenvolvimento — cada teste limpa e
+recria o admin. Os testes do frontend rodam com jsdom usando scripts de preload
+para globais do DOM e helpers do React.

@@ -73,7 +73,7 @@ export function LoginForm() {
                         src="/logo_sem_texto_pitang.png"
                     /> */}
                     <div className="text-center">
-                        <h1 className="text-xl font-bold tracking-tight">
+                        <h1 className="text-2xl font-bold tracking-tight">
                             Pitang Reimbursement Control
                         </h1>
                         <p className="text-muted-foreground text-sm">
