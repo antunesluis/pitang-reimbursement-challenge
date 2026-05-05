@@ -8,6 +8,7 @@ RUN bun install
 COPY packages/backend/tsconfig.json ./
 COPY packages/backend/prisma.config.ts ./
 COPY packages/backend/prisma/ ./prisma/
+ENV DATABASE_URL=file:./dev.db
 RUN bunx --bun prisma generate
 
 COPY packages/backend/src/ ./src/
