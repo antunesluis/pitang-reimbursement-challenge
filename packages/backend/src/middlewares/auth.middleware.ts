@@ -20,6 +20,7 @@ declare global {
                 name: string;
                 role: string;
             };
+            validatedQuery?: Record<string, unknown>;
         }
     }
 }

@@ -20,7 +20,8 @@ export function usePermissions() {
 
         canSubmit: (status: Status, ownerId: string) =>
             user?.id === ownerId && status === 'DRAFT',
-        canUpload: (ownerId: string) => user?.id === ownerId,
+        canUpload: (ownerId: string, status: Status) =>
+            user?.id === ownerId && status === 'DRAFT',
         isAdmin: role === 'ADMIN',
         isEmployee: role === 'EMPLOYEE',
         isFinance: role === 'FINANCE',

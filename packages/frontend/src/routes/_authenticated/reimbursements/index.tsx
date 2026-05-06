@@ -1,13 +1,16 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { Plus, Receipt } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { Plus } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { z } from 'zod';
 
+import { CategorySelect } from '@/components/categories/CategorySelect.tsx';
 import { StatusBadge } from '@/components/reimbursements/StatusBadge.tsx';
+import { StatusTabs } from '@/components/reimbursements/StatusTabs.tsx';
 import { Delayed } from '@/components/shared/Delayed.tsx';
-import { EmptyState } from '@/components/shared/EmptyState.tsx';
 import { ErrorAlert } from '@/components/shared/ErrorAlert.tsx';
 import { Pagination } from '@/components/shared/Pagination.tsx';
+import { SortableHeader } from '@/components/shared/SortableHeader.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import {
@@ -21,39 +24,98 @@ import {
 import { usePermissions } from '@/hooks/use-permissions.ts';
 import { reimbursementService } from '@/services/reimbursement.service.ts';
 
-import type { Reimbursement } from '@/types/index.ts';
+import type { Reimbursement, Status } from '@/types/index.ts';
+
+const searchSchema = z.object({
+    categoryId: z.string().optional(),
+    limit: z.coerce.number().int().positive().max(50).default(10),
+    order: z.enum(['asc', 'desc']).default('desc'),
+    page: z.coerce.number().int().positive().default(1),
+    sort: z
+        .enum(['amount', 'createdAt', 'expenseDate'])
+        .default('createdAt'),
+    status: z
+        .enum([
+            'APPROVED',
+            'CANCELLED',
+            'DRAFT',
+            'PAID',
+            'REJECTED',
+            'SUBMITTED',
+        ])
+        .optional(),
+});
 
 export const Route = createFileRoute('/_authenticated/reimbursements/')({
     component: ReimbursementListPage,
+    validateSearch: searchSchema,
 });
 
 function ReimbursementListPage() {
-    const { isEmployee } = usePermissions();
+    const { isEmployee, role } = usePermissions();
+    const search = Route.useSearch();
+    const navigate = Route.useNavigate();
+
     const [data, setData] = useState<Reimbursement[]>([]);
-    const [page, setPage] = useState(1);
     const [total, setTotal] = useState(0);
-    const [totalPages, setTotalPages] = useState(0);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
+    const firstLoad = useRef(true);
 
-    const fetchPage = useCallback(async (p: number) => {
-        setLoading(true);
+    const fetchPage = useCallback(async () => {
+        if (firstLoad.current) setLoading(true);
         try {
-            const res = await reimbursementService.list(p);
+            const res = await reimbursementService.list({
+                categoryId: search.categoryId,
+                limit: search.limit,
+                order: search.order,
+                page: search.page,
+                sort: search.sort,
+                status: search.status,
+            });
             setData(res.data);
-            setPage(res.page);
             setTotal(res.total);
-            setTotalPages(res.totalPages);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to load');
         } finally {
-            setLoading(false);
+            if (firstLoad.current) {
+                setLoading(false);
+                firstLoad.current = false;
+            }
         }
-    }, []);
+    }, [search]);
 
     useEffect(() => {
-        fetchPage(1);
+        fetchPage();
     }, [fetchPage]);
+
+    function handleSort(field: string, order: string) {
+        navigate({
+            search: { ...search, order, page: 1, sort: field },
+        } as never);
+    }
+
+    function handleStatusChange(status: Status | undefined) {
+        navigate({
+            search: { ...search, page: 1, status },
+        } as never);
+    }
+
+    function handleCategoryChange(categoryId: string) {
+        navigate({
+            search: {
+                ...search,
+                categoryId: categoryId || undefined,
+                page: 1,
+            },
+        } as never);
+    }
+
+    function handlePageChange(page: number) {
+        navigate({
+            search: { ...search, page },
+        } as never);
+    }
 
     if (loading) {
         return (
@@ -81,41 +143,12 @@ function ReimbursementListPage() {
         );
     }
 
-    if (data.length === 0) {
-        return (
-            <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-bold">Reimbursements</h1>
-                    {isEmployee && (
-                        <Button asChild>
-                            <Link to="/reimbursements/new">
-                                <Plus className="mr-2 size-4" />
-                                New Reimbursement
-                            </Link>
-                        </Button>
-                    )}
-                </div>
-                <EmptyState
-                    action={
-                        isEmployee
-                            ? {
-                                  href: '/reimbursements/new',
-                                  label: 'Create Reimbursement',
-                              }
-                            : undefined
-                    }
-                    description="You have no reimbursements yet."
-                    icon={Receipt}
-                    title="No reimbursements"
-                />
-            </div>
-        );
-    }
-
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold">Reimbursements ({total})</h1>
+                <h1 className="text-2xl font-bold">
+                    Reimbursements ({total})
+                </h1>
                 {isEmployee && (
                     <Button asChild>
                         <Link to="/reimbursements/new">
@@ -126,19 +159,57 @@ function ReimbursementListPage() {
                 )}
             </div>
 
+            {role && (
+                <>
+                    <StatusTabs
+                        onChange={handleStatusChange}
+                        role={role}
+                        value={search.status}
+                    />
+                    <div className="w-full max-w-xs">
+                        <CategorySelect
+                            onChange={handleCategoryChange}
+                            value={search.categoryId ?? ''}
+                        />
+                    </div>
+                </>
+            )}
+
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>
                         <TableRow>
                             <TableHead>Description</TableHead>
-                            <TableHead>Amount</TableHead>
+                            <SortableHeader
+                                field="amount"
+                                label="Amount"
+                                onSort={handleSort}
+                                order={search.order}
+                                sort={search.sort}
+                            />
                             <TableHead>Status</TableHead>
                             <TableHead>Category</TableHead>
-                            <TableHead>Date</TableHead>
+                            <SortableHeader
+                                field="expenseDate"
+                                label="Date"
+                                onSort={handleSort}
+                                order={search.order}
+                                sort={search.sort}
+                            />
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {data.map((r) => (
+                        {data.length === 0 ? (
+                            <TableRow>
+                                <TableCell
+                                    className="text-muted-foreground text-center"
+                                    colSpan={5}
+                                >
+                                    No reimbursements found
+                                </TableCell>
+                            </TableRow>
+                        ) : (
+                            data.map((r) => (
                             <TableRow key={r.id}>
                                 <TableCell className="font-medium">
                                     <Link
@@ -162,15 +233,16 @@ function ReimbursementListPage() {
                                     ).toLocaleDateString()}
                                 </TableCell>
                             </TableRow>
-                        ))}
+                        ))
+                        )}
                     </TableBody>
                 </Table>
             </div>
 
             <Pagination
-                onPageChange={fetchPage}
-                page={page}
-                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                page={search.page}
+                totalPages={Math.ceil(total / search.limit)}
             />
         </div>
     );

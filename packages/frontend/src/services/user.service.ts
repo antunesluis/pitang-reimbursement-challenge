@@ -10,6 +10,19 @@ export const userService = {
         role?: string;
     }) => api.post<User>('/users', data),
 
-    list: (page = 1, limit = 10) =>
-        api.get<PaginatedResponse<User>>(`/users?page=${page}&limit=${limit}`),
+    list: (params: {
+        page?: number;
+        limit?: number;
+        sort?: string;
+        order?: string;
+    } = {}) => {
+        const searchParams = new URLSearchParams();
+        if (params.page) searchParams.set('page', String(params.page));
+        if (params.limit) searchParams.set('limit', String(params.limit));
+        if (params.sort) searchParams.set('sort', params.sort);
+        if (params.order) searchParams.set('order', params.order);
+        return api.get<PaginatedResponse<User>>(
+            `/users?${searchParams.toString()}`,
+        );
+    },
 };

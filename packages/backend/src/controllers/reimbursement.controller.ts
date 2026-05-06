@@ -6,6 +6,7 @@ import type {
     Action,
     Status,
 } from '../../prisma/src/generated/prisma/enums.ts';
+import type { ListQuery } from '../schemas/list-query.schema.ts';
 import type {
     CreateReimbursementInput,
     RejectReimbursementInput,
@@ -63,17 +64,15 @@ function canView(
     req: Request,
     reimbursement: { requesterId: string; status: string },
 ) {
-    // Owner and admin see everything
     if (isOwner(req, reimbursement)) return true;
     if (isAdmin(req)) return true;
-    // Manager sees submitted + everything downstream (approved/pay flow)
     if (
         isManager(req) &&
-        reimbursement.status !== 'DRAFT' &&
-        reimbursement.status !== 'CANCELLED'
+        (reimbursement.status === 'SUBMITTED' ||
+            reimbursement.status === 'APPROVED' ||
+            reimbursement.status === 'REJECTED')
     )
         return true;
-    // Finance sees approved + paid (their queue + what they processed)
     if (
         isFinance(req) &&
         (reimbursement.status === 'APPROVED' || reimbursement.status === 'PAID')
@@ -142,23 +141,62 @@ export async function create(req: Request, res: Response) {
 export async function list(req: Request, res: Response) {
     try {
         const { id: userId, role } = req.user!;
-        const page = parseInt((req.query.page as string) ?? '1');
-        const limit = parseInt((req.query.limit as string) ?? '10');
+        const { categoryId, limit, order, page, sort, status } =
+            req.validatedQuery as ListQuery;
         const skip = (page - 1) * limit;
 
         const where: Record<string, unknown> = {};
 
+        // Role-based access filter
         if (role === 'EMPLOYEE') {
             where.requesterId = userId;
+        }
+
+        // Optional status filter — validate role can access the requested status
+        const allowedStatuses: Record<string, Status[]> = {
+            ADMIN: [
+                'APPROVED',
+                'CANCELLED',
+                'DRAFT',
+                'PAID',
+                'REJECTED',
+                'SUBMITTED',
+            ],
+            EMPLOYEE: [
+                'APPROVED',
+                'CANCELLED',
+                'DRAFT',
+                'PAID',
+                'REJECTED',
+                'SUBMITTED',
+            ],
+            FINANCE: ['APPROVED', 'PAID'],
+            MANAGER: ['SUBMITTED', 'APPROVED', 'REJECTED'],
+        };
+
+        if (status) {
+            if (!allowedStatuses[role]?.includes(status)) {
+                res.status(400).json({
+                    message: `Cannot filter by status "${status}" with your role`,
+                    statusCode: 400,
+                });
+                return;
+            }
+            where.status = status;
         } else if (role === 'MANAGER') {
             where.status = 'SUBMITTED';
         } else if (role === 'FINANCE') {
             where.status = 'APPROVED';
         }
 
+        // Optional category filter
+        if (categoryId) {
+            where.categoryId = categoryId;
+        }
+
         const [data, total] = await Promise.all([
             prisma.reimbursement.findMany({
-                orderBy: { createdAt: 'desc' },
+                orderBy: { [sort]: order },
                 select: selectReimbursement,
                 skip,
                 take: limit,
@@ -366,6 +404,11 @@ export async function approve(req: Request, res: Response) {
         const reimbursement = await transitionStatus(req, res, 'SUBMITTED');
         if (!reimbursement) return;
 
+        if (!isManager(req)) {
+            res.status(403).json({ message: 'Access denied', statusCode: 403 });
+            return;
+        }
+
         const updated = await prisma.reimbursement.update({
             data: { status: 'APPROVED' },
             select: selectReimbursement,
@@ -396,6 +439,11 @@ export async function reject(req: Request, res: Response) {
         const reimbursement = await transitionStatus(req, res, 'SUBMITTED');
         if (!reimbursement) return;
 
+        if (!isManager(req)) {
+            res.status(403).json({ message: 'Access denied', statusCode: 403 });
+            return;
+        }
+
         const updated = await prisma.reimbursement.update({
             data: { rejectionReason, status: 'REJECTED' },
             select: selectReimbursement,
@@ -423,6 +471,11 @@ export async function pay(req: Request, res: Response) {
     try {
         const reimbursement = await transitionStatus(req, res, 'APPROVED');
         if (!reimbursement) return;
+
+        if (!isFinance(req)) {
+            res.status(403).json({ message: 'Access denied', statusCode: 403 });
+            return;
+        }
 
         const updated = await prisma.reimbursement.update({
             data: { status: 'PAID' },

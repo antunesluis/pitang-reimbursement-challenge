@@ -26,10 +26,7 @@ export function validate(schemas: ValidationSchemas) {
                 res.status(400).json(formatZodError(result.error));
                 return;
             }
-            req.query = result.data as Record<
-                string,
-                string | string[] | undefined
-            >;
+            req.validatedQuery = result.data as Record<string, unknown>;
         }
 
         if (schemas.body) {

@@ -16,7 +16,7 @@ export async function addAttachment(req: Request, res: Response) {
         }
 
         const reimbursement = await prisma.reimbursement.findUnique({
-            select: { requesterId: true },
+            select: { requesterId: true, status: true },
             where: { id },
         });
 
@@ -30,6 +30,14 @@ export async function addAttachment(req: Request, res: Response) {
 
         if (req.user!.id !== reimbursement.requesterId) {
             res.status(403).json({ message: 'Access denied', statusCode: 403 });
+            return;
+        }
+
+        if (reimbursement.status !== 'DRAFT') {
+            res.status(400).json({
+                message: 'Attachments can only be added to DRAFT reimbursements',
+                statusCode: 400,
+            });
             return;
         }
 
@@ -78,8 +86,9 @@ export async function listAttachments(req: Request, res: Response) {
         if (
             !canView &&
             role === 'MANAGER' &&
-            status !== 'DRAFT' &&
-            status !== 'CANCELLED'
+            (status === 'SUBMITTED' ||
+                status === 'APPROVED' ||
+                status === 'REJECTED')
         )
             canView = true;
         if (

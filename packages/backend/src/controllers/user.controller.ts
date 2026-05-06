@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 
 import { prisma } from '../lib/prisma.ts';
 
+import type { UserListQuery } from '../schemas/user-list-query.schema.ts';
 import type { CreateUserInput } from '../schemas/user.schema.ts';
 import type { Request, Response } from 'express';
 
@@ -43,13 +44,12 @@ export async function create(req: Request, res: Response) {
 
 export async function list(req: Request, res: Response) {
     try {
-        const page = parseInt((req.query.page as string) ?? '1');
-        const limit = parseInt((req.query.limit as string) ?? '10');
+        const { limit, order, page, sort } = req.validatedQuery as UserListQuery;
         const skip = (page - 1) * limit;
 
         const [data, total] = await Promise.all([
             prisma.user.findMany({
-                orderBy: { createdAt: 'desc' },
+                orderBy: { [sort]: order },
                 select: {
                     createdAt: true,
                     email: true,

@@ -49,7 +49,7 @@ function DashboardPage() {
             try {
                 const [statsData, reimbs] = await Promise.all([
                     reimbursementService.getStats(),
-                    reimbursementService.list(1, 5),
+                    reimbursementService.list({ limit: 5, page: 1 }),
                 ]);
                 setStats(statsData);
                 setReimbursements(reimbs.data);

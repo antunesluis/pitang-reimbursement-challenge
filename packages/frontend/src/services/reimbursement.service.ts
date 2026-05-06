@@ -30,10 +30,26 @@ export const reimbursementService = {
 
     getStats: () => api.get<ReimbursementStats>('/reimbursements/stats'),
 
-    list: (page = 1, limit = 10) =>
-        api.get<PaginatedResponse<Reimbursement>>(
-            `/reimbursements?page=${page}&limit=${limit}`,
-        ),
+    list: (params: {
+        page?: number;
+        limit?: number;
+        sort?: string;
+        order?: string;
+        status?: string;
+        categoryId?: string;
+    } = {}) => {
+        const searchParams = new URLSearchParams();
+        if (params.page) searchParams.set('page', String(params.page));
+        if (params.limit) searchParams.set('limit', String(params.limit));
+        if (params.sort) searchParams.set('sort', params.sort);
+        if (params.order) searchParams.set('order', params.order);
+        if (params.status) searchParams.set('status', params.status);
+        if (params.categoryId)
+            searchParams.set('categoryId', params.categoryId);
+        return api.get<PaginatedResponse<Reimbursement>>(
+            `/reimbursements?${searchParams.toString()}`,
+        );
+    },
 
     pay: (id: string) => api.post<Reimbursement>(`/reimbursements/${id}/pay`),
 

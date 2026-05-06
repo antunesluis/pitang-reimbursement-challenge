@@ -190,12 +190,13 @@ describe('usePermissions', () => {
             expect(result.current.canCancel('APPROVED', 'user-1')).toBe(false);
         });
 
-        it('canUpload is true for owner', () => {
+        it('canUpload is true for owner with DRAFT status', () => {
             const { result } = renderHook(() => usePermissions(), {
                 wrapper: makeWrapper('EMPLOYEE'),
             });
-            expect(result.current.canUpload('user-1')).toBe(true);
-            expect(result.current.canUpload('other-user')).toBe(false);
+            expect(result.current.canUpload('user-1', 'DRAFT')).toBe(true);
+            expect(result.current.canUpload('user-1', 'SUBMITTED')).toBe(false);
+            expect(result.current.canUpload('other-user', 'DRAFT')).toBe(false);
         });
     });
 });

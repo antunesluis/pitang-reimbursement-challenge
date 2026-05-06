@@ -23,6 +23,7 @@ import { authMiddleware } from '../middlewares/auth.middleware.ts';
 import { roleMiddleware } from '../middlewares/role.middleware.ts';
 import { validate } from '../middlewares/validate.middleware.ts';
 import { paramsWithId } from '../schemas/common.schema.ts';
+import { listQuerySchema } from '../schemas/list-query.schema.ts';
 import {
     createReimbursementSchema,
     rejectReimbursementSchema,
@@ -33,7 +34,11 @@ export const reimbursementRoutes = Router();
 
 reimbursementRoutes.use(authMiddleware);
 
-reimbursementRoutes.get('/', list);
+reimbursementRoutes.get(
+    '/',
+    validate({ query: listQuerySchema }),
+    list,
+);
 
 reimbursementRoutes.get('/stats', getStats);
 

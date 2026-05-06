@@ -5,6 +5,7 @@ import { create, list } from '../controllers/user.controller.ts';
 import { authMiddleware } from '../middlewares/auth.middleware.ts';
 import { roleMiddleware } from '../middlewares/role.middleware.ts';
 import { validate } from '../middlewares/validate.middleware.ts';
+import { userListQuerySchema } from '../schemas/user-list-query.schema.ts';
 import { createUserSchema } from '../schemas/user.schema.ts';
 
 export const userRoutes = Router();
@@ -16,4 +17,10 @@ userRoutes.post(
     validate({ body: createUserSchema }),
     create,
 );
-userRoutes.get('/', authMiddleware, roleMiddleware([Role.ADMIN]), list);
+userRoutes.get(
+    '/',
+    authMiddleware,
+    roleMiddleware([Role.ADMIN]),
+    validate({ query: userListQuerySchema }),
+    list,
+);

@@ -493,7 +493,7 @@ describe('Reimbursements', () => {
     });
 
     describe('view after processing', () => {
-        it('MANAGER can still view APPROVED reimbursement after approving', async () => {
+        it('MANAGER can view APPROVED reimbursement after approving', async () => {
             const createRes = await request(app)
                 .post('/reimbursements')
                 .set('Authorization', `Bearer ${empToken}`)

@@ -109,7 +109,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
                     <SidebarMenuItem>
                         <SidebarMenuButton
                             size="lg"
-                            tooltip="Reimbursement Control"
+                            tooltip="Pitang Reimbursement Control"
                         >
                             <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                                 <img
