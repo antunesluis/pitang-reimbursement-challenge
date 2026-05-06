@@ -1,856 +1,1426 @@
 {
-    "info": {
-        "name": "Desafio Pitang Reembolsos",
-        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-        "description": "## Setup\n\n```bash\nbunx --bun prisma migrate reset --force\nbun run prisma:seed\nbun run dev\n```\n\n## Seed Users\n\n| Role | Email | Password |\n|------|-------|----------|\n| ADMIN | admin@example.com | admin123 |\n| EMPLOYEE | employee@test.com | secret123 |\n| MANAGER | manager@test.com | secret123 |\n| FINANCE | finance@test.com | secret123 |\n\n## Variables\n\n| Variable | Source |\n|----------|--------|\n| `url` | http://localhost:3000 |\n| `adminToken` | Login (Admin) auto-save |\n| `employeeToken` | Login (Employee) auto-save |\n| `managerToken` | Login (Manager) auto-save |\n| `financeToken` | Login (Finance) auto-save |\n| `categoryId` | Copy from Create Category response |\n| `reimbursementId` | Copy from Create Reimbursement response |\n\n## Flow\n\n**Admin setup:** Auth login → Categories create → Users list\n**Full cycle:** Employee creates → submits → Manager approves → Finance pays\n"
-    },
-    "item": [
+  "info": {
+    "name": "Pitang Reimbursement Control",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "## Setup\n\n```bash\nbun install\nbun run --cwd packages/backend prisma:migrate\nbun run --cwd packages/backend prisma:seed\nbun run --cwd packages/backend dev\n```\n\n## Seed Users\n\n| Role | Email | Password |\n|------|-------|----------|\n| ADMIN | admin@example.com | admin123 |\n| EMPLOYEE | employee@test.com | secret123 |\n| MANAGER | manager@test.com | secret123 |\n| FINANCE | finance@test.com | secret123 |\n\n## Variables\n\n| Variable | Source |\n|----------|--------|\n| `url` | http://localhost:3000 |\n| `adminToken` | Login (Admin) auto-save |\n| `employeeToken` | Login (Employee) auto-save |\n| `managerToken` | Login (Manager) auto-save |\n| `financeToken` | Login (Finance) auto-save |\n| `categoryId` | Copy from Create Category response |\n| `reimbursementId` | Copy from Create Reimbursement response |\n\n## Recommended Execution Order\n\n1. Auth → Login for all 4 roles\n2. Categories → Create Category (saves `categoryId`)\n3. Reimbursements — Full Cycle (saves `reimbursementId`, runs full flow)\n4. Explore remaining folders"
+  },
+  "item": [
+    {
+      "name": "1. Auth",
+      "description": "Authenticate each role. Tokens auto-saved to collection variables.",
+      "item": [
         {
-            "name": "1. Auth",
-            "description": "Login for each role. Tokens are auto-saved to collection variables.",
-            "item": [
-                {
-                    "name": "Login (Admin)",
-                    "event": [
-                        {
-                            "listen": "test",
-                            "script": {
-                                "exec": [
-                                    "const r = pm.response.json(); if (r.token) pm.collectionVariables.set('adminToken', r.token);"
-                                ]
-                            }
-                        }
-                    ],
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\"email\":\"admin@example.com\",\"password\":\"admin123\"}",
-                            "options": { "raw": { "language": "json" } }
-                        },
-                        "url": {
-                            "raw": "{{url}}/auth/login",
-                            "host": ["{{url}}"],
-                            "path": ["auth", "login"]
-                        }
-                    }
-                },
-                {
-                    "name": "Login (Employee)",
-                    "event": [
-                        {
-                            "listen": "test",
-                            "script": {
-                                "exec": [
-                                    "const r = pm.response.json(); if (r.token) pm.collectionVariables.set('employeeToken', r.token);"
-                                ]
-                            }
-                        }
-                    ],
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\"email\":\"employee@test.com\",\"password\":\"secret123\"}",
-                            "options": { "raw": { "language": "json" } }
-                        },
-                        "url": {
-                            "raw": "{{url}}/auth/login",
-                            "host": ["{{url}}"],
-                            "path": ["auth", "login"]
-                        }
-                    }
-                },
-                {
-                    "name": "Login (Manager)",
-                    "event": [
-                        {
-                            "listen": "test",
-                            "script": {
-                                "exec": [
-                                    "const r = pm.response.json(); if (r.token) pm.collectionVariables.set('managerToken', r.token);"
-                                ]
-                            }
-                        }
-                    ],
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\"email\":\"manager@test.com\",\"password\":\"secret123\"}",
-                            "options": { "raw": { "language": "json" } }
-                        },
-                        "url": {
-                            "raw": "{{url}}/auth/login",
-                            "host": ["{{url}}"],
-                            "path": ["auth", "login"]
-                        }
-                    }
-                },
-                {
-                    "name": "Login (Finance)",
-                    "event": [
-                        {
-                            "listen": "test",
-                            "script": {
-                                "exec": [
-                                    "const r = pm.response.json(); if (r.token) pm.collectionVariables.set('financeToken', r.token);"
-                                ]
-                            }
-                        }
-                    ],
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\"email\":\"finance@test.com\",\"password\":\"secret123\"}",
-                            "options": { "raw": { "language": "json" } }
-                        },
-                        "url": {
-                            "raw": "{{url}}/auth/login",
-                            "host": ["{{url}}"],
-                            "path": ["auth", "login"]
-                        }
-                    }
-                },
-                {
-                    "name": "Me / Validate Token",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{adminToken}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{url}}/auth/me",
-                            "host": ["{{url}}"],
-                            "path": ["auth", "me"]
-                        }
-                    }
-                }
-            ]
+          "name": "Login (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const r = pm.response.json();",
+                  "if (r.token) pm.collectionVariables.set('adminToken', r.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"admin@example.com\",\"password\":\"admin123\"}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{url}}/auth/login",
+              "host": ["{{url}}"],
+              "path": ["auth", "login"]
+            }
+          }
         },
         {
-            "name": "2. Users",
-            "description": "ADMIN only. Create and list users.",
-            "item": [
-                {
-                    "name": "List All Users",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{adminToken}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{url}}/users",
-                            "host": ["{{url}}"],
-                            "path": ["users"]
-                        }
-                    }
-                },
-                {
-                    "name": "Create User (any role)",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{adminToken}}"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"name\": \"John\",\n  \"email\": \"john@example.com\",\n  \"password\": \"secret123\",\n  \"role\": \"EMPLOYEE\"\n}",
-                            "options": { "raw": { "language": "json" } }
-                        },
-                        "url": {
-                            "raw": "{{url}}/users",
-                            "host": ["{{url}}"],
-                            "path": ["users"]
-                        }
-                    }
-                },
-                {
-                    "name": "Create User (invalid — expect 400)",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{adminToken}}"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"name\": \"X\",\n  \"email\": \"not-an-email\",\n  \"password\": \"12\"\n}",
-                            "options": { "raw": { "language": "json" } }
-                        },
-                        "url": {
-                            "raw": "{{url}}/users",
-                            "host": ["{{url}}"],
-                            "path": ["users"]
-                        }
-                    }
-                },
-                {
-                    "name": "Create User (duplicate — expect 409)",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{adminToken}}"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"name\": \"Dup\",\n  \"email\": \"employee@test.com\",\n  \"password\": \"secret123\"\n}",
-                            "options": { "raw": { "language": "json" } }
-                        },
-                        "url": {
-                            "raw": "{{url}}/users",
-                            "host": ["{{url}}"],
-                            "path": ["users"]
-                        }
-                    }
-                },
-                {
-                    "name": "List Users (EMPLOYEE — expect 403)",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{employeeToken}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{url}}/users",
-                            "host": ["{{url}}"],
-                            "path": ["users"]
-                        }
-                    }
-                }
-            ]
+          "name": "Login (Employee)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const r = pm.response.json();",
+                  "if (r.token) pm.collectionVariables.set('employeeToken', r.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"employee@test.com\",\"password\":\"secret123\"}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{url}}/auth/login",
+              "host": ["{{url}}"],
+              "path": ["auth", "login"]
+            }
+          }
         },
         {
-            "name": "3. Categories",
-            "description": "ADMIN only. Create, update, and list categories.",
-            "item": [
-                {
-                    "name": "List Categories",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{adminToken}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{url}}/categories",
-                            "host": ["{{url}}"],
-                            "path": ["categories"]
-                        }
-                    }
-                },
-                {
-                    "name": "Create Category",
-                    "event": [
-                        {
-                            "listen": "test",
-                            "script": {
-                                "exec": [
-                                    "const r = pm.response.json(); if (r.id) pm.collectionVariables.set('categoryId', r.id);"
-                                ]
-                            }
-                        }
-                    ],
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{adminToken}}"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\"name\":\"Transporte\"}",
-                            "options": { "raw": { "language": "json" } }
-                        },
-                        "url": {
-                            "raw": "{{url}}/categories",
-                            "host": ["{{url}}"],
-                            "path": ["categories"]
-                        }
-                    }
-                },
-                {
-                    "name": "Rename Category",
-                    "request": {
-                        "method": "PUT",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{adminToken}}"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\"name\":\"Transporte — atualizado\"}",
-                            "options": { "raw": { "language": "json" } }
-                        },
-                        "url": {
-                            "raw": "{{url}}/categories/{{categoryId}}",
-                            "host": ["{{url}}"],
-                            "path": ["categories", "{{categoryId}}"]
-                        }
-                    }
-                },
-                {
-                    "name": "Deactivate Category",
-                    "request": {
-                        "method": "PUT",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{adminToken}}"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\"active\":false}",
-                            "options": { "raw": { "language": "json" } }
-                        },
-                        "url": {
-                            "raw": "{{url}}/categories/{{categoryId}}",
-                            "host": ["{{url}}"],
-                            "path": ["categories", "{{categoryId}}"]
-                        }
-                    }
-                },
-                {
-                    "name": "Create Category (EMPLOYEE — expect 403)",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{employeeToken}}"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\"name\":\"Hacked\"}",
-                            "options": { "raw": { "language": "json" } }
-                        },
-                        "url": {
-                            "raw": "{{url}}/categories",
-                            "host": ["{{url}}"],
-                            "path": ["categories"]
-                        }
-                    }
-                }
-            ]
+          "name": "Login (Manager)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const r = pm.response.json();",
+                  "if (r.token) pm.collectionVariables.set('managerToken', r.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"manager@test.com\",\"password\":\"secret123\"}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{url}}/auth/login",
+              "host": ["{{url}}"],
+              "path": ["auth", "login"]
+            }
+          }
         },
         {
-            "name": "4. Reimbursements — Full Cycle",
-            "description": "1. Employee creates → 2. Submits → 3. Manager approves → 4. Finance pays",
-            "item": [
-                {
-                    "name": "1. Create (Employee)",
-                    "event": [
-                        {
-                            "listen": "test",
-                            "script": {
-                                "exec": [
-                                    "const r = pm.response.json(); if (r.id) pm.collectionVariables.set('reimbursementId', r.id);"
-                                ]
-                            }
-                        }
-                    ],
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{employeeToken}}"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"description\": \"Lunch with client\",\n  \"amount\": 85.50,\n  \"expenseDate\": \"2026-04-25\",\n  \"categoryId\": \"{{categoryId}}\"\n}",
-                            "options": { "raw": { "language": "json" } }
-                        },
-                        "url": {
-                            "raw": "{{url}}/reimbursements",
-                            "host": ["{{url}}"],
-                            "path": ["reimbursements"]
-                        }
-                    }
-                },
-                {
-                    "name": "2. Submit (Employee)",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{employeeToken}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/submit",
-                            "host": ["{{url}}"],
-                            "path": [
-                                "reimbursements",
-                                "{{reimbursementId}}",
-                                "submit"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "3. Approve (Manager)",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{managerToken}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/approve",
-                            "host": ["{{url}}"],
-                            "path": [
-                                "reimbursements",
-                                "{{reimbursementId}}",
-                                "approve"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "4. Pay (Finance)",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{financeToken}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/pay",
-                            "host": ["{{url}}"],
-                            "path": [
-                                "reimbursements",
-                                "{{reimbursementId}}",
-                                "pay"
-                            ]
-                        }
-                    }
-                }
-            ]
+          "name": "Login (Finance)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const r = pm.response.json();",
+                  "if (r.token) pm.collectionVariables.set('financeToken', r.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"finance@test.com\",\"password\":\"secret123\"}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{url}}/auth/login",
+              "host": ["{{url}}"],
+              "path": ["auth", "login"]
+            }
+          }
         },
         {
-            "name": "5. Reimbursements — Other Actions",
-            "description": "List, detail, reject, cancel, history.",
-            "item": [
-                {
-                    "name": "List (Employee — sees own)",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{employeeToken}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{url}}/reimbursements",
-                            "host": ["{{url}}"],
-                            "path": ["reimbursements"]
-                        }
-                    }
-                },
-                {
-                    "name": "List (Manager — sees SUBMITTED)",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{managerToken}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{url}}/reimbursements",
-                            "host": ["{{url}}"],
-                            "path": ["reimbursements"]
-                        }
-                    }
-                },
-                {
-                    "name": "List (Finance — sees APPROVED)",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{financeToken}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{url}}/reimbursements",
-                            "host": ["{{url}}"],
-                            "path": ["reimbursements"]
-                        }
-                    }
-                },
-                {
-                    "name": "List (Admin — sees all)",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{adminToken}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{url}}/reimbursements",
-                            "host": ["{{url}}"],
-                            "path": ["reimbursements"]
-                        }
-                    }
-                },
-                {
-                    "name": "Get Detail",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{employeeToken}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{url}}/reimbursements/{{reimbursementId}}",
-                            "host": ["{{url}}"],
-                            "path": ["reimbursements", "{{reimbursementId}}"]
-                        }
-                    }
-                },
-                {
-                    "name": "Edit (DRAFT only)",
-                    "request": {
-                        "method": "PUT",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{employeeToken}}"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"description\": \"Lunch — updated\",\n  \"amount\": 95.00\n}",
-                            "options": { "raw": { "language": "json" } }
-                        },
-                        "url": {
-                            "raw": "{{url}}/reimbursements/{{reimbursementId}}",
-                            "host": ["{{url}}"],
-                            "path": ["reimbursements", "{{reimbursementId}}"]
-                        }
-                    }
-                },
-                {
-                    "name": "Reject (Manager — requires reason)",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{managerToken}}"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\"rejectionReason\":\"Amount exceeds policy limit\"}",
-                            "options": { "raw": { "language": "json" } }
-                        },
-                        "url": {
-                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/reject",
-                            "host": ["{{url}}"],
-                            "path": [
-                                "reimbursements",
-                                "{{reimbursementId}}",
-                                "reject"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Cancel (Employee)",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{employeeToken}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/cancel",
-                            "host": ["{{url}}"],
-                            "path": [
-                                "reimbursements",
-                                "{{reimbursementId}}",
-                                "cancel"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Get History",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{employeeToken}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/history",
-                            "host": ["{{url}}"],
-                            "path": [
-                                "reimbursements",
-                                "{{reimbursementId}}",
-                                "history"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Pay Rejected (FINANCE — expect 400)",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{financeToken}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/pay",
-                            "host": ["{{url}}"],
-                            "path": [
-                                "reimbursements",
-                                "{{reimbursementId}}",
-                                "pay"
-                            ]
-                        }
-                    }
-                }
-            ]
+          "name": "Login (invalid — 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"admin@example.com\",\"password\":\"wrong\"}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{url}}/auth/login",
+              "host": ["{{url}}"],
+              "path": ["auth", "login"]
+            }
+          }
         },
         {
-            "name": "6. Attachments",
-            "description": "Upload and list attachments on a reimbursement.",
-            "item": [
-                {
-                    "name": "Upload Attachment (PDF)",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{employeeToken}}"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"fileName\": \"receipt.pdf\",\n  \"fileUrl\": \"https://example.com/receipt.pdf\",\n  \"fileType\": \"application/pdf\"\n}",
-                            "options": { "raw": { "language": "json" } }
-                        },
-                        "url": {
-                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/attachments",
-                            "host": ["{{url}}"],
-                            "path": [
-                                "reimbursements",
-                                "{{reimbursementId}}",
-                                "attachments"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Upload Attachment (JPG)",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{employeeToken}}"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"fileName\": \"photo.jpg\",\n  \"fileUrl\": \"https://example.com/photo.jpg\",\n  \"fileType\": \"image/jpeg\"\n}",
-                            "options": { "raw": { "language": "json" } }
-                        },
-                        "url": {
-                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/attachments",
-                            "host": ["{{url}}"],
-                            "path": [
-                                "reimbursements",
-                                "{{reimbursementId}}",
-                                "attachments"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Upload (invalid type — expect 400)",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{employeeToken}}"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"fileName\": \"virus.exe\",\n  \"fileUrl\": \"https://example.com/v.exe\",\n  \"fileType\": \"application/x-msdos-program\"\n}",
-                            "options": { "raw": { "language": "json" } }
-                        },
-                        "url": {
-                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/attachments",
-                            "host": ["{{url}}"],
-                            "path": [
-                                "reimbursements",
-                                "{{reimbursementId}}",
-                                "attachments"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "List Attachments",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{employeeToken}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/attachments",
-                            "host": ["{{url}}"],
-                            "path": [
-                                "reimbursements",
-                                "{{reimbursementId}}",
-                                "attachments"
-                            ]
-                        }
-                    }
-                }
-            ]
+          "name": "Me (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Role is ADMIN', () => {",
+                  "  pm.expect(pm.response.json().role).to.equal('ADMIN');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": {
+              "raw": "{{url}}/auth/me",
+              "host": ["{{url}}"],
+              "path": ["auth", "me"]
+            }
+          }
+        },
+        {
+          "name": "Me (Employee)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }],
+            "url": {
+              "raw": "{{url}}/auth/me",
+              "host": ["{{url}}"],
+              "path": ["auth", "me"]
+            }
+          }
+        },
+        {
+          "name": "Me (no token — 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{url}}/auth/me",
+              "host": ["{{url}}"],
+              "path": ["auth", "me"]
+            }
+          }
         }
-    ],
-    "variable": [
-        { "key": "url", "value": "http://localhost:3000" },
-        { "key": "adminToken", "value": "" },
-        { "key": "employeeToken", "value": "" },
-        { "key": "managerToken", "value": "" },
-        { "key": "financeToken", "value": "" },
-        { "key": "categoryId", "value": "" },
-        { "key": "reimbursementId", "value": "" }
-    ]
+      ]
+    },
+    {
+      "name": "2. Users",
+      "description": "ADMIN only. Create and list users.",
+      "item": [
+        {
+          "name": "List Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has pagination fields', () => {",
+                  "  const r = pm.response.json();",
+                  "  pm.expect(r).to.have.property('data');",
+                  "  pm.expect(r).to.have.property('total');",
+                  "  pm.expect(r).to.have.property('page');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": {
+              "raw": "{{url}}/users?page=1&limit=10&sort=createdAt&order=desc",
+              "host": ["{{url}}"],
+              "path": ["users"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "sort", "value": "createdAt" },
+                { "key": "order", "value": "desc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create User (Employee)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Jane\",\"email\":\"jane@example.com\",\"password\":\"secret123\",\"role\":\"EMPLOYEE\"}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{url}}/users",
+              "host": ["{{url}}"],
+              "path": ["users"]
+            }
+          }
+        },
+        {
+          "name": "Create User (Manager)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Bob\",\"email\":\"bob@example.com\",\"password\":\"secret123\",\"role\":\"MANAGER\"}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{url}}/users",
+              "host": ["{{url}}"],
+              "path": ["users"]
+            }
+          }
+        },
+        {
+          "name": "Create User (invalid — 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"X\",\"email\":\"not-an-email\",\"password\":\"12\"}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{url}}/users",
+              "host": ["{{url}}"],
+              "path": ["users"]
+            }
+          }
+        },
+        {
+          "name": "Create User (duplicate — 409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 409', () => pm.response.to.have.status(409));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Dup\",\"email\":\"employee@test.com\",\"password\":\"secret123\"}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{url}}/users",
+              "host": ["{{url}}"],
+              "path": ["users"]
+            }
+          }
+        },
+        {
+          "name": "List Users (Employee — 403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 403', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }],
+            "url": {
+              "raw": "{{url}}/users",
+              "host": ["{{url}}"],
+              "path": ["users"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Categories",
+      "description": "ADMIN creates/manages. Any authenticated user can list.",
+      "item": [
+        {
+          "name": "List Categories",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": {
+              "raw": "{{url}}/categories",
+              "host": ["{{url}}"],
+              "path": ["categories"]
+            }
+          }
+        },
+        {
+          "name": "Create Category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "if (r.id) pm.collectionVariables.set('categoryId', r.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Transporte\"}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{url}}/categories",
+              "host": ["{{url}}"],
+              "path": ["categories"]
+            }
+          }
+        },
+        {
+          "name": "Rename Category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Transporte (atualizado)\"}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{url}}/categories/{{categoryId}}",
+              "host": ["{{url}}"],
+              "path": ["categories", "{{categoryId}}"]
+            }
+          }
+        },
+        {
+          "name": "Deactivate Category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"active\":false}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{url}}/categories/{{categoryId}}",
+              "host": ["{{url}}"],
+              "path": ["categories", "{{categoryId}}"]
+            }
+          }
+        },
+        {
+          "name": "Reactivate Category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"active\":true}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{url}}/categories/{{categoryId}}",
+              "host": ["{{url}}"],
+              "path": ["categories", "{{categoryId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Category (duplicate — 409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 409', () => pm.response.to.have.status(409));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Transporte\"}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{url}}/categories",
+              "host": ["{{url}}"],
+              "path": ["categories"]
+            }
+          }
+        },
+        {
+          "name": "Create Category (Employee — 403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 403', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employeeToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Hacked\"}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{url}}/categories",
+              "host": ["{{url}}"],
+              "path": ["categories"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Reimbursements — Full Cycle",
+      "description": "1. Employee creates → 2. Submits → 3. Manager approves → 4. Finance pays",
+      "item": [
+        {
+          "name": "1. Create (Employee → DRAFT)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "pm.test('Status is DRAFT', () => pm.expect(r.status).to.equal('DRAFT'));",
+                  "if (r.id) pm.collectionVariables.set('reimbursementId', r.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employeeToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"description\":\"Almoço com cliente\",\"amount\":85.50,\"expenseDate\":\"2026-04-25\",\"categoryId\":\"{{categoryId}}\"}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{url}}/reimbursements",
+              "host": ["{{url}}"],
+              "path": ["reimbursements"]
+            }
+          }
+        },
+        {
+          "name": "2. Submit (Employee → SUBMITTED)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Status is SUBMITTED', () => pm.expect(pm.response.json().status).to.equal('SUBMITTED'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }],
+            "url": {
+              "raw": "{{url}}/reimbursements/{{reimbursementId}}/submit",
+              "host": ["{{url}}"],
+              "path": ["reimbursements", "{{reimbursementId}}", "submit"]
+            }
+          }
+        },
+        {
+          "name": "3. Approve (Manager → APPROVED)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Status is APPROVED', () => pm.expect(pm.response.json().status).to.equal('APPROVED'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{managerToken}}" }],
+            "url": {
+              "raw": "{{url}}/reimbursements/{{reimbursementId}}/approve",
+              "host": ["{{url}}"],
+              "path": ["reimbursements", "{{reimbursementId}}", "approve"]
+            }
+          }
+        },
+        {
+          "name": "4. Pay (Finance → PAID)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Status is PAID', () => pm.expect(pm.response.json().status).to.equal('PAID'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{financeToken}}" }],
+            "url": {
+              "raw": "{{url}}/reimbursements/{{reimbursementId}}/pay",
+              "host": ["{{url}}"],
+              "path": ["reimbursements", "{{reimbursementId}}", "pay"]
+            }
+          }
+        },
+        {
+          "name": "5. Get History",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has history entries', () => pm.expect(pm.response.json()).to.be.an('array').with.lengthOf.at.least(4));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }],
+            "url": {
+              "raw": "{{url}}/reimbursements/{{reimbursementId}}/history",
+              "host": ["{{url}}"],
+              "path": ["reimbursements", "{{reimbursementId}}", "history"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Reimbursements — List & Filter",
+      "description": "Paginação, ordenação e filtros via query params.",
+      "item": [
+        {
+          "name": "List (Employee — own, sort by amount desc)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }],
+            "url": {
+              "raw": "{{url}}/reimbursements?page=1&limit=10&sort=amount&order=desc",
+              "host": ["{{url}}"],
+              "path": ["reimbursements"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "sort", "value": "amount" },
+                { "key": "order", "value": "desc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List (Employee — filter by status DRAFT)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }],
+            "url": {
+              "raw": "{{url}}/reimbursements?status=DRAFT&sort=createdAt&order=desc",
+              "host": ["{{url}}"],
+              "path": ["reimbursements"],
+              "query": [
+                { "key": "status", "value": "DRAFT" },
+                { "key": "sort", "value": "createdAt" },
+                { "key": "order", "value": "desc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List (Employee — filter by categoryId)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }],
+            "url": {
+              "raw": "{{url}}/reimbursements?categoryId={{categoryId}}",
+              "host": ["{{url}}"],
+              "path": ["reimbursements"],
+              "query": [
+                { "key": "categoryId", "value": "{{categoryId}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List (Manager — SUBMITTED by default)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{managerToken}}" }],
+            "url": {
+              "raw": "{{url}}/reimbursements",
+              "host": ["{{url}}"],
+              "path": ["reimbursements"]
+            }
+          }
+        },
+        {
+          "name": "List (Manager — filter by status APPROVED)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{managerToken}}" }],
+            "url": {
+              "raw": "{{url}}/reimbursements?status=APPROVED",
+              "host": ["{{url}}"],
+              "path": ["reimbursements"],
+              "query": [
+                { "key": "status", "value": "APPROVED" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List (Manager — status DRAFT forbidden → 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{managerToken}}" }],
+            "url": {
+              "raw": "{{url}}/reimbursements?status=DRAFT",
+              "host": ["{{url}}"],
+              "path": ["reimbursements"],
+              "query": [
+                { "key": "status", "value": "DRAFT" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List (Finance — APPROVED by default)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{financeToken}}" }],
+            "url": {
+              "raw": "{{url}}/reimbursements",
+              "host": ["{{url}}"],
+              "path": ["reimbursements"]
+            }
+          }
+        },
+        {
+          "name": "List (Admin — all, paginated)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": {
+              "raw": "{{url}}/reimbursements?page=1&limit=5",
+              "host": ["{{url}}"],
+              "path": ["reimbursements"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "5" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Reimbursements — Actions & Errors",
+      "description": "Each scenario creates a fresh DRAFT, testing exact expected behavior independently.",
+      "item": [
+        {
+          "name": "0. Create Fresh DRAFT (→ testId)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "if (r.id) pm.collectionVariables.set('testId', r.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employeeToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"description\":\"Test DRAFT\",\"amount\":50,\"expenseDate\":\"2026-04-01\",\"categoryId\":\"{{categoryId}}\"}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{url}}/reimbursements",
+              "host": ["{{url}}"],
+              "path": ["reimbursements"]
+            }
+          }
+        },
+        {
+          "name": "Edit DRAFT (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employeeToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"description\":\"Updated\",\"amount\":75}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{url}}/reimbursements/{{testId}}",
+              "host": ["{{url}}"],
+              "path": ["reimbursements", "{{testId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Detail (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }],
+            "url": {
+              "raw": "{{url}}/reimbursements/{{testId}}",
+              "host": ["{{url}}"],
+              "path": ["reimbursements", "{{testId}}"]
+            }
+          }
+        },
+        {
+          "name": "Approve DRAFT → 400 (Manager)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{managerToken}}" }],
+            "url": {
+              "raw": "{{url}}/reimbursements/{{testId}}/approve",
+              "host": ["{{url}}"],
+              "path": ["reimbursements", "{{testId}}", "approve"]
+            }
+          }
+        },
+        {
+          "name": "Pay DRAFT → 400 (Finance)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{financeToken}}" }],
+            "url": {
+              "raw": "{{url}}/reimbursements/{{testId}}/pay",
+              "host": ["{{url}}"],
+              "path": ["reimbursements", "{{testId}}", "pay"]
+            }
+          }
+        },
+        {
+          "name": "Reject DRAFT → 400 (Manager)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{managerToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"rejectionReason\":\"Invalid status\"}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{url}}/reimbursements/{{testId}}/reject",
+              "host": ["{{url}}"],
+              "path": ["reimbursements", "{{testId}}", "reject"]
+            }
+          }
+        },
+        {
+          "name": "Cancel DRAFT (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Status is CANCELLED', () => pm.expect(pm.response.json().status).to.equal('CANCELLED'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }],
+            "url": {
+              "raw": "{{url}}/reimbursements/{{testId}}/cancel",
+              "host": ["{{url}}"],
+              "path": ["reimbursements", "{{testId}}", "cancel"]
+            }
+          }
+        },
+        {
+          "name": "Create with future date → 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employeeToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"description\":\"Future\",\"amount\":10,\"expenseDate\":\"2099-12-31\",\"categoryId\":\"{{categoryId}}\"}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{url}}/reimbursements",
+              "host": ["{{url}}"],
+              "path": ["reimbursements"]
+            }
+          }
+        },
+        {
+          "name": "Get non-existent → 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": {
+              "raw": "{{url}}/reimbursements/00000000-0000-0000-0000-000000000000",
+              "host": ["{{url}}"],
+              "path": ["reimbursements", "00000000-0000-0000-0000-000000000000"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Attachments",
+      "description": "Upload via multipart/form-data (real file) or list. Upload only works on DRAFT reimbursements.",
+      "item": [
+        {
+          "name": "Upload PDF (multipart/form-data)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "sample.pdf"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{url}}/reimbursements/{{reimbursementId}}/attachments",
+              "host": ["{{url}}"],
+              "path": ["reimbursements", "{{reimbursementId}}", "attachments"]
+            }
+          }
+        },
+        {
+          "name": "Upload PNG (multipart/form-data)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "sample.png"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{url}}/reimbursements/{{reimbursementId}}/attachments",
+              "host": ["{{url}}"],
+              "path": ["reimbursements", "{{reimbursementId}}", "attachments"]
+            }
+          }
+        },
+        {
+          "name": "Upload without file (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }],
+            "url": {
+              "raw": "{{url}}/reimbursements/{{reimbursementId}}/attachments",
+              "host": ["{{url}}"],
+              "path": ["reimbursements", "{{reimbursementId}}", "attachments"]
+            }
+          }
+        },
+        {
+          "name": "List Attachments",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }],
+            "url": {
+              "raw": "{{url}}/reimbursements/{{reimbursementId}}/attachments",
+              "host": ["{{url}}"],
+              "path": ["reimbursements", "{{reimbursementId}}", "attachments"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Stats",
+      "description": "Dashboard statistics per role.",
+      "item": [
+        {
+          "name": "Stats (Employee)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has count fields', () => {",
+                  "  const r = pm.response.json();",
+                  "  pm.expect(r).to.have.property('total');",
+                  "  pm.expect(r).to.have.property('draft');",
+                  "  pm.expect(r).to.have.property('submitted');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }],
+            "url": {
+              "raw": "{{url}}/reimbursements/stats",
+              "host": ["{{url}}"],
+              "path": ["reimbursements", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Stats (Manager)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has pending field', () => pm.expect(pm.response.json()).to.have.property('pending'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{managerToken}}" }],
+            "url": {
+              "raw": "{{url}}/reimbursements/stats",
+              "host": ["{{url}}"],
+              "path": ["reimbursements", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Stats (Finance)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has pending field', () => pm.expect(pm.response.json()).to.have.property('pending'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{financeToken}}" }],
+            "url": {
+              "raw": "{{url}}/reimbursements/stats",
+              "host": ["{{url}}"],
+              "path": ["reimbursements", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Stats (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has global fields', () => {",
+                  "  const r = pm.response.json();",
+                  "  pm.expect(r).to.have.property('reimbursements');",
+                  "  pm.expect(r).to.have.property('users');",
+                  "  pm.expect(r).to.have.property('categories');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": {
+              "raw": "{{url}}/reimbursements/stats",
+              "host": ["{{url}}"],
+              "path": ["reimbursements", "stats"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "url", "value": "http://localhost:3000" },
+    { "key": "adminToken", "value": "" },
+    { "key": "employeeToken", "value": "" },
+    { "key": "managerToken", "value": "" },
+    { "key": "financeToken", "value": "" },
+    { "key": "categoryId", "value": "" },
+    { "key": "reimbursementId", "value": "" },
+    { "key": "testId", "value": "" }
+  ]
 }

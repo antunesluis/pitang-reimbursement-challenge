@@ -1,26 +1,20 @@
+import { AppError } from '../lib/errors.ts';
+
 import type { Role } from '../../prisma/src/generated/prisma/enums.ts';
 import type { NextFunction, Request, Response } from 'express';
 
 export function roleMiddleware(allowedRoles: Role[]) {
-    return (req: Request, res: Response, next: NextFunction) => {
+    return (req: Request, _res: Response, next: NextFunction) => {
         const role = req.user?.role as Role | undefined;
 
         if (!role) {
-            res.status(401).json({
-                message: 'Authentication required',
-                statusCode: 401,
-            });
-            return;
+            throw new AppError(401, 'Authentication required');
         }
 
-        if (allowedRoles.includes(role)) {
-            next();
-            return;
+        if (!allowedRoles.includes(role)) {
+            throw new AppError(403, 'Insufficient permissions');
         }
 
-        res.status(403).json({
-            message: 'Insufficient permissions',
-            statusCode: 403,
-        });
+        next();
     };
 }

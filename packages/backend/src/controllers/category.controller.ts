@@ -1,3 +1,4 @@
+import { AppError } from '../lib/errors.ts';
 import { prisma } from '../lib/prisma.ts';
 
 import type {
@@ -26,11 +27,7 @@ export async function create(req: Request, res: Response) {
 
     const existing = await prisma.category.findUnique({ where: { name } });
     if (existing) {
-        res.status(409).json({
-            message: 'Category name already exists',
-            statusCode: 409,
-        });
-        return;
+        throw new AppError(409, 'Category name already exists');
     }
 
     const category = await prisma.category.create({
@@ -53,21 +50,13 @@ export async function update(req: Request, res: Response) {
 
     const category = await prisma.category.findUnique({ where: { id } });
     if (!category) {
-        res.status(404).json({
-            message: 'Category not found',
-            statusCode: 404,
-        });
-        return;
+        throw new AppError(404, 'Category not found');
     }
 
     if (name && name !== category.name) {
         const existing = await prisma.category.findUnique({ where: { name } });
         if (existing) {
-            res.status(409).json({
-                message: 'Category name already exists',
-                statusCode: 409,
-            });
-            return;
+            throw new AppError(409, 'Category name already exists');
         }
     }
 

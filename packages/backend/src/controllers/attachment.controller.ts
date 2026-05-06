@@ -1,3 +1,4 @@
+import { AppError } from '../lib/errors.ts';
 import { prisma } from '../lib/prisma.ts';
 
 import type { Request, Response } from 'express';
@@ -7,11 +8,7 @@ export async function addAttachment(req: Request, res: Response) {
     const file = req.file;
 
     if (!file) {
-        res.status(400).json({
-            message: 'File is required',
-            statusCode: 400,
-        });
-        return;
+        throw new AppError(400, 'File is required');
     }
 
     const reimbursement = await prisma.reimbursement.findUnique({
@@ -20,24 +17,18 @@ export async function addAttachment(req: Request, res: Response) {
     });
 
     if (!reimbursement) {
-        res.status(404).json({
-            message: 'Reimbursement not found',
-            statusCode: 404,
-        });
-        return;
+        throw new AppError(404, 'Reimbursement not found');
     }
 
     if (req.user!.id !== reimbursement.requesterId) {
-        res.status(403).json({ message: 'Access denied', statusCode: 403 });
-        return;
+        throw new AppError(403, 'Access denied');
     }
 
     if (reimbursement.status !== 'DRAFT') {
-        res.status(400).json({
-            message: 'Attachments can only be added to DRAFT reimbursements',
-            statusCode: 400,
-        });
-        return;
+        throw new AppError(
+            400,
+            'Attachments can only be added to DRAFT reimbursements',
+        );
     }
 
     const attachment = await prisma.attachment.create({
@@ -62,11 +53,7 @@ export async function listAttachments(req: Request, res: Response) {
     });
 
     if (!reimbursement) {
-        res.status(404).json({
-            message: 'Reimbursement not found',
-            statusCode: 404,
-        });
-        return;
+        throw new AppError(404, 'Reimbursement not found');
     }
 
     const isOwner = req.user!.id === reimbursement.requesterId;
@@ -90,8 +77,7 @@ export async function listAttachments(req: Request, res: Response) {
         canView = true;
 
     if (!canView) {
-        res.status(403).json({ message: 'Access denied', statusCode: 403 });
-        return;
+        throw new AppError(403, 'Access denied');
     }
 
     const attachments = await prisma.attachment.findMany({

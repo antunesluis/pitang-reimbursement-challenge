@@ -1,4 +1,5 @@
 import { env } from '../lib/env.vars.ts';
+import { AppError } from '../lib/errors.ts';
 
 import type { NextFunction, Request, Response } from 'express';
 
@@ -10,27 +11,33 @@ export function errorFallbackMiddleware(
 ) {
     console.error(error.stack);
 
-    // File upload errors (multer) → 400
-    if (
-        error.message?.includes('File type') ||
-        error.message?.includes('File too large')
-    ) {
-        response.status(400).json({ message: error.message, statusCode: 400 });
-        return;
-    }
-
-    const statusCode = response.statusCode >= 400 ? response.statusCode : 500;
-
-    if (env.NODE_ENV === 'development') {
-        response.status(statusCode).json({
+    if (error instanceof AppError) {
+        response.status(error.statusCode).json({
+            error: error.error,
+            errors: error.errors,
             message: error.message,
-            stack: error.stack,
-            statusCode,
+            statusCode: error.statusCode,
         });
         return;
     }
 
-    response
-        .status(statusCode)
-        .json({ message: 'Internal server error', statusCode });
+    if (
+        error.message?.includes('File type') ||
+        error.message?.includes('File too large')
+    ) {
+        response.status(400).json({
+            error: 'Bad Request',
+            message: error.message,
+            statusCode: 400,
+        });
+        return;
+    }
+
+    const isDev = env.NODE_ENV === 'development';
+
+    response.status(500).json({
+        error: 'Internal Server Error',
+        message: isDev ? error.message : 'Internal server error',
+        statusCode: 500,
+    });
 }

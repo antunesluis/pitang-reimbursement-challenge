@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 
+import { AppError } from '../lib/errors.ts';
 import { prisma } from '../lib/prisma.ts';
 
 import type { UserListQuery } from '../schemas/user-list-query.schema.ts';
@@ -11,11 +12,7 @@ export async function create(req: Request, res: Response) {
 
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
-        res.status(409).json({
-            message: 'Email already in use',
-            statusCode: 409,
-        });
-        return;
+        throw new AppError(409, 'Email already in use');
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);

@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 
+import { AppError } from '../lib/errors.ts';
 import { prisma } from '../lib/prisma.ts';
 
 import type {
@@ -90,22 +91,14 @@ export async function create(req: Request, res: Response) {
         req.body as CreateReimbursementInput;
 
     if (isFutureDate(expenseDate)) {
-        res.status(400).json({
-            message: 'Expense date cannot be in the future',
-            statusCode: 400,
-        });
-        return;
+        throw new AppError(400, 'Expense date cannot be in the future');
     }
 
     const category = await prisma.category.findUnique({
         where: { id: categoryId },
     });
     if (!category || !category.active) {
-        res.status(400).json({
-            message: 'Category not found or inactive',
-            statusCode: 400,
-        });
-        return;
+        throw new AppError(400, 'Category not found or inactive');
     }
 
     const reimbursement = await prisma.reimbursement.create({
@@ -165,11 +158,10 @@ export async function list(req: Request, res: Response) {
 
     if (status) {
         if (!allowedStatuses[role]?.includes(status)) {
-            res.status(400).json({
-                message: `Cannot filter by status "${status}" with your role`,
-                statusCode: 400,
-            });
-            return;
+            throw new AppError(
+                400,
+                `Cannot filter by status "${status}" with your role`,
+            );
         }
         where.status = status;
     } else if (role === 'MANAGER') {
@@ -221,16 +213,11 @@ export async function getById(req: Request, res: Response) {
     });
 
     if (!reimbursement) {
-        res.status(404).json({
-            message: 'Reimbursement not found',
-            statusCode: 404,
-        });
-        return;
+        throw new AppError(404, 'Reimbursement not found');
     }
 
     if (!canView(req, reimbursement)) {
-        res.status(403).json({ message: 'Access denied', statusCode: 403 });
-        return;
+        throw new AppError(403, 'Access denied');
     }
 
     res.json(reimbursement);
@@ -244,32 +231,22 @@ export async function update(req: Request, res: Response) {
         where: { id },
     });
     if (!reimbursement) {
-        res.status(404).json({
-            message: 'Reimbursement not found',
-            statusCode: 404,
-        });
-        return;
+        throw new AppError(404, 'Reimbursement not found');
     }
 
     if (!isOwner(req, reimbursement)) {
-        res.status(403).json({ message: 'Access denied', statusCode: 403 });
-        return;
+        throw new AppError(403, 'Access denied');
     }
 
     if (reimbursement.status !== 'DRAFT') {
-        res.status(400).json({
-            message: 'Only DRAFT reimbursements can be edited',
-            statusCode: 400,
-        });
-        return;
+        throw new AppError(
+            400,
+            'Only DRAFT reimbursements can be edited',
+        );
     }
 
     if (data.expenseDate && isFutureDate(data.expenseDate)) {
-        res.status(400).json({
-            message: 'Expense date cannot be in the future',
-            statusCode: 400,
-        });
-        return;
+        throw new AppError(400, 'Expense date cannot be in the future');
     }
 
     if (data.categoryId) {
@@ -277,11 +254,7 @@ export async function update(req: Request, res: Response) {
             where: { id: data.categoryId },
         });
         if (!category || !category.active) {
-            res.status(400).json({
-                message: 'Category not found or inactive',
-                statusCode: 400,
-            });
-            return;
+            throw new AppError(400, 'Category not found or inactive');
         }
     }
 
@@ -291,19 +264,13 @@ export async function update(req: Request, res: Response) {
         where: { id },
     });
 
-    await recordHistory(
-        id,
-        req.user!.id,
-        'UPDATED',
-        'Reimbursement updated',
-    );
+    await recordHistory(id, req.user!.id, 'UPDATED', 'Reimbursement updated');
 
     res.json(updated);
 }
 
 async function transitionStatus(
     req: Request,
-    res: Response,
     fromStatus: Status | Status[],
 ) {
     const id = req.params.id as string;
@@ -312,32 +279,22 @@ async function transitionStatus(
         where: { id },
     });
     if (!reimbursement) {
-        res.status(404).json({
-            message: 'Reimbursement not found',
-            statusCode: 404,
-        });
-        return null;
+        throw new AppError(404, 'Reimbursement not found');
     }
 
     const allowed = Array.isArray(fromStatus) ? fromStatus : [fromStatus];
     if (!allowed.includes(reimbursement.status as Status)) {
-        res.status(400).json({
-            message: 'Invalid status transition',
-            statusCode: 400,
-        });
-        return null;
+        throw new AppError(400, 'Invalid status transition');
     }
 
     return reimbursement;
 }
 
 export async function submit(req: Request, res: Response) {
-    const reimbursement = await transitionStatus(req, res, 'DRAFT');
-    if (!reimbursement) return;
+    const reimbursement = await transitionStatus(req, 'DRAFT');
 
     if (!isOwner(req, reimbursement)) {
-        res.status(403).json({ message: 'Access denied', statusCode: 403 });
-        return;
+        throw new AppError(403, 'Access denied');
     }
 
     const updated = await prisma.reimbursement.update({
@@ -357,12 +314,10 @@ export async function submit(req: Request, res: Response) {
 }
 
 export async function approve(req: Request, res: Response) {
-    const reimbursement = await transitionStatus(req, res, 'SUBMITTED');
-    if (!reimbursement) return;
+    const reimbursement = await transitionStatus(req, 'SUBMITTED');
 
     if (!isManager(req)) {
-        res.status(403).json({ message: 'Access denied', statusCode: 403 });
-        return;
+        throw new AppError(403, 'Access denied');
     }
 
     const updated = await prisma.reimbursement.update({
@@ -384,12 +339,10 @@ export async function approve(req: Request, res: Response) {
 export async function reject(req: Request, res: Response) {
     const { rejectionReason } = req.body as RejectReimbursementInput;
 
-    const reimbursement = await transitionStatus(req, res, 'SUBMITTED');
-    if (!reimbursement) return;
+    const reimbursement = await transitionStatus(req, 'SUBMITTED');
 
     if (!isManager(req)) {
-        res.status(403).json({ message: 'Access denied', statusCode: 403 });
-        return;
+        throw new AppError(403, 'Access denied');
     }
 
     const updated = await prisma.reimbursement.update({
@@ -409,12 +362,10 @@ export async function reject(req: Request, res: Response) {
 }
 
 export async function pay(req: Request, res: Response) {
-    const reimbursement = await transitionStatus(req, res, 'APPROVED');
-    if (!reimbursement) return;
+    const reimbursement = await transitionStatus(req, 'APPROVED');
 
     if (!isFinance(req)) {
-        res.status(403).json({ message: 'Access denied', statusCode: 403 });
-        return;
+        throw new AppError(403, 'Access denied');
     }
 
     const updated = await prisma.reimbursement.update({
@@ -434,15 +385,13 @@ export async function pay(req: Request, res: Response) {
 }
 
 export async function cancel(req: Request, res: Response) {
-    const reimbursement = await transitionStatus(req, res, [
+    const reimbursement = await transitionStatus(req, [
         'DRAFT',
         'SUBMITTED',
     ]);
-    if (!reimbursement) return;
 
     if (!isOwner(req, reimbursement)) {
-        res.status(403).json({ message: 'Access denied', statusCode: 403 });
-        return;
+        throw new AppError(403, 'Access denied');
     }
 
     const updated = await prisma.reimbursement.update({
@@ -470,16 +419,11 @@ export async function getHistory(req: Request, res: Response) {
     });
 
     if (!reimbursement) {
-        res.status(404).json({
-            message: 'Reimbursement not found',
-            statusCode: 404,
-        });
-        return;
+        throw new AppError(404, 'Reimbursement not found');
     }
 
     if (!canView(req, reimbursement)) {
-        res.status(403).json({ message: 'Access denied', statusCode: 403 });
-        return;
+        throw new AppError(403, 'Access denied');
     }
 
     const history = await prisma.history.findMany({

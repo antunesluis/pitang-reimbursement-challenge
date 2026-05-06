@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 import { env } from '../lib/env.vars.ts';
+import { AppError } from '../lib/errors.ts';
 import { prisma } from '../lib/prisma.ts';
 
 import type { LoginInput } from '../schemas/auth.schema.ts';
@@ -12,20 +13,12 @@ export async function login(req: Request, res: Response) {
 
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-        res.status(401).json({
-            message: 'Invalid credentials',
-            statusCode: 401,
-        });
-        return;
+        throw new AppError(401, 'Invalid credentials');
     }
 
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
-        res.status(401).json({
-            message: 'Invalid credentials',
-            statusCode: 401,
-        });
-        return;
+        throw new AppError(401, 'Invalid credentials');
     }
 
     const token = jwt.sign(
