@@ -14,11 +14,13 @@ bun install
 | --------------- | -------------------------------------------------------- |
 | Backend dev     | `bun run --cwd packages/backend dev`                     |
 | Backend test    | `bun run --cwd packages/backend test`                    |
-| Single test     | `bun run --cwd packages/backend test tests/auth.test.ts` |
+| Single BE test  | `bun run --cwd packages/backend test tests/auth.test.ts` |
 | Backend lint    | `bun run --cwd packages/backend lint`                    |
 | Frontend dev    | `bun run --cwd packages/frontend dev`                    |
 | Frontend build  | `bun run --cwd packages/frontend build`                  |
+| Frontend test   | `bun run --cwd packages/frontend test`                   |
 | Frontend lint   | `bun run --cwd packages/frontend lint`                   |
+| Docker up       | `docker compose up --build`                              |
 | Root lint       | `bun run lint` (runs eslint from root config)            |
 | Root format     | `bun run format`                                         |
 | Prisma migrate  | `bun run --cwd packages/backend prisma:migrate`          |
@@ -46,6 +48,8 @@ packages/backend/               — Express 5 + Prisma 7 + SQLite (libsql)
   tests/setup.ts                —   cleanupDatabase() + seedAdmin() + helpers
 packages/frontend/              — Vite 8 + React 19 + TanStack Router + Shadcn UI
   src/main.tsx                  —   entrypoint
+  src/routes/                   —   file-based routes (auto-code-splitting)
+  src/types/index.ts            —   Role/Status/Action const arrays (no enums)
 DESAFIO.md                      — full project spec (requirements, entities, rules)
 ```
 
@@ -122,6 +126,8 @@ Every status transition must create a History record (action + userId + observat
 - **`verbatimModuleSyntax: true`** everywhere — type imports must use `import type { ... }`.
 - **Frontend uses TS project references** — `tsc -b` via `tsconfig.json` → `tsconfig.app.json` + `tsconfig.node.json`.
 - **Frontend `erasableSyntaxOnly: true`** — no enums, namespaces, or parameter properties. Prisma enum values are used as string literals instead.
+- **Frontend `noUnusedLocals` / `noUnusedParameters` are `true`** (backend has them `false`). Unused variables will fail the frontend build.
+- **Backend `noUncheckedIndexedAccess: true`** — array/object index access may require explicit narrowing.
 - **Backend package.json declares `typescript: ^5`** as a peerDependency, but the workspace root installs **6.0.3**, which is what actually runs. All code is compatible with TS 6.
 
 ## ESLint + Prettier
@@ -154,16 +160,37 @@ Root `eslint.config.js` applies to the whole monorepo:
 - Port defaults to 3000.
 - Error responses always include `{ message, statusCode }`. Validation errors add `{ errors: [...] }`.
 
+### Seed data
+
+`prisma:seed` creates 4 users + 3 categories + 1 sample DRAFT reimbursement. User emails (source of truth in `prisma/seed.ts`):
+
+| Role      | Email                | Password  |
+| --------- | -------------------- | --------- |
+| ADMIN     | admin@example.com    | admin123  |
+| EMPLOYEE  | employee@test.com    | secret123 |
+| MANAGER   | manager@test.com     | secret123 |
+| FINANCE   | finance@test.com     | secret123 |
+
+Passwords can be overridden via env vars (`ADMIN_PASSWORD`, `EMPLOYEE_PASSWORD`, `MANAGER_PASSWORD`, `FINANCE_PASSWORD`).
+
 ## Testing
+
+### Backend
 
 - **Bun test runner** (`bun:test`) + **supertest** against the Express app (`app` export from `src/app.ts`).
 - Run: `bun run --cwd packages/backend test` (or `bun test` from the backend dir).
 - Run single file: `bun run --cwd packages/backend test tests/auth.test.ts`.
-- 36 tests across 5 files: `tests/{auth,users,categories,reimbursements,attachments}.test.ts`.
+- 52 tests across 5 files: `tests/{auth,users,categories,reimbursements,attachments}.test.ts`.
 - Tests share `dev.db` — `cleanupDatabase()` deletes all rows in order (history → attachments → reimbursements → categories → users); `seedAdmin()` creates admin user.
 - Admin credentials in tests: `admin@example.com` / `admin123` (role: ADMIN).
 - Helpers in `tests/setup.ts`: `getAdminToken()`, `loginAs()`, `createCategory()`.
 - All API field names in tests are English (e.g. `amount`, `description`, `categoryId`, `expenseDate`, `rejectionReason`).
+
+### Frontend
+
+- **Bun test runner** (`bun:test`) + **jsdom** + **Testing Library**.
+- Run: `bun run --cwd packages/frontend test` (preloads `tests/dom.ts` and `tests/setup.tsx`).
+- 41 tests across 10 files in `tests/`.
 
 ## CI / automation
 
