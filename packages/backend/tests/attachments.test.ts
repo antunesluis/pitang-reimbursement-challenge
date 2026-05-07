@@ -155,4 +155,49 @@ describe('Attachments', () => {
 
         expect(res.status).toBe(403);
     });
+
+    it('POST /reimbursements/:id/attachments returns 404 for nonexistent reimbursement', async () => {
+        const testFile = path.resolve(
+            import.meta.dirname,
+            'fixtures/sample.pdf',
+        );
+
+        const res = await request(app)
+            .post('/reimbursements/non-existent-id/attachments')
+            .set('Authorization', `Bearer ${empToken}`)
+            .attach('file', testFile);
+
+        expect(res.status).toBe(404);
+    });
+
+    it('POST /reimbursements/:id/attachments returns 400 on SUBMITTED', async () => {
+        const adminToken = await getAdminToken();
+        const cat = await createCategory(adminToken, 'Att-Cat-3');
+        const createRes = await request(app)
+            .post('/reimbursements')
+            .set('Authorization', `Bearer ${empToken}`)
+            .send({
+                amount: 30,
+                categoryId: cat.id,
+                description: 'Will be submitted',
+                expenseDate: '2026-05-01T00:00:00Z',
+            });
+        const id = createRes.body.id;
+
+        await request(app)
+            .post(`/reimbursements/${id}/submit`)
+            .set('Authorization', `Bearer ${empToken}`);
+
+        const testFile = path.resolve(
+            import.meta.dirname,
+            'fixtures/sample.pdf',
+        );
+
+        const res = await request(app)
+            .post(`/reimbursements/${id}/attachments`)
+            .set('Authorization', `Bearer ${empToken}`)
+            .attach('file', testFile);
+
+        expect(res.status).toBe(400);
+    });
 });

@@ -132,13 +132,13 @@ function DashboardPage() {
             <StatsCard
                 className="border-purple-200 dark:border-purple-800"
                 icon={DollarSign}
-                label="Paid (this month)"
-                value={stats.paidThisMonth ?? 0}
+                label="Paid Amount (this month)"
+                value={stats.paidAmountThisMonth ?? 0}
             />
             <StatsCard
-                icon={Clock}
-                label="Volume (this month)"
-                value={stats.volumeThisMonth ?? 0}
+                icon={CheckCircle}
+                label="Paid (this month)"
+                value={stats.paidThisMonth ?? 0}
             />
         </>
     ) : (

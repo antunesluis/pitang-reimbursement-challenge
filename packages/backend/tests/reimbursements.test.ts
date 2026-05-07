@@ -493,7 +493,7 @@ describe('Reimbursements', () => {
     });
 
     describe('view after processing', () => {
-        it('MANAGER can view APPROVED reimbursement after approving', async () => {
+        it('MANAGER cannot view APPROVED reimbursement after approving (status out of scope)', async () => {
             const createRes = await request(app)
                 .post('/reimbursements')
                 .set('Authorization', `Bearer ${empToken}`)
@@ -516,11 +516,10 @@ describe('Reimbursements', () => {
                 .get(`/reimbursements/${id}`)
                 .set('Authorization', `Bearer ${mgrToken}`);
 
-            expect(res.status).toBe(200);
-            expect(res.body.status).toBe('APPROVED');
+            expect(res.status).toBe(403);
         });
 
-        it('FINANCE can still view PAID reimbursement after paying', async () => {
+        it('FINANCE cannot view PAID reimbursement after paying (status out of scope)', async () => {
             const createRes = await request(app)
                 .post('/reimbursements')
                 .set('Authorization', `Bearer ${empToken}`)
@@ -546,8 +545,7 @@ describe('Reimbursements', () => {
                 .get(`/reimbursements/${id}`)
                 .set('Authorization', `Bearer ${finToken}`);
 
-            expect(res.status).toBe(200);
-            expect(res.body.status).toBe('PAID');
+            expect(res.status).toBe(403);
         });
     });
 
@@ -584,7 +582,7 @@ describe('Reimbursements', () => {
             expect(res.status).toBe(200);
             expect(res.body.pending).toBeGreaterThanOrEqual(0);
             expect(typeof res.body.paidThisMonth).toBe('number');
-            expect(typeof res.body.volumeThisMonth).toBe('number');
+            expect(typeof res.body.paidAmountThisMonth).toBe('number');
         });
 
         it('GET /reimbursements/stats returns admin stats', async () => {
@@ -603,6 +601,117 @@ describe('Reimbursements', () => {
             const res = await request(app).get('/reimbursements/stats');
 
             expect(res.status).toBe(401);
+        });
+    });
+
+    describe('pagination and sorting', () => {
+        it('GET /reimbursements supports pagination', async () => {
+            const res = await request(app)
+                .get('/reimbursements?page=1&limit=2')
+                .set('Authorization', `Bearer ${empToken}`);
+
+            expect(res.status).toBe(200);
+            expect(res.body.page).toBe(1);
+            expect(res.body.limit).toBe(2);
+            expect(res.body.total).toBeGreaterThanOrEqual(0);
+            expect(typeof res.body.totalPages).toBe('number');
+            expect(Array.isArray(res.body.data)).toBe(true);
+        });
+
+        it('GET /reimbursements supports sorting by amount desc', async () => {
+            const res = await request(app)
+                .get('/reimbursements?sort=amount&order=desc')
+                .set('Authorization', `Bearer ${empToken}`);
+
+            expect(res.status).toBe(200);
+        });
+
+        it('GET /reimbursements returns 400 for invalid sort field', async () => {
+            const res = await request(app)
+                .get('/reimbursements?sort=invalid')
+                .set('Authorization', `Bearer ${empToken}`);
+
+            expect(res.status).toBe(400);
+            expect(res.body.errors).toBeDefined();
+        });
+
+        it('GET /reimbursements returns 400 for negative page', async () => {
+            const res = await request(app)
+                .get('/reimbursements?page=-1')
+                .set('Authorization', `Bearer ${empToken}`);
+
+            expect(res.status).toBe(400);
+        });
+    });
+
+    describe('status filter restrictions', () => {
+        it('MANAGER requesting ?status=DRAFT returns 400', async () => {
+            const res = await request(app)
+                .get('/reimbursements?status=DRAFT')
+                .set('Authorization', `Bearer ${mgrToken}`);
+
+            expect(res.status).toBe(400);
+        });
+
+        it('MANAGER requesting ?status=PAID returns 400', async () => {
+            const res = await request(app)
+                .get('/reimbursements?status=PAID')
+                .set('Authorization', `Bearer ${mgrToken}`);
+
+            expect(res.status).toBe(400);
+        });
+
+        it('FINANCE requesting ?status=SUBMITTED returns 400', async () => {
+            const res = await request(app)
+                .get('/reimbursements?status=SUBMITTED')
+                .set('Authorization', `Bearer ${finToken}`);
+
+            expect(res.status).toBe(400);
+        });
+
+        it('FINANCE requesting ?status=DRAFT returns 400', async () => {
+            const res = await request(app)
+                .get('/reimbursements?status=DRAFT')
+                .set('Authorization', `Bearer ${finToken}`);
+
+            expect(res.status).toBe(400);
+        });
+
+        it('EMPLOYEE can filter by any status', async () => {
+            const res = await request(app)
+                .get('/reimbursements?status=DRAFT')
+                .set('Authorization', `Bearer ${empToken}`);
+
+            expect(res.status).toBe(200);
+            for (const r of res.body.data) {
+                expect(r.status).toBe('DRAFT');
+            }
+        });
+    });
+
+    describe('inter-role access restrictions', () => {
+        it('EMPLOYEE cannot approve any reimbursement', async () => {
+            const res = await request(app)
+                .post('/reimbursements/nonexistent/approve')
+                .set('Authorization', `Bearer ${empToken}`);
+
+            expect(res.status).toBe(403);
+        });
+
+        it('FINANCE cannot approve any reimbursement', async () => {
+            const res = await request(app)
+                .post('/reimbursements/nonexistent/approve')
+                .set('Authorization', `Bearer ${finToken}`);
+
+            expect(res.status).toBe(403);
+        });
+
+        it('MANAGER cannot pay any reimbursement', async () => {
+            const res = await request(app)
+                .post('/reimbursements/nonexistent/pay')
+                .set('Authorization', `Bearer ${mgrToken}`);
+
+            expect(res.status).toBe(403);
         });
     });
 });

@@ -96,5 +96,5 @@ export type ReimbursementStats = {
     submitted?: number;
     total?: number;
     users?: number;
-    volumeThisMonth?: number;
+    paidAmountThisMonth?: number;
 };

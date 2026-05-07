@@ -91,4 +91,25 @@ describe('Categories', () => {
         expect(res.body.name).toBe('Alimentação Atualizada');
         expect(res.body.active).toBe(false);
     });
+
+    it('PUT /categories/:id returns 403 for non-ADMIN', async () => {
+        const cat = await createCategory(adminToken, 'OnlyAdmin');
+        const empToken = await loginAs('cat-emp@test.com');
+
+        const res = await request(app)
+            .put(`/categories/${cat.id}`)
+            .set('Authorization', `Bearer ${empToken}`)
+            .send({ name: 'Hacked' });
+
+        expect(res.status).toBe(403);
+    });
+
+    it('PUT /categories/:id returns 404 for nonexistent', async () => {
+        const res = await request(app)
+            .put('/categories/non-existent')
+            .set('Authorization', `Bearer ${adminToken}`)
+            .send({ name: 'Ghost' });
+
+        expect(res.status).toBe(404);
+    });
 });

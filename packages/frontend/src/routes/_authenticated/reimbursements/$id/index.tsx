@@ -4,6 +4,7 @@ import { Download } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
+import { ConfirmActionDialog } from '@/components/reimbursements/ConfirmActionDialog.tsx';
 import { HistoryTimeline } from '@/components/reimbursements/HistoryTimeline.tsx';
 import { RejectDialog } from '@/components/reimbursements/RejectDialog.tsx';
 import { StatusBadge } from '@/components/reimbursements/StatusBadge.tsx';
@@ -31,8 +32,19 @@ export const Route = createFileRoute('/_authenticated/reimbursements/$id/')({
     staticData: { breadcrumb: 'Detail' },
 });
 
+type ConfirmAction = {
+    action: () => Promise<unknown>;
+    confirmLabel: string;
+    description: string;
+    message: string;
+    redirect: boolean;
+    title: string;
+    variant: 'default' | 'destructive' | 'outline';
+};
+
 function ReimbursementDetailPage() {
     const { id } = Route.useParams();
+    const navigate = Route.useNavigate();
     const perm = usePermissions();
     const [data, setData] = useState<null | Reimbursement>(null);
     const [history, setHistory] = useState<HistoryEntry[]>([]);
@@ -41,6 +53,7 @@ function ReimbursementDetailPage() {
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
     const [rejectOpen, setRejectOpen] = useState(false);
+    const [confirm, setConfirm] = useState<ConfirmAction | null>(null);
 
     const fetchData = useCallback(async () => {
         try {
@@ -64,17 +77,37 @@ function ReimbursementDetailPage() {
         fetchData();
     }, [fetchData]);
 
-    async function handleAction(action: () => Promise<unknown>, label: string) {
+    async function handleConfirm() {
+        if (!confirm) return;
         setActionLoading(true);
         try {
-            await action();
-            await fetchData();
-            toast.success(label);
+            await confirm.action();
+            if (confirm.redirect) {
+                toast.success(confirm.message);
+                navigate({ to: '/reimbursements' });
+            } else {
+                await fetchData();
+                toast.success(confirm.message);
+            }
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Action failed');
             toast.error(err instanceof Error ? err.message : 'Action failed');
         } finally {
             setActionLoading(false);
+            setConfirm(null);
+        }
+    }
+
+    async function handleRejectSubmit(formData: { rejectionReason: string }) {
+        setActionLoading(true);
+        try {
+            await reimbursementService.reject(id, formData.rejectionReason);
+            toast.success('Reimbursement rejected');
+            navigate({ to: '/reimbursements' });
+        } catch (err) {
+            toast.error(err instanceof Error ? err.message : 'Reject failed');
+        } finally {
+            setActionLoading(false);
+            setRejectOpen(false);
         }
     }
 
@@ -237,10 +270,17 @@ function ReimbursementDetailPage() {
                             <Button
                                 disabled={actionLoading}
                                 onClick={() =>
-                                    handleAction(
-                                        () => reimbursementService.submit(id),
-                                        'Reimbursement submitted',
-                                    )
+                                    setConfirm({
+                                        action: () =>
+                                            reimbursementService.submit(id),
+                                        confirmLabel: 'Submit',
+                                        description:
+                                            'Once submitted, the reimbursement can no longer be edited.',
+                                        message: 'Reimbursement submitted',
+                                        redirect: false,
+                                        title: 'Submit for Review?',
+                                        variant: 'default',
+                                    })
                                 }
                             >
                                 Submit for Review
@@ -250,12 +290,18 @@ function ReimbursementDetailPage() {
                             <Button
                                 disabled={actionLoading}
                                 onClick={() =>
-                                    handleAction(
-                                        () => reimbursementService.approve(id),
-                                        'Reimbursement approved',
-                                    )
+                                    setConfirm({
+                                        action: () =>
+                                            reimbursementService.approve(id),
+                                        confirmLabel: 'Approve',
+                                        description:
+                                            'The reimbursement will be approved and you will no longer be able to see it.',
+                                        message: 'Reimbursement approved',
+                                        redirect: true,
+                                        title: 'Approve Reimbursement?',
+                                        variant: 'default',
+                                    })
                                 }
-                                variant="default"
                             >
                                 Approve
                             </Button>
@@ -273,12 +319,18 @@ function ReimbursementDetailPage() {
                             <Button
                                 disabled={actionLoading}
                                 onClick={() =>
-                                    handleAction(
-                                        () => reimbursementService.pay(id),
-                                        'Payment marked as paid',
-                                    )
+                                    setConfirm({
+                                        action: () =>
+                                            reimbursementService.pay(id),
+                                        confirmLabel: 'Mark as Paid',
+                                        description:
+                                            'The reimbursement will be marked as paid and you will no longer be able to see it.',
+                                        message: 'Payment marked as paid',
+                                        redirect: true,
+                                        title: 'Confirm Payment?',
+                                        variant: 'default',
+                                    })
                                 }
-                                variant="default"
                             >
                                 Mark as Paid
                             </Button>
@@ -287,10 +339,17 @@ function ReimbursementDetailPage() {
                             <Button
                                 disabled={actionLoading}
                                 onClick={() =>
-                                    handleAction(
-                                        () => reimbursementService.cancel(id),
-                                        'Reimbursement cancelled',
-                                    )
+                                    setConfirm({
+                                        action: () =>
+                                            reimbursementService.cancel(id),
+                                        confirmLabel: 'Cancel',
+                                        description:
+                                            'This will cancel the reimbursement request.',
+                                        message: 'Reimbursement cancelled',
+                                        redirect: true,
+                                        title: 'Cancel Reimbursement?',
+                                        variant: 'destructive',
+                                    })
                                 }
                                 variant="outline"
                             >
@@ -350,18 +409,19 @@ function ReimbursementDetailPage() {
 
             <RejectDialog
                 onClose={() => setRejectOpen(false)}
-                onSubmit={async (formData) => {
-                    await handleAction(
-                        () =>
-                            reimbursementService.reject(
-                                id,
-                                formData.rejectionReason,
-                            ),
-                        'Reimbursement rejected',
-                    );
-                    setRejectOpen(false);
-                }}
+                onSubmit={handleRejectSubmit}
                 open={rejectOpen}
+            />
+
+            <ConfirmActionDialog
+                confirmLabel={confirm?.confirmLabel ?? ''}
+                confirmVariant={confirm?.variant}
+                description={confirm?.description ?? ''}
+                loading={actionLoading}
+                onClose={() => setConfirm(null)}
+                onConfirm={handleConfirm}
+                open={!!confirm}
+                title={confirm?.title ?? ''}
             />
         </div>
     );

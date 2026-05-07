@@ -2,9 +2,11 @@ import dayjs from 'dayjs';
 
 import { AppError } from '../lib/errors.ts';
 import { prisma } from '../lib/prisma.ts';
+import { reimbursementPolicy } from '../policies/reimbursement.policy.ts';
 
 import type {
     Action,
+    Role,
     Status,
 } from '../../prisma/src/generated/prisma/enums.ts';
 import type { ListQuery } from '../schemas/list-query.schema.ts';
@@ -44,43 +46,6 @@ const selectReimbursement = {
     status: true,
     updatedAt: true,
 } as const;
-
-function isOwner(req: Request, reimbursement: { requesterId: string }) {
-    return req.user!.id === reimbursement.requesterId;
-}
-
-function isManager(req: Request) {
-    return req.user!.role === 'MANAGER';
-}
-
-function isFinance(req: Request) {
-    return req.user!.role === 'FINANCE';
-}
-
-function isAdmin(req: Request) {
-    return req.user!.role === 'ADMIN';
-}
-
-function canView(
-    req: Request,
-    reimbursement: { requesterId: string; status: string },
-) {
-    if (isOwner(req, reimbursement)) return true;
-    if (isAdmin(req)) return true;
-    if (
-        isManager(req) &&
-        (reimbursement.status === 'SUBMITTED' ||
-            reimbursement.status === 'APPROVED' ||
-            reimbursement.status === 'REJECTED')
-    )
-        return true;
-    if (
-        isFinance(req) &&
-        (reimbursement.status === 'APPROVED' || reimbursement.status === 'PAID')
-    )
-        return true;
-    return false;
-}
 
 function isFutureDate(date: Date): boolean {
     return dayjs(date).isAfter(dayjs(), 'day');
@@ -127,53 +92,15 @@ export async function list(req: Request, res: Response) {
     const { id: userId, role } = req.user!;
     const { categoryId, limit, order, page, sort, status } =
         req.validatedQuery as ListQuery;
-    const skip = (page - 1) * limit;
 
-    const where: Record<string, unknown> = {};
-
-    if (role === 'EMPLOYEE') {
-        where.requesterId = userId;
-    }
-
-    const allowedStatuses: Record<string, Status[]> = {
-        ADMIN: [
-            'APPROVED',
-            'CANCELLED',
-            'DRAFT',
-            'PAID',
-            'REJECTED',
-            'SUBMITTED',
-        ],
-        EMPLOYEE: [
-            'APPROVED',
-            'CANCELLED',
-            'DRAFT',
-            'PAID',
-            'REJECTED',
-            'SUBMITTED',
-        ],
-        FINANCE: ['APPROVED', 'PAID'],
-        MANAGER: ['SUBMITTED', 'APPROVED', 'REJECTED'],
+    const where = {
+        categoryId,
+        // Prisma ignores undefined fields — filter is not applied
+        requesterId: role === 'EMPLOYEE' ? userId : undefined,
+        status: reimbursementPolicy.getStatusFilter(role, status),
     };
 
-    if (status) {
-        if (!allowedStatuses[role]?.includes(status)) {
-            throw new AppError(
-                400,
-                `Cannot filter by status "${status}" with your role`,
-            );
-        }
-        where.status = status;
-    } else if (role === 'MANAGER') {
-        where.status = 'SUBMITTED';
-    } else if (role === 'FINANCE') {
-        where.status = 'APPROVED';
-    }
-
-    if (categoryId) {
-        where.categoryId = categoryId;
-    }
-
+    const skip = (page - 1) * limit;
     const [data, total] = await Promise.all([
         prisma.reimbursement.findMany({
             orderBy: { [sort]: order },
@@ -216,7 +143,13 @@ export async function getById(req: Request, res: Response) {
         throw new AppError(404, 'Reimbursement not found');
     }
 
-    if (!canView(req, reimbursement)) {
+    if (
+        !reimbursementPolicy.canView({
+            isOwner: req.user!.id === reimbursement.requesterId,
+            role: req.user!.role as Role,
+            status: reimbursement.status,
+        })
+    ) {
         throw new AppError(403, 'Access denied');
     }
 
@@ -234,15 +167,11 @@ export async function update(req: Request, res: Response) {
         throw new AppError(404, 'Reimbursement not found');
     }
 
-    if (!isOwner(req, reimbursement)) {
-        throw new AppError(403, 'Access denied');
-    }
+    const isOwner = req.user!.id === reimbursement.requesterId;
+    if (!isOwner) throw new AppError(403, 'Access denied');
 
     if (reimbursement.status !== 'DRAFT') {
-        throw new AppError(
-            400,
-            'Only DRAFT reimbursements can be edited',
-        );
+        throw new AppError(400, 'Only DRAFT reimbursements can be edited');
     }
 
     if (data.expenseDate && isFutureDate(data.expenseDate)) {
@@ -269,10 +198,7 @@ export async function update(req: Request, res: Response) {
     res.json(updated);
 }
 
-async function transitionStatus(
-    req: Request,
-    fromStatus: Status | Status[],
-) {
+async function transitionStatus(req: Request, fromStatus: Status | Status[]) {
     const id = req.params.id as string;
 
     const reimbursement = await prisma.reimbursement.findUnique({
@@ -293,7 +219,13 @@ async function transitionStatus(
 export async function submit(req: Request, res: Response) {
     const reimbursement = await transitionStatus(req, 'DRAFT');
 
-    if (!isOwner(req, reimbursement)) {
+    if (
+        !reimbursementPolicy.canSubmit({
+            isOwner: req.user!.id === reimbursement.requesterId,
+            role: req.user!.role as Role,
+            status: reimbursement.status,
+        })
+    ) {
         throw new AppError(403, 'Access denied');
     }
 
@@ -316,10 +248,6 @@ export async function submit(req: Request, res: Response) {
 export async function approve(req: Request, res: Response) {
     const reimbursement = await transitionStatus(req, 'SUBMITTED');
 
-    if (!isManager(req)) {
-        throw new AppError(403, 'Access denied');
-    }
-
     const updated = await prisma.reimbursement.update({
         data: { status: 'APPROVED' },
         select: selectReimbursement,
@@ -341,10 +269,6 @@ export async function reject(req: Request, res: Response) {
 
     const reimbursement = await transitionStatus(req, 'SUBMITTED');
 
-    if (!isManager(req)) {
-        throw new AppError(403, 'Access denied');
-    }
-
     const updated = await prisma.reimbursement.update({
         data: { rejectionReason, status: 'REJECTED' },
         select: selectReimbursement,
@@ -364,10 +288,6 @@ export async function reject(req: Request, res: Response) {
 export async function pay(req: Request, res: Response) {
     const reimbursement = await transitionStatus(req, 'APPROVED');
 
-    if (!isFinance(req)) {
-        throw new AppError(403, 'Access denied');
-    }
-
     const updated = await prisma.reimbursement.update({
         data: { status: 'PAID' },
         select: selectReimbursement,
@@ -385,12 +305,15 @@ export async function pay(req: Request, res: Response) {
 }
 
 export async function cancel(req: Request, res: Response) {
-    const reimbursement = await transitionStatus(req, [
-        'DRAFT',
-        'SUBMITTED',
-    ]);
+    const reimbursement = await transitionStatus(req, ['DRAFT', 'SUBMITTED']);
 
-    if (!isOwner(req, reimbursement)) {
+    if (
+        !reimbursementPolicy.canCancel({
+            isOwner: req.user!.id === reimbursement.requesterId,
+            role: req.user!.role as Role,
+            status: reimbursement.status,
+        })
+    ) {
         throw new AppError(403, 'Access denied');
     }
 
@@ -422,7 +345,13 @@ export async function getHistory(req: Request, res: Response) {
         throw new AppError(404, 'Reimbursement not found');
     }
 
-    if (!canView(req, reimbursement)) {
+    if (
+        !reimbursementPolicy.canView({
+            isOwner: req.user!.id === reimbursement.requesterId,
+            role: req.user!.role as Role,
+            status: reimbursement.status,
+        })
+    ) {
         throw new AppError(403, 'Access denied');
     }
 
@@ -445,6 +374,7 @@ export async function getStats(req: Request, res: Response) {
     const { id: userId, role } = req.user!;
     const startOfMonth = dayjs().startOf('month').toDate();
     const endOfMonth = dayjs().endOf('month').toDate();
+    const thisMonth = { gte: startOfMonth, lte: endOfMonth };
 
     if (role === 'EMPLOYEE') {
         const where = { requesterId: userId };
@@ -459,9 +389,7 @@ export async function getStats(req: Request, res: Response) {
             prisma.reimbursement.count({
                 where: { ...where, status: 'APPROVED' },
             }),
-            prisma.reimbursement.count({
-                where: { ...where, status: 'PAID' },
-            }),
+            prisma.reimbursement.count({ where: { ...where, status: 'PAID' } }),
         ]);
         res.json({ approved, draft, paid, submitted, total });
         return;
@@ -470,20 +398,12 @@ export async function getStats(req: Request, res: Response) {
     if (role === 'MANAGER') {
         const [pending, approvedThisMonth, rejectedThisMonth] =
             await Promise.all([
+                prisma.reimbursement.count({ where: { status: 'SUBMITTED' } }),
                 prisma.reimbursement.count({
-                    where: { status: 'SUBMITTED' },
+                    where: { status: 'APPROVED', updatedAt: thisMonth },
                 }),
                 prisma.reimbursement.count({
-                    where: {
-                        status: 'APPROVED',
-                        updatedAt: { gte: startOfMonth, lte: endOfMonth },
-                    },
-                }),
-                prisma.reimbursement.count({
-                    where: {
-                        status: 'REJECTED',
-                        updatedAt: { gte: startOfMonth, lte: endOfMonth },
-                    },
+                    where: { status: 'REJECTED', updatedAt: thisMonth },
                 }),
             ]);
         res.json({ approvedThisMonth, pending, rejectedThisMonth });
@@ -491,23 +411,23 @@ export async function getStats(req: Request, res: Response) {
     }
 
     if (role === 'FINANCE') {
-        const [pending, paidThisMonth, volumeThisMonth] = await Promise.all([
-            prisma.reimbursement.count({
-                where: { status: 'APPROVED' },
-            }),
-            prisma.reimbursement.count({
-                where: {
-                    status: 'PAID',
-                    updatedAt: { gte: startOfMonth, lte: endOfMonth },
-                },
-            }),
-            prisma.reimbursement.count({
-                where: {
-                    createdAt: { gte: startOfMonth, lte: endOfMonth },
-                },
-            }),
-        ]);
-        res.json({ paidThisMonth, pending, volumeThisMonth });
+        const [pending, paidThisMonth, paidAmountThisMonth] = await Promise.all(
+            [
+                prisma.reimbursement.count({ where: { status: 'APPROVED' } }),
+                prisma.reimbursement.count({
+                    where: { status: 'PAID', updatedAt: thisMonth },
+                }),
+                prisma.reimbursement.aggregate({
+                    _sum: { amount: true },
+                    where: { status: 'PAID', updatedAt: thisMonth },
+                }),
+            ],
+        );
+        res.json({
+            paidAmountThisMonth: paidAmountThisMonth._sum.amount ?? 0,
+            paidThisMonth,
+            pending,
+        });
         return;
     }
 
@@ -515,9 +435,7 @@ export async function getStats(req: Request, res: Response) {
         const [reimbursements, pendingReview, users, categories] =
             await Promise.all([
                 prisma.reimbursement.count(),
-                prisma.reimbursement.count({
-                    where: { status: 'SUBMITTED' },
-                }),
+                prisma.reimbursement.count({ where: { status: 'SUBMITTED' } }),
                 prisma.user.count(),
                 prisma.category.count(),
             ]);

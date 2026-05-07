@@ -1,6 +1,8 @@
 import { AppError } from '../lib/errors.ts';
 import { prisma } from '../lib/prisma.ts';
+import { reimbursementPolicy } from '../policies/reimbursement.policy.ts';
 
+import type { Role } from '../../prisma/src/generated/prisma/enums.ts';
 import type { Request, Response } from 'express';
 
 export async function addAttachment(req: Request, res: Response) {
@@ -20,9 +22,8 @@ export async function addAttachment(req: Request, res: Response) {
         throw new AppError(404, 'Reimbursement not found');
     }
 
-    if (req.user!.id !== reimbursement.requesterId) {
-        throw new AppError(403, 'Access denied');
-    }
+    const isOwner = req.user!.id === reimbursement.requesterId;
+    if (!isOwner) throw new AppError(403, 'Access denied');
 
     if (reimbursement.status !== 'DRAFT') {
         throw new AppError(
@@ -56,27 +57,13 @@ export async function listAttachments(req: Request, res: Response) {
         throw new AppError(404, 'Reimbursement not found');
     }
 
-    const isOwner = req.user!.id === reimbursement.requesterId;
-    const role = req.user!.role;
-    const status = reimbursement.status;
-
-    let canView = isOwner || role === 'ADMIN';
     if (
-        !canView &&
-        role === 'MANAGER' &&
-        (status === 'SUBMITTED' ||
-            status === 'APPROVED' ||
-            status === 'REJECTED')
-    )
-        canView = true;
-    if (
-        !canView &&
-        role === 'FINANCE' &&
-        (status === 'APPROVED' || status === 'PAID')
-    )
-        canView = true;
-
-    if (!canView) {
+        !reimbursementPolicy.canViewAttachments({
+            isOwner: req.user!.id === reimbursement.requesterId,
+            role: req.user!.role as Role,
+            status: reimbursement.status,
+        })
+    ) {
         throw new AppError(403, 'Access denied');
     }
 
