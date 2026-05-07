@@ -33,60 +33,61 @@ import {
 } from '@/components/ui/sidebar.tsx';
 import { useAuth } from '@/contexts/auth.context.tsx';
 import { usePermissions } from '@/hooks/use-permissions.ts';
+import { Role } from '@/types/index.ts';
 
-import type { Role } from '@/types/index.ts';
+import type { Role as RoleType } from '@/types/index.ts';
 
 const NAV_ITEMS: {
     icon: React.ComponentType<{ className?: string }>;
     label: string;
     path: string;
-    roles: Role[];
+    roles: RoleType[];
 }[] = [
     {
         icon: LayoutDashboard,
         label: 'Dashboard',
         path: '/dashboard',
-        roles: ['ADMIN', 'EMPLOYEE', 'FINANCE', 'MANAGER'],
+        roles: [Role.ADMIN, Role.EMPLOYEE, Role.FINANCE, Role.MANAGER],
     },
     {
         icon: Receipt,
         label: 'My Reimbursements',
         path: '/reimbursements',
-        roles: ['EMPLOYEE'],
+        roles: [Role.EMPLOYEE],
     },
     {
         icon: Receipt,
         label: 'Pending Review',
         path: '/reimbursements',
-        roles: ['MANAGER'],
+        roles: [Role.MANAGER],
     },
     {
         icon: Receipt,
         label: 'Pending Payment',
         path: '/reimbursements',
-        roles: ['FINANCE'],
+        roles: [Role.FINANCE],
     },
     {
         icon: Receipt,
         label: 'All Reimbursements',
         path: '/reimbursements',
-        roles: ['ADMIN'],
+        roles: [Role.ADMIN],
     },
     {
         icon: Users,
         label: 'Users',
         path: '/users',
-        roles: ['ADMIN'],
+        roles: [Role.ADMIN],
     },
     {
         icon: Tags,
         label: 'Categories',
         path: '/categories',
-        roles: ['ADMIN'],
+        roles: [Role.ADMIN],
     },
 ];
 
-const ROLE_LABELS: Record<Role, string> = {
+const ROLE_LABELS: Record<RoleType, string> = {
     ADMIN: 'Admin',
     EMPLOYEE: 'Employee',
     FINANCE: 'Finance',

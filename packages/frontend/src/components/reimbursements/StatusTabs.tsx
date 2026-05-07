@@ -1,16 +1,25 @@
 import { Button } from '@/components/ui/button.tsx';
+import { capitalize } from '@/lib/format.ts';
+import { Status } from '@/types/index.ts';
 
-import type { Role, Status } from '@/types/index.ts';
+import type { Role, Status as StatusType } from '@/types/index.ts';
 
-const STATUSES_BY_ROLE: Record<Role, Status[]> = {
-    ADMIN: ['DRAFT', 'SUBMITTED', 'APPROVED', 'PAID', 'REJECTED', 'CANCELLED'],
+const STATUSES_BY_ROLE: Record<Role, StatusType[]> = {
+    ADMIN: [
+        Status.DRAFT,
+        Status.SUBMITTED,
+        Status.APPROVED,
+        Status.PAID,
+        Status.REJECTED,
+        Status.CANCELLED,
+    ],
     EMPLOYEE: [
-        'DRAFT',
-        'SUBMITTED',
-        'APPROVED',
-        'PAID',
-        'REJECTED',
-        'CANCELLED',
+        Status.DRAFT,
+        Status.SUBMITTED,
+        Status.APPROVED,
+        Status.PAID,
+        Status.REJECTED,
+        Status.CANCELLED,
     ],
     FINANCE: [],
     MANAGER: [],
@@ -18,8 +27,8 @@ const STATUSES_BY_ROLE: Record<Role, Status[]> = {
 
 type Props = {
     role: Role;
-    value?: Status;
-    onChange: (status: Status | undefined) => void;
+    value?: StatusType;
+    onChange: (status: StatusType | undefined) => void;
 };
 
 export function StatusTabs({ onChange, role, value }: Props) {
@@ -42,7 +51,7 @@ export function StatusTabs({ onChange, role, value }: Props) {
                     size="sm"
                     variant={value === s ? 'default' : 'ghost'}
                 >
-                    {s.charAt(0) + s.slice(1).toLowerCase()}
+                    {capitalize(s)}
                 </Button>
             ))}
         </div>

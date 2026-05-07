@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { EmptyTableRow } from '@/components/shared/EmptyTableRow.tsx';
 import { FieldError } from '@/components/shared/FieldError.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Input } from '@/components/ui/input.tsx';
@@ -64,14 +65,10 @@ export function CategoryList({
                 </TableHeader>
                 <TableBody>
                     {categories.length === 0 ? (
-                        <TableRow>
-                            <TableCell
-                                className="text-muted-foreground text-center"
-                                colSpan={4}
-                            >
-                                No categories found
-                            </TableCell>
-                        </TableRow>
+                        <EmptyTableRow
+                            colSpan={4}
+                            message="No categories found"
+                        />
                     ) : (
                         categories.map((cat) => (
                             <TableRow key={cat.id}>

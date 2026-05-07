@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { Plus } from 'lucide-react';
-import { z } from 'zod';
 
 import { Delayed } from '@/components/shared/Delayed.tsx';
+import { EmptyTableRow } from '@/components/shared/EmptyTableRow.tsx';
 import { ErrorAlert } from '@/components/shared/ErrorAlert.tsx';
 import { Pagination } from '@/components/shared/Pagination.tsx';
 import { SortableHeader } from '@/components/shared/SortableHeader.tsx';
@@ -18,17 +18,12 @@ import {
 } from '@/components/ui/table.tsx';
 import { usePermissions } from '@/hooks/use-permissions.ts';
 import { useUserList } from '@/hooks/use-user-list.ts';
-
-const searchSchema = z.object({
-    limit: z.coerce.number().int().positive().max(50).default(10),
-    order: z.enum(['asc', 'desc']).default('desc'),
-    page: z.coerce.number().int().positive().default(1),
-    sort: z.enum(['createdAt', 'name']).default('createdAt'),
-});
+import { capitalize } from '@/lib/format.ts';
+import { userListSearchSchema } from '@/schemas/user.schema.ts';
 
 export const Route = createFileRoute('/_authenticated/users/')({
     component: UsersPage,
-    validateSearch: searchSchema,
+    validateSearch: userListSearchSchema,
 });
 
 function UsersPage() {
@@ -123,14 +118,10 @@ function UsersPage() {
                     </TableHeader>
                     <TableBody>
                         {users.length === 0 ? (
-                            <TableRow>
-                                <TableCell
-                                    className="text-muted-foreground text-center"
-                                    colSpan={4}
-                                >
-                                    No users found
-                                </TableCell>
-                            </TableRow>
+                            <EmptyTableRow
+                                colSpan={4}
+                                message="No users found"
+                            />
                         ) : (
                             users.map((u) => (
                                 <TableRow key={u.id}>
@@ -142,10 +133,7 @@ function UsersPage() {
                                     </TableCell>
                                     <TableCell>
                                         <span className="bg-primary/10 text-primary inline-flex rounded-full px-2 py-0.5 text-xs font-medium">
-                                            {u.role.charAt(0) +
-                                                u.role
-                                                    .slice(1)
-                                                    .toLowerCase()}
+                                            {capitalize(u.role)}
                                         </span>
                                     </TableCell>
                                     <TableCell className="text-muted-foreground">

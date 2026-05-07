@@ -6,6 +6,7 @@ import {
     CardTitle,
 } from '@/components/ui/card.tsx';
 import { Separator } from '@/components/ui/separator.tsx';
+import { formatCurrency } from '@/lib/format.ts';
 
 import type { Reimbursement } from '@/types/index.ts';
 
@@ -26,7 +27,7 @@ export function ReimbursementDetailsCard({ data }: Props) {
                             Amount
                         </span>
                         <p className="text-lg font-semibold">
-                            ${data.amount.toFixed(2)}
+                            {formatCurrency(data.amount)}
                         </p>
                     </div>
                     <Separator />

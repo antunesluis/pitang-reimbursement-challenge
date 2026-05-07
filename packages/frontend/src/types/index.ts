@@ -1,26 +1,34 @@
-export const ROLES = ['ADMIN', 'EMPLOYEE', 'FINANCE', 'MANAGER'] as const;
-export type Role = (typeof ROLES)[number];
+export const Role = {
+    ADMIN: 'ADMIN',
+    EMPLOYEE: 'EMPLOYEE',
+    FINANCE: 'FINANCE',
+    MANAGER: 'MANAGER',
+} as const;
+export type Role = (typeof Role)[keyof typeof Role];
+export const ROLES = Object.values(Role) as Role[];
 
-export const STATUSES = [
-    'APPROVED',
-    'CANCELLED',
-    'DRAFT',
-    'PAID',
-    'REJECTED',
-    'SUBMITTED',
-] as const;
-export type Status = (typeof STATUSES)[number];
+export const Status = {
+    APPROVED: 'APPROVED',
+    CANCELLED: 'CANCELLED',
+    DRAFT: 'DRAFT',
+    PAID: 'PAID',
+    REJECTED: 'REJECTED',
+    SUBMITTED: 'SUBMITTED',
+} as const;
+export type Status = (typeof Status)[keyof typeof Status];
+export const STATUSES = Object.values(Status) as Status[];
 
-export const ACTIONS = [
-    'APPROVED',
-    'CANCELLED',
-    'CREATED',
-    'PAID',
-    'REJECTED',
-    'SUBMITTED',
-    'UPDATED',
-] as const;
-export type Action = (typeof ACTIONS)[number];
+export const Action = {
+    APPROVED: 'APPROVED',
+    CANCELLED: 'CANCELLED',
+    CREATED: 'CREATED',
+    PAID: 'PAID',
+    REJECTED: 'REJECTED',
+    SUBMITTED: 'SUBMITTED',
+    UPDATED: 'UPDATED',
+} as const;
+export type Action = (typeof Action)[keyof typeof Action];
+export const ACTIONS = Object.values(Action) as Action[];
 
 export type User = {
     createdAt: string;
@@ -76,8 +84,8 @@ export type LoginResponse = {
 
 export type PaginatedResponse<T> = {
     data: T[];
-    page: number;
     limit: number;
+    page: number;
     total: number;
     totalPages: number;
 };
@@ -88,6 +96,7 @@ export type ReimbursementStats = {
     categories?: number;
     draft?: number;
     paid?: number;
+    paidAmountThisMonth?: number;
     paidThisMonth?: number;
     pending?: number;
     pendingReview?: number;
@@ -96,5 +105,4 @@ export type ReimbursementStats = {
     submitted?: number;
     total?: number;
     users?: number;
-    paidAmountThisMonth?: number;
 };

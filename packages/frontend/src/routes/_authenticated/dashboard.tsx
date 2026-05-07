@@ -9,7 +9,6 @@ import {
     Tags,
     Users,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
 
 import { StatusBadge } from '@/components/reimbursements/StatusBadge.tsx';
 import { Delayed } from '@/components/shared/Delayed.tsx';
@@ -25,11 +24,9 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table.tsx';
+import { useDashboardStats } from '@/hooks/use-dashboard-stats.ts';
 import { usePermissions } from '@/hooks/use-permissions.ts';
-import { reimbursementService } from '@/services/reimbursement.service.ts';
-
-import type { Reimbursement } from '@/types/index.ts';
-import type { ReimbursementStats } from '@/types/index.ts';
+import { formatCurrency } from '@/lib/format.ts';
 
 export const Route = createFileRoute('/_authenticated/dashboard')({
     component: DashboardPage,
@@ -38,31 +35,7 @@ export const Route = createFileRoute('/_authenticated/dashboard')({
 
 function DashboardPage() {
     const perm = usePermissions();
-
-    const [reimbursements, setReimbursements] = useState<Reimbursement[]>([]);
-    const [stats, setStats] = useState<ReimbursementStats>({});
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        async function load() {
-            try {
-                const [statsData, reimbs] = await Promise.all([
-                    reimbursementService.getStats(),
-                    reimbursementService.list({ limit: 5, page: 1 }),
-                ]);
-                setStats(statsData);
-                setReimbursements(reimbs.data);
-            } catch (err) {
-                setError(err instanceof Error ? err.message : 'Failed to load');
-            } finally {
-                setLoading(false);
-            }
-        }
-        load();
-    }, []);
-
-    const recent = reimbursements.slice(0, 5);
+    const { error, loading, recent, stats } = useDashboardStats();
 
     if (loading) {
         return (
@@ -179,10 +152,8 @@ function DashboardPage() {
 
             {error && <ErrorAlert message={error} />}
 
-            {/* Stats — cards fill available width */}
             <div className="flex flex-wrap gap-4">{cards}</div>
 
-            {/* Recent Reimbursements */}
             <div>
                 <h2 className="mb-3 text-lg font-semibold">
                     Recent Reimbursements
@@ -215,7 +186,7 @@ function DashboardPage() {
                                             </Link>
                                         </TableCell>
                                         <TableCell>
-                                            ${r.amount.toFixed(2)}
+                                            {formatCurrency(r.amount)}
                                         </TableCell>
                                         <TableCell>
                                             <StatusBadge status={r.status} />

@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { Plus } from 'lucide-react';
-import { z } from 'zod';
 
 import { CategorySelect } from '@/components/categories/CategorySelect.tsx';
 import { StatusBadge } from '@/components/reimbursements/StatusBadge.tsx';
 import { StatusTabs } from '@/components/reimbursements/StatusTabs.tsx';
 import { Delayed } from '@/components/shared/Delayed.tsx';
+import { EmptyTableRow } from '@/components/shared/EmptyTableRow.tsx';
 import { ErrorAlert } from '@/components/shared/ErrorAlert.tsx';
 import { Pagination } from '@/components/shared/Pagination.tsx';
 import { SortableHeader } from '@/components/shared/SortableHeader.tsx';
@@ -21,32 +21,14 @@ import {
 } from '@/components/ui/table.tsx';
 import { usePermissions } from '@/hooks/use-permissions.ts';
 import { useReimbursementList } from '@/hooks/use-reimbursement-list.ts';
+import { formatCurrency } from '@/lib/format.ts';
+import { reimbursementListSearchSchema } from '@/schemas/reimbursement.schema.ts';
 
-import type { Status } from '@/types/index.ts';
-
-const searchSchema = z.object({
-    categoryId: z.string().optional(),
-    limit: z.coerce.number().int().positive().max(50).default(10),
-    order: z.enum(['asc', 'desc']).default('desc'),
-    page: z.coerce.number().int().positive().default(1),
-    sort: z.enum(['amount', 'createdAt', 'expenseDate']).default(
-        'createdAt',
-    ),
-    status: z
-        .enum([
-            'APPROVED',
-            'CANCELLED',
-            'DRAFT',
-            'PAID',
-            'REJECTED',
-            'SUBMITTED',
-        ])
-        .optional(),
-});
+import type { Status as StatusType } from '@/types/index.ts';
 
 export const Route = createFileRoute('/_authenticated/reimbursements/')({
     component: ReimbursementListPage,
-    validateSearch: searchSchema,
+    validateSearch: reimbursementListSearchSchema,
 });
 
 function ReimbursementListPage() {
@@ -62,7 +44,7 @@ function ReimbursementListPage() {
         } as never);
     }
 
-    function handleStatusChange(status: Status | undefined) {
+    function handleStatusChange(status: StatusType | undefined) {
         navigate({
             search: { ...search, page: 1, status },
         } as never);
@@ -169,14 +151,10 @@ function ReimbursementListPage() {
                     </TableHeader>
                     <TableBody>
                         {data.length === 0 ? (
-                            <TableRow>
-                                <TableCell
-                                    className="text-muted-foreground text-center"
-                                    colSpan={5}
-                                >
-                                    No reimbursements found
-                                </TableCell>
-                            </TableRow>
+                            <EmptyTableRow
+                                colSpan={5}
+                                message="No reimbursements found"
+                            />
                         ) : (
                             data.map((r) => (
                                 <TableRow key={r.id}>
@@ -190,7 +168,7 @@ function ReimbursementListPage() {
                                         </Link>
                                     </TableCell>
                                     <TableCell>
-                                        ${r.amount.toFixed(2)}
+                                        {formatCurrency(r.amount)}
                                     </TableCell>
                                     <TableCell>
                                         <StatusBadge
