@@ -1,3 +1,4 @@
+import { Status } from '../../prisma/src/generated/prisma/enums.ts';
 import { AppError } from '../lib/errors.ts';
 import { prisma } from '../lib/prisma.ts';
 import { reimbursementPolicy } from '../policies/reimbursement.policy.ts';
@@ -25,7 +26,7 @@ export async function addAttachment(req: Request, res: Response) {
     const isOwner = req.user!.id === reimbursement.requesterId;
     if (!isOwner) throw new AppError(403, 'Access denied');
 
-    if (reimbursement.status !== 'DRAFT') {
+    if (reimbursement.status !== Status.DRAFT) {
         throw new AppError(
             400,
             'Attachments can only be added to DRAFT reimbursements',

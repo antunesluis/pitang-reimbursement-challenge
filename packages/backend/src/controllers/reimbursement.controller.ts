@@ -1,14 +1,10 @@
 import dayjs from 'dayjs';
 
+import { Action, Role, Status } from '../../prisma/src/generated/prisma/enums.ts';
 import { AppError } from '../lib/errors.ts';
 import { prisma } from '../lib/prisma.ts';
 import { reimbursementPolicy } from '../policies/reimbursement.policy.ts';
 
-import type {
-    Action,
-    Role,
-    Status,
-} from '../../prisma/src/generated/prisma/enums.ts';
 import type { ListQuery } from '../schemas/list-query.schema.ts';
 import type {
     CreateReimbursementInput,
@@ -73,7 +69,7 @@ export async function create(req: Request, res: Response) {
             description,
             expenseDate,
             requesterId: req.user!.id,
-            status: 'DRAFT',
+            status: Status.DRAFT,
         },
         select: selectReimbursement,
     });
@@ -81,7 +77,7 @@ export async function create(req: Request, res: Response) {
     await recordHistory(
         reimbursement.id,
         req.user!.id,
-        'CREATED',
+        Action.CREATED,
         'Reimbursement created',
     );
 
@@ -96,7 +92,7 @@ export async function list(req: Request, res: Response) {
     const where = {
         categoryId,
         // Prisma ignores undefined fields — filter is not applied
-        requesterId: role === 'EMPLOYEE' ? userId : undefined,
+        requesterId: role === Role.EMPLOYEE ? userId : undefined,
         status: reimbursementPolicy.getStatusFilter(role, status),
     };
 
@@ -170,7 +166,7 @@ export async function update(req: Request, res: Response) {
     const isOwner = req.user!.id === reimbursement.requesterId;
     if (!isOwner) throw new AppError(403, 'Access denied');
 
-    if (reimbursement.status !== 'DRAFT') {
+    if (reimbursement.status !== Status.DRAFT) {
         throw new AppError(400, 'Only DRAFT reimbursements can be edited');
     }
 
@@ -193,7 +189,7 @@ export async function update(req: Request, res: Response) {
         where: { id },
     });
 
-    await recordHistory(id, req.user!.id, 'UPDATED', 'Reimbursement updated');
+    await recordHistory(id, req.user!.id, Action.UPDATED, 'Reimbursement updated');
 
     res.json(updated);
 }
@@ -217,7 +213,7 @@ async function transitionStatus(req: Request, fromStatus: Status | Status[]) {
 }
 
 export async function submit(req: Request, res: Response) {
-    const reimbursement = await transitionStatus(req, 'DRAFT');
+    const reimbursement = await transitionStatus(req, Status.DRAFT);
 
     if (
         !reimbursementPolicy.canSubmit({
@@ -230,7 +226,7 @@ export async function submit(req: Request, res: Response) {
     }
 
     const updated = await prisma.reimbursement.update({
-        data: { status: 'SUBMITTED' },
+        data: { status: Status.SUBMITTED },
         select: selectReimbursement,
         where: { id: reimbursement.id },
     });
@@ -238,7 +234,7 @@ export async function submit(req: Request, res: Response) {
     await recordHistory(
         reimbursement.id,
         req.user!.id,
-        'SUBMITTED',
+        Action.SUBMITTED,
         'Reimbursement submitted for review',
     );
 
@@ -246,10 +242,10 @@ export async function submit(req: Request, res: Response) {
 }
 
 export async function approve(req: Request, res: Response) {
-    const reimbursement = await transitionStatus(req, 'SUBMITTED');
+    const reimbursement = await transitionStatus(req, Status.SUBMITTED);
 
     const updated = await prisma.reimbursement.update({
-        data: { status: 'APPROVED' },
+        data: { status: Status.APPROVED },
         select: selectReimbursement,
         where: { id: reimbursement.id },
     });
@@ -257,7 +253,7 @@ export async function approve(req: Request, res: Response) {
     await recordHistory(
         reimbursement.id,
         req.user!.id,
-        'APPROVED',
+        Action.APPROVED,
         'Reimbursement approved by manager',
     );
 
@@ -267,10 +263,10 @@ export async function approve(req: Request, res: Response) {
 export async function reject(req: Request, res: Response) {
     const { rejectionReason } = req.body as RejectReimbursementInput;
 
-    const reimbursement = await transitionStatus(req, 'SUBMITTED');
+    const reimbursement = await transitionStatus(req, Status.SUBMITTED);
 
     const updated = await prisma.reimbursement.update({
-        data: { rejectionReason, status: 'REJECTED' },
+        data: { rejectionReason, status: Status.REJECTED },
         select: selectReimbursement,
         where: { id: reimbursement.id },
     });
@@ -278,7 +274,7 @@ export async function reject(req: Request, res: Response) {
     await recordHistory(
         reimbursement.id,
         req.user!.id,
-        'REJECTED',
+        Action.REJECTED,
         `Reimbursement rejected: ${rejectionReason}`,
     );
 
@@ -286,10 +282,10 @@ export async function reject(req: Request, res: Response) {
 }
 
 export async function pay(req: Request, res: Response) {
-    const reimbursement = await transitionStatus(req, 'APPROVED');
+    const reimbursement = await transitionStatus(req, Status.APPROVED);
 
     const updated = await prisma.reimbursement.update({
-        data: { status: 'PAID' },
+        data: { status: Status.PAID },
         select: selectReimbursement,
         where: { id: reimbursement.id },
     });
@@ -297,7 +293,7 @@ export async function pay(req: Request, res: Response) {
     await recordHistory(
         reimbursement.id,
         req.user!.id,
-        'PAID',
+        Action.PAID,
         'Payment processed by finance',
     );
 
@@ -305,7 +301,10 @@ export async function pay(req: Request, res: Response) {
 }
 
 export async function cancel(req: Request, res: Response) {
-    const reimbursement = await transitionStatus(req, ['DRAFT', 'SUBMITTED']);
+    const reimbursement = await transitionStatus(req, [
+        Status.DRAFT,
+        Status.SUBMITTED,
+    ]);
 
     if (
         !reimbursementPolicy.canCancel({
@@ -318,7 +317,7 @@ export async function cancel(req: Request, res: Response) {
     }
 
     const updated = await prisma.reimbursement.update({
-        data: { status: 'CANCELLED' },
+        data: { status: Status.CANCELLED },
         select: selectReimbursement,
         where: { id: reimbursement.id },
     });
@@ -326,7 +325,7 @@ export async function cancel(req: Request, res: Response) {
     await recordHistory(
         reimbursement.id,
         req.user!.id,
-        'CANCELLED',
+        Action.CANCELLED,
         'Reimbursement cancelled by requester',
     );
 
@@ -376,53 +375,64 @@ export async function getStats(req: Request, res: Response) {
     const endOfMonth = dayjs().endOf('month').toDate();
     const thisMonth = { gte: startOfMonth, lte: endOfMonth };
 
-    if (role === 'EMPLOYEE') {
+    if (role === Role.EMPLOYEE) {
         const where = { requesterId: userId };
         const [total, draft, submitted, approved, paid] = await Promise.all([
             prisma.reimbursement.count({ where }),
             prisma.reimbursement.count({
-                where: { ...where, status: 'DRAFT' },
+                where: { ...where, status: Status.DRAFT },
             }),
             prisma.reimbursement.count({
-                where: { ...where, status: 'SUBMITTED' },
+                where: { ...where, status: Status.SUBMITTED },
             }),
             prisma.reimbursement.count({
-                where: { ...where, status: 'APPROVED' },
+                where: { ...where, status: Status.APPROVED },
             }),
-            prisma.reimbursement.count({ where: { ...where, status: 'PAID' } }),
+            prisma.reimbursement.count({
+                where: { ...where, status: Status.PAID },
+            }),
         ]);
         res.json({ approved, draft, paid, submitted, total });
         return;
     }
 
-    if (role === 'MANAGER') {
+    if (role === Role.MANAGER) {
         const [pending, approvedThisMonth, rejectedThisMonth] =
             await Promise.all([
-                prisma.reimbursement.count({ where: { status: 'SUBMITTED' } }),
                 prisma.reimbursement.count({
-                    where: { status: 'APPROVED', updatedAt: thisMonth },
+                    where: { status: Status.SUBMITTED },
                 }),
                 prisma.reimbursement.count({
-                    where: { status: 'REJECTED', updatedAt: thisMonth },
+                    where: {
+                        status: Status.APPROVED,
+                        updatedAt: thisMonth,
+                    },
+                }),
+                prisma.reimbursement.count({
+                    where: {
+                        status: Status.REJECTED,
+                        updatedAt: thisMonth,
+                    },
                 }),
             ]);
         res.json({ approvedThisMonth, pending, rejectedThisMonth });
         return;
     }
 
-    if (role === 'FINANCE') {
-        const [pending, paidThisMonth, paidAmountThisMonth] = await Promise.all(
-            [
-                prisma.reimbursement.count({ where: { status: 'APPROVED' } }),
+    if (role === Role.FINANCE) {
+        const [pending, paidThisMonth, paidAmountThisMonth] =
+            await Promise.all([
                 prisma.reimbursement.count({
-                    where: { status: 'PAID', updatedAt: thisMonth },
+                    where: { status: Status.APPROVED },
+                }),
+                prisma.reimbursement.count({
+                    where: { status: Status.PAID, updatedAt: thisMonth },
                 }),
                 prisma.reimbursement.aggregate({
                     _sum: { amount: true },
-                    where: { status: 'PAID', updatedAt: thisMonth },
+                    where: { status: Status.PAID, updatedAt: thisMonth },
                 }),
-            ],
-        );
+            ]);
         res.json({
             paidAmountThisMonth: paidAmountThisMonth._sum.amount ?? 0,
             paidThisMonth,
@@ -431,11 +441,13 @@ export async function getStats(req: Request, res: Response) {
         return;
     }
 
-    if (role === 'ADMIN') {
+    if (role === Role.ADMIN) {
         const [reimbursements, pendingReview, users, categories] =
             await Promise.all([
                 prisma.reimbursement.count(),
-                prisma.reimbursement.count({ where: { status: 'SUBMITTED' } }),
+                prisma.reimbursement.count({
+                    where: { status: Status.SUBMITTED },
+                }),
                 prisma.user.count(),
                 prisma.category.count(),
             ]);

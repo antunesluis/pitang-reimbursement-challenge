@@ -1,42 +1,47 @@
+import { Role, Status } from '../../prisma/src/generated/prisma/enums.ts';
 import { AppError } from '../lib/errors.ts';
 
-import type { Role, Status } from '../../prisma/src/generated/prisma/enums.ts';
+import type {
+    Role as RoleType,
+    Status as StatusType,
+} from '../../prisma/src/generated/prisma/enums.ts';
 
 type PolicyContext = {
     isOwner: boolean;
-    role: Role;
-    status: Status;
+    role: RoleType;
+    status: StatusType;
 };
 
-const fixedStatus: Partial<Record<string, Status>> = {
-    FINANCE: 'APPROVED',
-    MANAGER: 'SUBMITTED',
+const fixedStatus: Partial<Record<string, StatusType>> = {
+    [Role.FINANCE]: Status.APPROVED,
+    [Role.MANAGER]: Status.SUBMITTED,
 };
 
 export const reimbursementPolicy = {
     canAddAttachment: ({ isOwner, status }: PolicyContext) =>
-        isOwner && status === 'DRAFT',
+        isOwner && status === Status.DRAFT,
 
     canApprove: ({ role, status }: PolicyContext) =>
-        role === 'MANAGER' && status === 'SUBMITTED',
+        role === Role.MANAGER && status === Status.SUBMITTED,
 
     canCancel: ({ isOwner, status }: PolicyContext) =>
-        isOwner && ['DRAFT', 'SUBMITTED'].includes(status),
+        isOwner &&
+        [Status.DRAFT, Status.SUBMITTED].includes(status),
 
     canEdit: ({ isOwner, status }: PolicyContext) =>
-        isOwner && status === 'DRAFT',
+        isOwner && status === Status.DRAFT,
 
     canPay: ({ role, status }: PolicyContext) =>
-        role === 'FINANCE' && status === 'APPROVED',
+        role === Role.FINANCE && status === Status.APPROVED,
 
     canReject: ({ role, status }: PolicyContext) =>
-        role === 'MANAGER' && status === 'SUBMITTED',
+        role === Role.MANAGER && status === Status.SUBMITTED,
 
     canSubmit: ({ isOwner, status }: PolicyContext) =>
-        isOwner && status === 'DRAFT',
+        isOwner && status === Status.DRAFT,
 
     canView: ({ isOwner, role, status }: PolicyContext) => {
-        if (isOwner || role === 'ADMIN') return true;
+        if (isOwner || role === Role.ADMIN) return true;
         const fixed = fixedStatus[role];
         return fixed === status;
     },
@@ -44,7 +49,10 @@ export const reimbursementPolicy = {
     canViewAttachments: (ctx: PolicyContext) =>
         reimbursementPolicy.canView(ctx),
 
-    getStatusFilter: (role: Role, requested?: Status): Status | undefined => {
+    getStatusFilter: (
+        role: RoleType,
+        requested?: StatusType,
+    ): StatusType | undefined => {
         const fixed = fixedStatus[role];
         if (fixed) {
             if (requested && requested !== fixed)

@@ -1,31 +1,32 @@
 import bcrypt from 'bcryptjs';
 
 import { prisma } from '../src/lib/prisma.ts';
+import { Action, Role, Status } from './src/generated/prisma/enums.ts';
 
 const USERS = [
     {
         email: 'admin@example.com',
         name: 'Admin',
         password: 'admin123',
-        role: 'ADMIN',
+        role: Role.ADMIN,
     },
     {
         email: 'employee@test.com',
         name: 'Employee',
         password: 'secret123',
-        role: 'EMPLOYEE',
+        role: Role.EMPLOYEE,
     },
     {
         email: 'manager@test.com',
         name: 'Manager',
         password: 'secret123',
-        role: 'MANAGER',
+        role: Role.MANAGER,
     },
     {
         email: 'finance@test.com',
         name: 'Finance',
         password: 'secret123',
-        role: 'FINANCE',
+        role: Role.FINANCE,
     },
 ] as const;
 
@@ -91,12 +92,12 @@ async function seed() {
                     description: 'Sample — Almoço com cliente',
                     expenseDate: new Date('2026-04-25T12:00:00Z'),
                     requesterId: employee.id,
-                    status: 'DRAFT',
+                    status: Status.DRAFT,
                 },
             });
             await prisma.history.create({
                 data: {
-                    action: 'CREATED',
+                    action: Action.CREATED,
                     observation: 'Sample reimbursement — created by seed',
                     reimbursementId: reimbursement.id,
                     userId: employee.id,
