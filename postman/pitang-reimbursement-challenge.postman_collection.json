@@ -2,223 +2,91 @@
   "info": {
     "name": "Pitang Reimbursement Control",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "## Setup\n\n```bash\nbun install\nbun run --cwd packages/backend prisma:migrate\nbun run --cwd packages/backend prisma:seed\nbun run --cwd packages/backend dev\n```\n\n## Seed Users\n\n| Role | Email | Password |\n|------|-------|----------|\n| ADMIN | admin@example.com | admin123 |\n| EMPLOYEE | employee@test.com | secret123 |\n| MANAGER | manager@test.com | secret123 |\n| FINANCE | finance@test.com | secret123 |\n\n## Variables\n\n| Variable | Source |\n|----------|--------|\n| `url` | http://localhost:3000 |\n| `adminToken` | Login (Admin) auto-save |\n| `employeeToken` | Login (Employee) auto-save |\n| `managerToken` | Login (Manager) auto-save |\n| `financeToken` | Login (Finance) auto-save |\n| `categoryId` | Created by Create Category |\n| `reimbursementId` | Created by Full Cycle step 1 |\n\n## Usage\n\nRun each folder top-to-bottom. Full Cycle depends on Category existing. Actions & Errors depends on Full Cycle completing.",
-    "variable": [
-      { "key": "url", "value": "http://localhost:3000" },
-      { "key": "adminToken", "value": "" },
-      { "key": "employeeToken", "value": "" },
-      { "key": "managerToken", "value": "" },
-      { "key": "financeToken", "value": "" },
-      { "key": "categoryId", "value": "" },
-      { "key": "reimbursementId", "value": "" }
-    ]
+    "description": "## Setup\n\nbun install && bun run --cwd packages/backend prisma:migrate && bun run --cwd packages/backend prisma:seed && bun run --cwd packages/backend dev\n\n## Seed Users\n\n| Role | Email | Password |\n|------|-------|----------|\n| ADMIN | admin@example.com | admin123 |\n| EMPLOYEE | employee@test.com | secret123 |\n| MANAGER | manager@test.com | secret123 |\n| FINANCE | finance@test.com | secret123 |\n\n## Variables\n\n| Variable | Source |\n|----------|--------|\n| url | http://localhost:3000 |\n| adminToken | Login (Admin) |\n| employeeToken | Login (Employee) |\n| managerToken | Login (Manager) |\n| financeToken | Login (Finance) |\n| categoryId | Create Category |\n| reimbursementId | Full Cycle step 1 |\n\n## Usage\n\n1. Auth - login for all 4 roles (copy tokens to variables)\n2. Categories - create category (copy id to categoryId)\n3. Full Cycle - create through pay (copy id to reimbursementId)\n4. Explore remaining folders"
   },
+  "variable": [
+    { "key": "url", "value": "http://localhost:3000" },
+    { "key": "adminToken", "value": "" },
+    { "key": "employeeToken", "value": "" },
+    { "key": "managerToken", "value": "" },
+    { "key": "financeToken", "value": "" },
+    { "key": "categoryId", "value": "" },
+    { "key": "reimbursementId", "value": "" }
+  ],
   "item": [
     {
       "name": "1. Auth",
       "item": [
-        {
-          "name": "Login (Admin)",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200', function () { pm.response.to.have.status(200); });", "var r = pm.response.json(); if (r.token) pm.collectionVariables.set('adminToken', r.token);"] } } }],
-          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"email\":\"admin@example.com\",\"password\":\"admin123\"}" }, "url": { "raw": "{{url}}/auth/login", "host": ["{{url}}"], "path": ["auth", "login"] } }
-        },
-        {
-          "name": "Login (Employee)",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200', function () { pm.response.to.have.status(200); });", "var r = pm.response.json(); if (r.token) pm.collectionVariables.set('employeeToken', r.token);"] } } }],
-          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"email\":\"employee@test.com\",\"password\":\"secret123\"}" }, "url": { "raw": "{{url}}/auth/login", "host": ["{{url}}"], "path": ["auth", "login"] } }
-        },
-        {
-          "name": "Login (Manager)",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200', function () { pm.response.to.have.status(200); });", "var r = pm.response.json(); if (r.token) pm.collectionVariables.set('managerToken', r.token);"] } } }],
-          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"email\":\"manager@test.com\",\"password\":\"secret123\"}" }, "url": { "raw": "{{url}}/auth/login", "host": ["{{url}}"], "path": ["auth", "login"] } }
-        },
-        {
-          "name": "Login (Finance)",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200', function () { pm.response.to.have.status(200); });", "var r = pm.response.json(); if (r.token) pm.collectionVariables.set('financeToken', r.token);"] } } }],
-          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"email\":\"finance@test.com\",\"password\":\"secret123\"}" }, "url": { "raw": "{{url}}/auth/login", "host": ["{{url}}"], "path": ["auth", "login"] } }
-        },
-        {
-          "name": "Me",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200', function () { pm.response.to.have.status(200); });"] } }],
-          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": { "raw": "{{url}}/auth/me", "host": ["{{url}}"], "path": ["auth", "me"] } }
-        }
+        { "name": "Login (Admin)", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"email\":\"admin@example.com\",\"password\":\"admin123\"}" }, "url": { "raw": "{{url}}/auth/login", "host": ["{{url}}"], "path": ["auth", "login"] } } },
+        { "name": "Login (Employee)", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"email\":\"employee@test.com\",\"password\":\"secret123\"}" }, "url": { "raw": "{{url}}/auth/login", "host": ["{{url}}"], "path": ["auth", "login"] } } },
+        { "name": "Login (Manager)", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"email\":\"manager@test.com\",\"password\":\"secret123\"}" }, "url": { "raw": "{{url}}/auth/login", "host": ["{{url}}"], "path": ["auth", "login"] } } },
+        { "name": "Login (Finance)", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"email\":\"finance@test.com\",\"password\":\"secret123\"}" }, "url": { "raw": "{{url}}/auth/login", "host": ["{{url}}"], "path": ["auth", "login"] } } },
+        { "name": "Me", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": { "raw": "{{url}}/auth/me", "host": ["{{url}}"], "path": ["auth", "me"] } } }
       ]
     },
     {
       "name": "2. Categories",
       "item": [
-        {
-          "name": "Create Category",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('201', function () { pm.response.to.have.status(201); });", "var r = pm.response.json(); if (r.id) pm.collectionVariables.set('categoryId', r.id);"] } } }],
-          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{adminToken}}" }], "body": { "mode": "raw", "raw": "{\"name\":\"Transporte\"}" }, "url": { "raw": "{{url}}/categories", "host": ["{{url}}"], "path": ["categories"] } }
-        },
-        {
-          "name": "List Categories",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200', function () { pm.response.to.have.status(200); });"] } }],
-          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": { "raw": "{{url}}/categories", "host": ["{{url}}"], "path": ["categories"] } }
-        },
-        {
-          "name": "Deactivate Category",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200', function () { pm.response.to.have.status(200); });"] } }],
-          "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{adminToken}}" }], "body": { "mode": "raw", "raw": "{\"active\":false}" }, "url": { "raw": "{{url}}/categories/{{categoryId}}", "host": ["{{url}}"], "path": ["categories", "{{categoryId}}"] } }
-        },
-        {
-          "name": "Reactivate Category",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200', function () { pm.response.to.have.status(200); });"] } }],
-          "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{adminToken}}" }], "body": { "mode": "raw", "raw": "{\"active\":true}" }, "url": { "raw": "{{url}}/categories/{{categoryId}}", "host": ["{{url}}"], "path": ["categories", "{{categoryId}}"] } }
-        },
-        {
-          "name": "Create (Employee - 403)",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('403', function () { pm.response.to.have.status(403); });"] } }],
-          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "body": { "mode": "raw", "raw": "{\"name\":\"Hacked\"}" }, "url": { "raw": "{{url}}/categories", "host": ["{{url}}"], "path": ["categories"] } }
-        }
+        { "name": "Create Category", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{adminToken}}" }], "body": { "mode": "raw", "raw": "{\"name\":\"Transporte\"}" }, "url": { "raw": "{{url}}/categories", "host": ["{{url}}"], "path": ["categories"] } } },
+        { "name": "List Categories", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": { "raw": "{{url}}/categories", "host": ["{{url}}"], "path": ["categories"] } } },
+        { "name": "Deactivate Category", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{adminToken}}" }], "body": { "mode": "raw", "raw": "{\"active\":false}" }, "url": { "raw": "{{url}}/categories/{{categoryId}}", "host": ["{{url}}"], "path": ["categories", "{{categoryId}}"] } } },
+        { "name": "Reactivate Category", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{adminToken}}" }], "body": { "mode": "raw", "raw": "{\"active\":true}" }, "url": { "raw": "{{url}}/categories/{{categoryId}}", "host": ["{{url}}"], "path": ["categories", "{{categoryId}}"] } } },
+        { "name": "Create (Employee - 403)", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "body": { "mode": "raw", "raw": "{\"name\":\"Hacked\"}" }, "url": { "raw": "{{url}}/categories", "host": ["{{url}}"], "path": ["categories"] } } }
       ]
     },
     {
       "name": "3. Users",
       "item": [
-        {
-          "name": "Create User",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('201', function () { pm.response.to.have.status(201); });"] } }],
-          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{adminToken}}" }], "body": { "mode": "raw", "raw": "{\"name\":\"Jane\",\"email\":\"jane@test.com\",\"password\":\"secret123\",\"role\":\"EMPLOYEE\"}" }, "url": { "raw": "{{url}}/users", "host": ["{{url}}"], "path": ["users"] } }
-        },
-        {
-          "name": "List Users",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200', function () { pm.response.to.have.status(200); });"] } }],
-          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": { "raw": "{{url}}/users?page=1&limit=10&sort=name&order=asc", "host": ["{{url}}"], "path": ["users"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }, { "key": "sort", "value": "name" }, { "key": "order", "value": "asc" }] } }
-        }
+        { "name": "Create User", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{adminToken}}" }], "body": { "mode": "raw", "raw": "{\"name\":\"Jane\",\"email\":\"jane@test.com\",\"password\":\"secret123\",\"role\":\"EMPLOYEE\"}" }, "url": { "raw": "{{url}}/users", "host": ["{{url}}"], "path": ["users"] } } },
+        { "name": "List Users", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": { "raw": "{{url}}/users?page=1&limit=10&sort=name&order=asc", "host": ["{{url}}"], "path": ["users"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }, { "key": "sort", "value": "name" }, { "key": "order", "value": "asc" }] } } }
       ]
     },
     {
-      "name": "4. Full Cycle (DRAFT -> PAID)",
-      "description": "Runs the complete workflow. Saves {{reimbursementId}}.",
+      "name": "4. Full Cycle (DRAFT - PAID)",
+      "description": "Complete workflow: create, submit, approve, pay. Saves reimbursementId.",
       "item": [
-        {
-          "name": "1. Create (DRAFT)",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('201 DRAFT', function () {", "  pm.response.to.have.status(201);", "  pm.expect(pm.response.json().status).to.equal('DRAFT');", "  var r = pm.response.json(); if (r.id) pm.collectionVariables.set('reimbursementId', r.id);", "});"] } } }],
-          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "body": { "mode": "raw", "raw": "{\"description\":\"Almoco com cliente\",\"amount\":85.50,\"expenseDate\":\"2026-04-25\",\"categoryId\":\"{{categoryId}}\"}" }, "url": { "raw": "{{url}}/reimbursements", "host": ["{{url}}"], "path": ["reimbursements"] } }
-        },
-        {
-          "name": "2. Submit (SUBMITTED)",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200 SUBMITTED', function () {", "  pm.response.to.have.status(200);", "  pm.expect(pm.response.json().status).to.equal('SUBMITTED');", "});"] } } }],
-          "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}/submit", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}", "submit"] } }
-        },
-        {
-          "name": "3. Approve (APPROVED)",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200 APPROVED', function () {", "  pm.response.to.have.status(200);", "  pm.expect(pm.response.json().status).to.equal('APPROVED');", "});"] } } }],
-          "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{managerToken}}" }], "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}/approve", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}", "approve"] } }
-        },
-        {
-          "name": "4. Pay (PAID)",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200 PAID', function () {", "  pm.response.to.have.status(200);", "  pm.expect(pm.response.json().status).to.equal('PAID');", "});"] } } }],
-          "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{financeToken}}" }], "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}/pay", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}", "pay"] } }
-        },
-        {
-          "name": "5. Detail",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200', function () { pm.response.to.have.status(200); });"] } }],
-          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}"] } }
-        },
-        {
-          "name": "6. History",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200 + 4 entries', function () {", "  pm.response.to.have.status(200);", "  pm.expect(pm.response.json()).to.be.an('array').with.lengthOf.at.least(4);", "});"] } } }],
-          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}/history", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}", "history"] } }
-        }
+        { "name": "1. Create (DRAFT)", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "body": { "mode": "raw", "raw": "{\"description\":\"Almoco com cliente\",\"amount\":85.50,\"expenseDate\":\"2026-04-25\",\"categoryId\":\"{{categoryId}}\"}" }, "url": { "raw": "{{url}}/reimbursements", "host": ["{{url}}"], "path": ["reimbursements"] } } },
+        { "name": "2. Submit (SUBMITTED)", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}/submit", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}", "submit"] } } },
+        { "name": "3. Approve (APPROVED)", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{managerToken}}" }], "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}/approve", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}", "approve"] } } },
+        { "name": "4. Pay (PAID)", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{financeToken}}" }], "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}/pay", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}", "pay"] } } },
+        { "name": "5. Detail", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}"] } } },
+        { "name": "6. History", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}/history", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}", "history"] } } }
       ]
     },
     {
-      "name": "5. Actions & Errors",
-      "description": "Uses {{reimbursementId}} from Full Cycle.",
+      "name": "5. Actions and Errors",
+      "description": "Uses reimbursementId from Full Cycle.",
       "item": [
-        {
-          "name": "Reject with reason",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200 REJECTED', function () {", "  pm.response.to.have.status(200);", "  pm.expect(pm.response.json().status).to.equal('REJECTED');", "});"] } } }],
-          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{managerToken}}" }], "body": { "mode": "raw", "raw": "{\"rejectionReason\":\"Valor acima do limite\"}" }, "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}/reject", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}", "reject"] } }
-        },
-        {
-          "name": "Create future date (400)",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('400', function () { pm.response.to.have.status(400); });"] } }],
-          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "body": { "mode": "raw", "raw": "{\"description\":\"Futuro\",\"amount\":100,\"expenseDate\":\"2099-12-31\",\"categoryId\":\"{{categoryId}}\"}" }, "url": { "raw": "{{url}}/reimbursements", "host": ["{{url}}"], "path": ["reimbursements"] } }
-        },
-        {
-          "name": "Edit non-DRAFT (400)",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('400', function () { pm.response.to.have.status(400); });"] } }],
-          "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "body": { "mode": "raw", "raw": "{\"description\":\"Hacked\"}" }, "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}"] } }
-        },
-        {
-          "name": "Approve non-SUBMITTED (400)",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('400', function () { pm.response.to.have.status(400); });"] } }],
-          "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{managerToken}}" }], "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}/approve", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}", "approve"] } }
-        },
-        {
-          "name": "Pay non-APPROVED (400)",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('400', function () { pm.response.to.have.status(400); });"] } }],
-          "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{financeToken}}" }], "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}/pay", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}", "pay"] } }
-        }
+        { "name": "Reject with reason", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{managerToken}}" }], "body": { "mode": "raw", "raw": "{\"rejectionReason\":\"Valor acima do limite\"}" }, "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}/reject", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}", "reject"] } } },
+        { "name": "Create future date (400)", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "body": { "mode": "raw", "raw": "{\"description\":\"Futuro\",\"amount\":100,\"expenseDate\":\"2099-12-31\",\"categoryId\":\"{{categoryId}}\"}" }, "url": { "raw": "{{url}}/reimbursements", "host": ["{{url}}"], "path": ["reimbursements"] } } },
+        { "name": "Edit non-DRAFT (400)", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "body": { "mode": "raw", "raw": "{\"description\":\"Hacked\"}" }, "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}"] } } },
+        { "name": "Approve non-SUBMITTED (400)", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{managerToken}}" }], "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}/approve", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}", "approve"] } } },
+        { "name": "Pay non-APPROVED (400)", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{financeToken}}" }], "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}/pay", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}", "pay"] } } }
       ]
     },
     {
-      "name": "6. List & Filter",
+      "name": "6. List and Filter",
       "item": [
-        {
-          "name": "List (Employee - sort amount desc)",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200', function () { pm.response.to.have.status(200); });"] } }],
-          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "url": { "raw": "{{url}}/reimbursements?sort=amount&order=desc", "host": ["{{url}}"], "path": ["reimbursements"], "query": [{ "key": "sort", "value": "amount" }, { "key": "order", "value": "desc" }] } }
-        },
-        {
-          "name": "List (Employee - filter DRAFT)",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200', function () { pm.response.to.have.status(200); });"] } }],
-          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "url": { "raw": "{{url}}/reimbursements?status=DRAFT", "host": ["{{url}}"], "path": ["reimbursements"], "query": [{ "key": "status", "value": "DRAFT" }] } }
-        },
-        {
-          "name": "List (Employee - filter category)",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200', function () { pm.response.to.have.status(200); });"] } }],
-          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "url": { "raw": "{{url}}/reimbursements?categoryId={{categoryId}}", "host": ["{{url}}"], "path": ["reimbursements"], "query": [{ "key": "categoryId", "value": "{{categoryId}}" }] } }
-        },
-        {
-          "name": "List (paginated)",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200 + pagination', function () {", "  pm.response.to.have.status(200);", "  var r = pm.response.json();", "  pm.expect(r).to.have.property('page');", "  pm.expect(r).to.have.property('totalPages');", "});"] } } }],
-          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "url": { "raw": "{{url}}/reimbursements?page=1&limit=2", "host": ["{{url}}"], "path": ["reimbursements"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "2" }] } }
-        }
+        { "name": "List (Employee - sort amount desc)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "url": { "raw": "{{url}}/reimbursements?sort=amount&order=desc", "host": ["{{url}}"], "path": ["reimbursements"], "query": [{ "key": "sort", "value": "amount" }, { "key": "order", "value": "desc" }] } } },
+        { "name": "List (Employee - filter DRAFT)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "url": { "raw": "{{url}}/reimbursements?status=DRAFT", "host": ["{{url}}"], "path": ["reimbursements"], "query": [{ "key": "status", "value": "DRAFT" }] } } },
+        { "name": "List (Employee - filter category)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "url": { "raw": "{{url}}/reimbursements?categoryId={{categoryId}}", "host": ["{{url}}"], "path": ["reimbursements"], "query": [{ "key": "categoryId", "value": "{{categoryId}}" }] } } },
+        { "name": "List (paginated)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "url": { "raw": "{{url}}/reimbursements?page=1&limit=2", "host": ["{{url}}"], "path": ["reimbursements"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "2" }] } } }
       ]
     },
     {
       "name": "7. Stats",
       "item": [
-        {
-          "name": "Stats (Employee)",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200', function () { pm.response.to.have.status(200); });"] } }],
-          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "url": { "raw": "{{url}}/reimbursements/stats", "host": ["{{url}}"], "path": ["reimbursements", "stats"] } }
-        },
-        {
-          "name": "Stats (Manager)",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200', function () { pm.response.to.have.status(200); });"] } }],
-          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{managerToken}}" }], "url": { "raw": "{{url}}/reimbursements/stats", "host": ["{{url}}"], "path": ["reimbursements", "stats"] } }
-        },
-        {
-          "name": "Stats (Finance)",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200', function () { pm.response.to.have.status(200); });"] } }],
-          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{financeToken}}" }], "url": { "raw": "{{url}}/reimbursements/stats", "host": ["{{url}}"], "path": ["reimbursements", "stats"] } }
-        },
-        {
-          "name": "Stats (Admin)",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200', function () { pm.response.to.have.status(200); });"] } }],
-          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": { "raw": "{{url}}/reimbursements/stats", "host": ["{{url}}"], "path": ["reimbursements", "stats"] } }
-        }
+        { "name": "Stats (Employee)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "url": { "raw": "{{url}}/reimbursements/stats", "host": ["{{url}}"], "path": ["reimbursements", "stats"] } } },
+        { "name": "Stats (Manager)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{managerToken}}" }], "url": { "raw": "{{url}}/reimbursements/stats", "host": ["{{url}}"], "path": ["reimbursements", "stats"] } } },
+        { "name": "Stats (Finance)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{financeToken}}" }], "url": { "raw": "{{url}}/reimbursements/stats", "host": ["{{url}}"], "path": ["reimbursements", "stats"] } } },
+        { "name": "Stats (Admin)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": { "raw": "{{url}}/reimbursements/stats", "host": ["{{url}}"], "path": ["reimbursements", "stats"] } } }
       ]
     },
     {
       "name": "8. Attachments",
       "item": [
-        {
-          "name": "Upload PDF (form-data)",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('201', function () { pm.response.to.have.status(201); });"] } }],
-          "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "body": { "mode": "formdata", "formdata": [{ "key": "file", "type": "file", "src": "sample.pdf" }] }, "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}/attachments", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}", "attachments"] } }
-        },
-        {
-          "name": "List Attachments",
-          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200', function () { pm.response.to.have.status(200); });"] } }],
-          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}/attachments", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}", "attachments"] } }
-        }
+        { "name": "Upload PDF (form-data)", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "body": { "mode": "formdata", "formdata": [{ "key": "file", "type": "file", "src": "sample.pdf" }] }, "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}/attachments", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}", "attachments"] } } },
+        { "name": "List Attachments", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}/attachments", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}", "attachments"] } } }
       ]
     }
   ]

@@ -3,14 +3,7 @@ import { Button } from '@/components/ui/button.tsx';
 import type { Role, Status } from '@/types/index.ts';
 
 const STATUSES_BY_ROLE: Record<Role, Status[]> = {
-    ADMIN: [
-        'DRAFT',
-        'SUBMITTED',
-        'APPROVED',
-        'PAID',
-        'REJECTED',
-        'CANCELLED',
-    ],
+    ADMIN: ['DRAFT', 'SUBMITTED', 'APPROVED', 'PAID', 'REJECTED', 'CANCELLED'],
     EMPLOYEE: [
         'DRAFT',
         'SUBMITTED',

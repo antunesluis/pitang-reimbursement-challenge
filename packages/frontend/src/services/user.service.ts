@@ -10,12 +10,14 @@ export const userService = {
         role?: string;
     }) => api.post<User>('/users', data),
 
-    list: (params: {
-        page?: number;
-        limit?: number;
-        sort?: string;
-        order?: string;
-    } = {}) => {
+    list: (
+        params: {
+            page?: number;
+            limit?: number;
+            sort?: string;
+            order?: string;
+        } = {},
+    ) => {
         const searchParams = new URLSearchParams();
         if (params.page) searchParams.set('page', String(params.page));
         if (params.limit) searchParams.set('limit', String(params.limit));

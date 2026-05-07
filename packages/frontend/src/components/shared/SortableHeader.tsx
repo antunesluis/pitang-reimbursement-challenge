@@ -18,13 +18,15 @@ export function SortableHeader({ field, label, onSort, order, sort }: Props) {
 
     return (
         <TableHead
-            className="cursor-pointer select-none hover:text-foreground"
+            className="hover:text-foreground cursor-pointer select-none"
             onClick={handleClick}
         >
             <span className="inline-flex items-center gap-1">
                 {label}
                 {isActive && (
-                    <span className="text-xs">{order === 'asc' ? '▲' : '▼'}</span>
+                    <span className="text-xs">
+                        {order === 'asc' ? '▲' : '▼'}
+                    </span>
                 )}
             </span>
         </TableHead>

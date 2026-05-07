@@ -54,12 +54,12 @@ bun run --cwd packages/frontend dev
 
 ### Usuários do Seed
 
-| Perfil      | Email                | Senha     |
-| ----------- | -------------------- | --------- |
-| ADMIN       | admin@example.com    | admin123  |
-| COLABORADOR | employee@test.com    | secret123 |
-| GESTOR      | manager@test.com     | secret123 |
-| FINANCEIRO  | finance@test.com     | secret123 |
+| Perfil      | Email             | Senha     |
+| ----------- | ----------------- | --------- |
+| ADMIN       | admin@example.com | admin123  |
+| COLABORADOR | employee@test.com | secret123 |
+| GESTOR      | manager@test.com  | secret123 |
+| FINANCEIRO  | finance@test.com  | secret123 |
 
 Para alterar as credenciais, edite as variáveis no `.env` (`ADMIN_EMAIL`,
 `ADMIN_PASSWORD`, `EMPLOYEE_PASSWORD`, `MANAGER_PASSWORD`, `FINANCE_PASSWORD`)
@@ -138,10 +138,10 @@ packages/frontend/
 | POST   | `/reimbursements/:id/reject`                    | GESTOR      | Rejeitar (justificativa obrig.) |
 | POST   | `/reimbursements/:id/pay`                       | FINANCEIRO  | Marcar como pago                |
 | POST   | `/reimbursements/:id/cancel`                    | COLABORADOR | Cancelar próprio                |
-| GET    | `/reimbursements/:id/history`                    | Autenticado | Histórico de ações              |
-| GET    | `/reimbursements/:id/attachments`                 | Autenticado | Listar anexos                   |
-| POST   | `/reimbursements/:id/attachments`                 | Autenticado | Fazer upload de arquivo         |
-| GET    | `/reimbursements/:id/attachments/:attachmentId`   | Autenticado | Baixar arquivo                  |
+| GET    | `/reimbursements/:id/history`                   | Autenticado | Histórico de ações              |
+| GET    | `/reimbursements/:id/attachments`               | Autenticado | Listar anexos                   |
+| POST   | `/reimbursements/:id/attachments`               | Autenticado | Fazer upload de arquivo         |
+| GET    | `/reimbursements/:id/attachments/:attachmentId` | Autenticado | Baixar arquivo                  |
 
 ## Máquina de Estados
 

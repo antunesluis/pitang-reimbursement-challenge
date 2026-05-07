@@ -34,11 +34,7 @@ export const reimbursementRoutes = Router();
 
 reimbursementRoutes.use(authMiddleware);
 
-reimbursementRoutes.get(
-    '/',
-    validate({ query: listQuerySchema }),
-    list,
-);
+reimbursementRoutes.get('/', validate({ query: listQuerySchema }), list);
 
 reimbursementRoutes.get('/stats', getStats);
 

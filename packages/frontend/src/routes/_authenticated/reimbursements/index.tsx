@@ -31,9 +31,7 @@ const searchSchema = z.object({
     limit: z.coerce.number().int().positive().max(50).default(10),
     order: z.enum(['asc', 'desc']).default('desc'),
     page: z.coerce.number().int().positive().default(1),
-    sort: z
-        .enum(['amount', 'createdAt', 'expenseDate'])
-        .default('createdAt'),
+    sort: z.enum(['amount', 'createdAt', 'expenseDate']).default('createdAt'),
     status: z
         .enum([
             'APPROVED',
@@ -146,9 +144,7 @@ function ReimbursementListPage() {
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold">
-                    Reimbursements ({total})
-                </h1>
+                <h1 className="text-2xl font-bold">Reimbursements ({total})</h1>
                 {isEmployee && (
                     <Button asChild>
                         <Link to="/reimbursements/new">
@@ -210,30 +206,32 @@ function ReimbursementListPage() {
                             </TableRow>
                         ) : (
                             data.map((r) => (
-                            <TableRow key={r.id}>
-                                <TableCell className="font-medium">
-                                    <Link
-                                        className="hover:underline"
-                                        params={{ id: r.id }}
-                                        to="/reimbursements/$id"
-                                    >
-                                        {r.description}
-                                    </Link>
-                                </TableCell>
-                                <TableCell>${r.amount.toFixed(2)}</TableCell>
-                                <TableCell>
-                                    <StatusBadge status={r.status} />
-                                </TableCell>
-                                <TableCell className="text-muted-foreground">
-                                    {r.category.name}
-                                </TableCell>
-                                <TableCell className="text-muted-foreground">
-                                    {new Date(
-                                        r.expenseDate,
-                                    ).toLocaleDateString()}
-                                </TableCell>
-                            </TableRow>
-                        ))
+                                <TableRow key={r.id}>
+                                    <TableCell className="font-medium">
+                                        <Link
+                                            className="hover:underline"
+                                            params={{ id: r.id }}
+                                            to="/reimbursements/$id"
+                                        >
+                                            {r.description}
+                                        </Link>
+                                    </TableCell>
+                                    <TableCell>
+                                        ${r.amount.toFixed(2)}
+                                    </TableCell>
+                                    <TableCell>
+                                        <StatusBadge status={r.status} />
+                                    </TableCell>
+                                    <TableCell className="text-muted-foreground">
+                                        {r.category.name}
+                                    </TableCell>
+                                    <TableCell className="text-muted-foreground">
+                                        {new Date(
+                                            r.expenseDate,
+                                        ).toLocaleDateString()}
+                                    </TableCell>
+                                </TableRow>
+                            ))
                         )}
                     </TableBody>
                 </Table>

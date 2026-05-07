@@ -4,17 +4,17 @@ SPA com React 19, TanStack Router, Shadcn UI + Tailwind CSS v4.
 
 ## Stack
 
-| Tecnologia | Uso |
-|-----------|-----|
-| React 19 | componentes funcionais, hooks |
-| TanStack Router | roteamento file-based, search params, code-splitting |
-| Shadcn UI + Tailwind v4 | componentes de UI, tema claro/escuro |
-| React Hook Form + Zod | formulários com validação onBlur |
-| Context API | estado global de autenticação |
-| Fetch API | chamadas HTTP (wrapper em `lib/api.ts`) |
-| js-cookie | armazenamento do token JWT |
-| sonner | toasts de feedback |
-| bun:test + jsdom + Testing Library | testes de componentes |
+| Tecnologia                         | Uso                                                  |
+| ---------------------------------- | ---------------------------------------------------- |
+| React 19                           | componentes funcionais, hooks                        |
+| TanStack Router                    | roteamento file-based, search params, code-splitting |
+| Shadcn UI + Tailwind v4            | componentes de UI, tema claro/escuro                 |
+| React Hook Form + Zod              | formulários com validação onBlur                     |
+| Context API                        | estado global de autenticação                        |
+| Fetch API                          | chamadas HTTP (wrapper em `lib/api.ts`)              |
+| js-cookie                          | armazenamento do token JWT                           |
+| sonner                             | toasts de feedback                                   |
+| bun:test + jsdom + Testing Library | testes de componentes                                |
 
 ## Comandos
 
@@ -63,17 +63,17 @@ tests/                        dom.ts, setup.tsx, helpers.tsx + 7 arquivos (41 te
 
 ## Telas
 
-| Rota | Perfil | Descrição |
-|------|--------|-----------|
-| `/` | Público | Login |
-| `/dashboard` | Auth | Cards de estatísticas + recentes (por role) |
-| `/reimbursements` | Auth | List paginada com filtro/sort |
-| `/reimbursements/new` | EMPLOYEE | Formulário de criação |
-| `/reimbursements/$id` | Auth | Detalhe, ações, anexos, histórico |
-| `/reimbursements/$id/edit` | EMPLOYEE | Editar DRAFT próprio |
-| `/users` | ADMIN | Listar usuários |
-| `/users/new` | ADMIN | Criar usuário |
-| `/categories` | ADMIN | Gerenciar categorias |
+| Rota                       | Perfil   | Descrição                                   |
+| -------------------------- | -------- | ------------------------------------------- |
+| `/`                        | Público  | Login                                       |
+| `/dashboard`               | Auth     | Cards de estatísticas + recentes (por role) |
+| `/reimbursements`          | Auth     | List paginada com filtro/sort               |
+| `/reimbursements/new`      | EMPLOYEE | Formulário de criação                       |
+| `/reimbursements/$id`      | Auth     | Detalhe, ações, anexos, histórico           |
+| `/reimbursements/$id/edit` | EMPLOYEE | Editar DRAFT próprio                        |
+| `/users`                   | ADMIN    | Listar usuários                             |
+| `/users/new`               | ADMIN    | Criar usuário                               |
+| `/categories`              | ADMIN    | Gerenciar categorias                        |
 
 ## Funcionalidades
 
@@ -100,6 +100,7 @@ isAdmin, isEmployee, isManager, isFinance, isOwner
 ### Formulários
 
 Todos os formulários usam React Hook Form + Zod com `mode: "onBlur"`:
+
 - LoginForm — email + senha
 - NewReimbursement — descrição, valor, data, categoria
 - EditReimbursement — pré-preenchido com dados atuais
@@ -128,30 +129,30 @@ Todos os formulários usam React Hook Form + Zod com `mode: "onBlur"`:
 
 ### Feedback visual
 
-| Estado | Componente |
-|--------|-----------|
-| Loading inicial | `Delayed` (150ms) → Skeleton |
+| Estado              | Componente                              |
+| ------------------- | --------------------------------------- |
+| Loading inicial     | `Delayed` (150ms) → Skeleton            |
 | Loading subsequente | dados antigos visíveis, troca sem flash |
-| Erro | `ErrorAlert` |
-| Campo inválido | `FieldError` (onBlur) |
-| Ação concluída | `toast.success()` (sonner) |
-| Tabela vazia | "No reimbursements found" inline |
-| Não autorizado | `ErrorAlert` + redirect 401 |
+| Erro                | `ErrorAlert`                            |
+| Campo inválido      | `FieldError` (onBlur)                   |
+| Ação concluída      | `toast.success()` (sonner)              |
+| Tabela vazia        | "No reimbursements found" inline        |
+| Não autorizado      | `ErrorAlert` + redirect 401             |
 
 ## Testes
 
 41 testes em 10 arquivos com `bun:test` + `jsdom` + `@testing-library/react`:
 
-| Arquivo | Testes | Cobertura |
-|---------|--------|-----------|
-| `LoginForm.test.tsx` | validação visual, botão submit |
-| `CreateUser.test.tsx` | validação de campos |
-| `CreateCategory.test.tsx` | validação de nome curto |
-| `AttachmentUpload.test.tsx` | renderização do componente |
-| `Delayed.test.tsx` | não renderiza antes de 150ms |
-| `EmptyState.test.tsx` | removido |
-| `ErrorAlert.test.tsx` | renderiza mensagem |
-| `FieldError.test.tsx` | condicional (null se sem erro) |
-| `StatsCard.test.tsx` | renderiza props |
-| `StatusBadge.test.tsx` | cores e textos por status |
-| `usePermissions.test.tsx` | 20 testes de permissões por role |
+| Arquivo                     | Testes                           | Cobertura |
+| --------------------------- | -------------------------------- | --------- |
+| `LoginForm.test.tsx`        | validação visual, botão submit   |
+| `CreateUser.test.tsx`       | validação de campos              |
+| `CreateCategory.test.tsx`   | validação de nome curto          |
+| `AttachmentUpload.test.tsx` | renderização do componente       |
+| `Delayed.test.tsx`          | não renderiza antes de 150ms     |
+| `EmptyState.test.tsx`       | removido                         |
+| `ErrorAlert.test.tsx`       | renderiza mensagem               |
+| `FieldError.test.tsx`       | condicional (null se sem erro)   |
+| `StatsCard.test.tsx`        | renderiza props                  |
+| `StatusBadge.test.tsx`      | cores e textos por status        |
+| `usePermissions.test.tsx`   | 20 testes de permissões por role |

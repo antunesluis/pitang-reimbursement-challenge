@@ -30,14 +30,16 @@ export const reimbursementService = {
 
     getStats: () => api.get<ReimbursementStats>('/reimbursements/stats'),
 
-    list: (params: {
-        page?: number;
-        limit?: number;
-        sort?: string;
-        order?: string;
-        status?: string;
-        categoryId?: string;
-    } = {}) => {
+    list: (
+        params: {
+            page?: number;
+            limit?: number;
+            sort?: string;
+            order?: string;
+            status?: string;
+            categoryId?: string;
+        } = {},
+    ) => {
         const searchParams = new URLSearchParams();
         if (params.page) searchParams.set('page', String(params.page));
         if (params.limit) searchParams.set('limit', String(params.limit));

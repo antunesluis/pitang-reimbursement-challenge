@@ -164,12 +164,12 @@ Root `eslint.config.js` applies to the whole monorepo:
 
 `prisma:seed` creates 4 users + 3 categories + 1 sample DRAFT reimbursement. User emails (source of truth in `prisma/seed.ts`):
 
-| Role      | Email                | Password  |
-| --------- | -------------------- | --------- |
-| ADMIN     | admin@example.com    | admin123  |
-| EMPLOYEE  | employee@test.com    | secret123 |
-| MANAGER   | manager@test.com     | secret123 |
-| FINANCE   | finance@test.com     | secret123 |
+| Role     | Email             | Password  |
+| -------- | ----------------- | --------- |
+| ADMIN    | admin@example.com | admin123  |
+| EMPLOYEE | employee@test.com | secret123 |
+| MANAGER  | manager@test.com  | secret123 |
+| FINANCE  | finance@test.com  | secret123 |
 
 Passwords can be overridden via env vars (`ADMIN_PASSWORD`, `EMPLOYEE_PASSWORD`, `MANAGER_PASSWORD`, `FINANCE_PASSWORD`).
 

@@ -170,26 +170,26 @@ function UsersPage() {
                             </TableRow>
                         ) : (
                             users.map((u) => (
-                            <TableRow key={u.id}>
-                                <TableCell className="font-medium">
-                                    {u.name}
-                                </TableCell>
-                                <TableCell className="text-muted-foreground">
-                                    {u.email}
-                                </TableCell>
-                                <TableCell>
-                                    <span className="inline-flex rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                                        {u.role.charAt(0) +
-                                            u.role.slice(1).toLowerCase()}
-                                    </span>
-                                </TableCell>
-                                <TableCell className="text-muted-foreground">
-                                    {new Date(
-                                        u.createdAt,
-                                    ).toLocaleDateString()}
-                                </TableCell>
-                            </TableRow>
-                        ))
+                                <TableRow key={u.id}>
+                                    <TableCell className="font-medium">
+                                        {u.name}
+                                    </TableCell>
+                                    <TableCell className="text-muted-foreground">
+                                        {u.email}
+                                    </TableCell>
+                                    <TableCell>
+                                        <span className="bg-primary/10 text-primary inline-flex rounded-full px-2 py-0.5 text-xs font-medium">
+                                            {u.role.charAt(0) +
+                                                u.role.slice(1).toLowerCase()}
+                                        </span>
+                                    </TableCell>
+                                    <TableCell className="text-muted-foreground">
+                                        {new Date(
+                                            u.createdAt,
+                                        ).toLocaleDateString()}
+                                    </TableCell>
+                                </TableRow>
+                            ))
                         )}
                     </TableBody>
                 </Table>

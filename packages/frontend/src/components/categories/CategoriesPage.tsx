@@ -217,20 +217,26 @@ export function CategoriesPage() {
                                                 <Input
                                                     className="h-8 w-48"
                                                     onChange={(e) => {
-                                                        setEditName(e.target.value);
+                                                        setEditName(
+                                                            e.target.value,
+                                                        );
                                                         setEditError('');
                                                     }}
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter')
                                                             saveEdit(cat.id);
-                                                        if (e.key === 'Escape') {
+                                                        if (
+                                                            e.key === 'Escape'
+                                                        ) {
                                                             setEditingId(null);
                                                             setEditError('');
                                                         }
                                                     }}
                                                     value={editName}
                                                 />
-                                                <FieldError message={editError} />
+                                                <FieldError
+                                                    message={editError}
+                                                />
                                             </div>
                                         ) : (
                                             cat.name
