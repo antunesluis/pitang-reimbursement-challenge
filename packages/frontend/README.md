@@ -39,95 +39,26 @@ VITE_API_URL=http://localhost:3000
 
 ```
 src/
-  main.tsx                      entrypoint
-  index.css                     Tailwind v4 base + Inter font + CSS variables
-  routeTree.gen.ts              gerado pelo TanStack Router plugin
-  routes/
-    __root.tsx
-    index.tsx                   login page
-    _authenticated.tsx          layout: sidebar + header + loading skeleton
-    _authenticated/
-      dashboard.tsx             stats cards por role + recentes
-      reimbursements/
-        index.tsx               list com sort, filtro status, filtro categoria, paginação
-        new.tsx                 formulário de criação
-        $id/
-          index.tsx             detalhe com ações, anexos, histórico
-          edit.tsx              edição (DRAFT apenas)
-      users/
-        index.tsx               list
-        new.tsx                 formulário de criação
-      categories/
-        index.tsx               list, criar, renomear, toggle active
+  main.tsx                    entrypoint
+  routes/                     file-based (TanStack Router)
   components/
-    auth/
-      LoginForm.tsx             formulário RHF + Zod
-    categories/
-      CategoriesPage.tsx        gestão de categorias
-      CategorySelect.tsx        select de categorias ativas
-    layout/
-      AppHeader.tsx             breadcrumb
-      AppSidebar.tsx            navegação, avatar, logout
-      NotFound.tsx              404
-    reimbursements/
-      AttachmentUpload.tsx      upload de arquivos
-      ConfirmActionDialog.tsx   diálogo de confirmação (aprove/pay/cancel/submit)
-      HistoryTimeline.tsx       trilha de auditoria
-      RejectDialog.tsx          diálogo com justificativa
-      StatusBadge.tsx           badge colorido por status
-      StatusTabs.tsx            tabs de filtro por status
-    shared/
-      Delayed.tsx               evita flash de skeleton (< 150ms)
-      ErrorAlert.tsx            banner de erro
-      FieldError.tsx            erro inline de campo
-      Pagination.tsx            navegação entre páginas
-      SortableHeader.tsx        cabeçalho de tabela clicável com seta ▲/▼
-      StatsCard.tsx             card com ícone, label e valor
-    ui/                         componentes Shadcn (button, card, dialog, input, etc.)
-    users/
-      NewUserPage.tsx           formulário de criação de usuário
-  contexts/
-    auth.context.tsx            AuthContext (token em cookie, /me, login, logout)
-  hooks/
-    use-breadcrumb.ts           breadcrumb via route staticData
-    use-permissions.ts          RBAC: canEdit, canApprove, canPay, etc.
-  lib/
-    api.ts                      wrapper Fetch (Bearer token, 401 redirect)
-    cookies.ts                  js-cookie helpers
-    utils.ts                    cn() de tailwind-merge + clsx
-  schemas/
-    auth.schema.ts              login
-    user.schema.ts              create user
-    category.schema.ts          create/update category
-    reimbursement.schema.ts     create/update/reject reimbursement
-  services/
-    auth.service.ts
-    user.service.ts
-    category.service.ts
-    reimbursement.service.ts
-    attachment.service.ts
-  styles/
-    globals.css                 custom properties, @theme, @layer
-  types/
-    index.ts                    Role, Status, Action const arrays + tipos TS
-public/
-  favicon.ico
-  insigna-pitang.png            watermark na tela de login
-  logo_sem_texto_pitang.png     logo na sidebar
-tests/
-  dom.ts                        jsdom globals preload
-  setup.tsx                     React helpers preload
-  helpers.tsx                   mockAuthProvider
-  AttachmentUpload.test.tsx
-  CreateCategory.test.tsx
-  CreateUser.test.tsx
-  Delayed.test.tsx
-  ErrorAlert.test.tsx
-  FieldError.test.tsx
-  LoginForm.test.tsx
-  StatsCard.test.tsx
-  StatusBadge.test.tsx
-  usePermissions.test.tsx
+    auth/                     LoginForm
+    categories/               CategoriesPage, CategorySelect
+    layout/                   AppSidebar, AppHeader, NotFound
+    reimbursements/           StatusBadge, StatusTabs, HistoryTimeline,
+                              RejectDialog, ConfirmActionDialog, AttachmentUpload
+    shared/                   Delayed, ErrorAlert, FieldError, Pagination,
+                              SortableHeader, StatsCard
+    ui/                       Shadcn (button, card, dialog, input, table, etc.)
+    users/                    NewUserPage
+  contexts/                   AuthContext (JWT cookie, /me, login, logout)
+  hooks/                      use-permissions (RBAC), use-breadcrumb
+  lib/                        api.ts (Fetch wrapper + 401 redirect)
+  schemas/                    Zod: auth, user, category, reimbursement
+  services/                   auth, user, category, reimbursement, attachment
+  types/                      Role, Status, Action const arrays + tipos TS
+public/                       favicon, logo, insignia
+tests/                        dom.ts, setup.tsx, helpers.tsx + 7 arquivos (41 testes)
 ```
 
 ## Telas

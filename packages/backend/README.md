@@ -61,50 +61,19 @@ ADMIN_PASSWORD="admin123"
 
 ```
 src/
-  index.ts                      entrypoint
-  app.ts                        Express app
-  controllers/
-    auth.controller.ts          login, me
-    user.controller.ts          create, list (ADMIN)
-    category.controller.ts      list, create, update (ADMIN)
-    reimbursement.controller.ts create, list, getById, update, submit, approve,
-                                reject, pay, cancel, getHistory, getStats
-    attachment.controller.ts    addAttachment, listAttachments
-  routes/
-    auth.routes.ts
-    user.routes.ts
-    category.routes.ts
-    reimbursement.routes.ts
-  schemas/
-    auth.schema.ts              login
-    user.schema.ts              create user
-    category.schema.ts          create/update category
-    reimbursement.schema.ts     create/update/reject reimbursement
-    common.schema.ts            paramsWithId
-    list-query.schema.ts        query params: page, limit, sort, order, status, categoryId
-  policies/
-    reimbursement.policy.ts     permissões centralizadas: canView, canEdit, canApprove, etc.
-  middlewares/
-    auth.middleware.ts          JWT Bearer token
-    role.middleware.ts           role guard (ADMIN, MANAGER, FINANCE, EMPLOYEE)
-    validate.middleware.ts       Zod body/params/query
-    error.fallback.middleware.ts último recurso: logs stack, formata resposta
-  lib/
-    prisma.ts                   PrismaClient com adapter libsql
-    env.vars.ts                 Zod-validated DATABASE_URL, JWT_SECRET, PORT, NODE_ENV
-    errors.ts                   AppError class + HTTP_STATUS
-    upload.ts                   multer config (disk, 5MB, PDF/JPG/PNG)
+  index.ts                    entrypoint
+  app.ts                      Express app
+  controllers/                auth, user, category, reimbursement, attachment
+  routes/                     wiring de rotas
+  schemas/                    Zod: body, params, query
+  policies/                   reimbursement.policy.ts (RBAC centralizado)
+  middlewares/                auth JWT, role guard, validate, error fallback
+  lib/                        Prisma client, env vars, AppError, upload (multer)
 prisma/
-  schema.prisma                 User, Category, Reimbursement, Attachment, History
-  seed.ts
+  schema.prisma               modelo de dados
+  seed.ts                     seed users + categories + sample
   migrations/
-tests/
-  setup.ts                      cleanupDatabase, seedAdmin, helpers
-  auth.test.ts                  (7 testes)
-  users.test.ts                 (6)
-  categories.test.ts            (8)
-  reimbursements.test.ts        (40)
-  attachments.test.ts           (9)
+tests/                        setup.ts + 5 arquivos (68 testes)
 ```
 
 ## Endpoints
