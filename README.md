@@ -57,9 +57,9 @@ bun run --cwd packages/frontend dev
 | Perfil      | Email                | Senha     |
 | ----------- | -------------------- | --------- |
 | ADMIN       | admin@example.com    | admin123  |
-| COLABORADOR | employee@example.com | secret123 |
-| GESTOR      | manager@example.com  | secret123 |
-| FINANCEIRO  | finance@example.com  | secret123 |
+| COLABORADOR | employee@test.com    | secret123 |
+| GESTOR      | manager@test.com     | secret123 |
+| FINANCEIRO  | finance@test.com     | secret123 |
 
 Para alterar as credenciais, edite as variáveis no `.env` (`ADMIN_EMAIL`,
 `ADMIN_PASSWORD`, `EMPLOYEE_PASSWORD`, `MANAGER_PASSWORD`, `FINANCE_PASSWORD`)
@@ -93,27 +93,28 @@ packages/backend/
   src/
     index.ts                    Ponto de entrada (inicia o servidor)
     app.ts                      App Express (exportada para supertest)
-    controllers/                Handlers (auth, user, category, reimbursement, attachment)
-    routes/                     Rotas
-    schemas/                    Schemas de validação Zod
-    middlewares/                Auth JWT, verificação de role, validação, tratamento de erros
-    lib/                        Cliente Prisma, env vars, upload, utilitários de data
-  prisma/
-    schema.prisma               Modelo de dados (User, Category, Reimbursement, Attachment, History)
-    seed.ts                     Popula usuários + categorias + reembolso de exemplo
-  tests/                        Testes de integração (52 testes, 5 arquivos)
+      controllers/                Handlers (auth, user, category, reimbursement, attachment)
+      routes/                     Rotas
+      schemas/                    Schemas de validação Zod
+      policies/                   Regras de permissão por perfil (reimbursement.policy.ts)
+      middlewares/                Auth JWT, verificação de role, validação, tratamento de erros
+      lib/                        Cliente Prisma, env vars, upload, errors (AppError)
+    prisma/
+      schema.prisma               Modelo de dados (User, Category, Reimbursement, Attachment, History)
+      seed.ts                     Popula usuários + categorias + reembolso de exemplo
+    tests/                        Testes de integração (68 testes, 5 arquivos)
 
 packages/frontend/
   src/
     main.tsx                    Ponto de entrada
     routes/                     Rotas baseadas em arquivos (_authenticated.tsx, dashboard, reimbursements, users, categories)
-    components/                 Componentes por domínio: auth/, layout/, reimbursements/, categories/, shared/, ui/
-    contexts/                   AuthContext (JWT em cookie, validação /me)
-    hooks/                      use-permissions.ts, use-breadcrumb.ts
-    lib/                        api.ts (wrapper Fetch com redirect 401)
-    services/                   Funções de serviço da API
-    types/                      Tipos e constantes compartilhados
-  tests/                        45 testes de componentes/formulários/permissões (11 arquivos)
+      components/                 Componentes por domínio: auth/, layout/, reimbursements/, categories/, shared/, ui/
+      contexts/                   AuthContext (JWT em cookie, validação /me)
+      hooks/                      use-permissions.ts, use-breadcrumb.ts
+      lib/                        api.ts (wrapper Fetch com redirect 401)
+      services/                   Funções de serviço da API
+      types/                      Tipos e constantes compartilhados
+    tests/                        41 testes de componentes/formulários/permissões (10 arquivos)
 ```
 
 ## Endpoints da API
@@ -137,8 +138,10 @@ packages/frontend/
 | POST   | `/reimbursements/:id/reject`                    | GESTOR      | Rejeitar (justificativa obrig.) |
 | POST   | `/reimbursements/:id/pay`                       | FINANCEIRO  | Marcar como pago                |
 | POST   | `/reimbursements/:id/cancel`                    | COLABORADOR | Cancelar próprio                |
-| POST   | `/reimbursements/:id/attachments`               | Autenticado | Fazer upload de arquivo         |
-| GET    | `/reimbursements/:id/attachments/:attachmentId` | Autenticado | Baixar arquivo                  |
+| GET    | `/reimbursements/:id/history`                    | Autenticado | Histórico de ações              |
+| GET    | `/reimbursements/:id/attachments`                 | Autenticado | Listar anexos                   |
+| POST   | `/reimbursements/:id/attachments`                 | Autenticado | Fazer upload de arquivo         |
+| GET    | `/reimbursements/:id/attachments/:attachmentId`   | Autenticado | Baixar arquivo                  |
 
 ## Máquina de Estados
 
@@ -157,19 +160,20 @@ Toda transição gera um registro de histórico (ação, usuário, observação,
 ## Regras de Negócio
 
 - **COLABORADOR**: criar, editar RASCUNHO próprio, enviar, cancelar RASCUNHO/ENVIADO próprio, ver seus reembolsos, anexar arquivos
-- **GESTOR**: ver ENVIADOS, aprovar, rejeitar (com justificativa obrigatória)
-- **FINANCEIRO**: ver APROVADOS, marcar como PAGO
+- **GESTOR**: ver apenas ENVIADOS, aprovar, rejeitar (com justificativa obrigatória)
+- **FINANCEIRO**: ver apenas APROVADOS, marcar como PAGO
 - **ADMIN**: gerenciar usuários, gerenciar categorias, ver qualquer reembolso por ID
 - **Validações**: valor > 0, categoria deve estar ativa, data futura bloqueada, justificativa obrigatória na rejeição
-- **Paginação**: `?page=1&limit=10` em `/reimbursements` e `/users`
+- **Ordenação e paginação**: `?page=1&limit=10&sort=createdAt&order=desc` em `/reimbursements` e `/users`
+- **Filtros**: `?status=DRAFT&categoryId=xyz` (status disponíveis variam por perfil)
 
 ## Testes
 
 ```bash
-# Backend — 52 testes de integração
+# Backend — 68 testes de integração
 bun run --cwd packages/backend test
 
-# Frontend — 45 testes de componentes/formulários/permissões
+# Frontend — 41 testes de componentes/formulários/permissões
 bun run --cwd packages/frontend test
 
 # Rodar um único arquivo de teste do backend
@@ -179,3 +183,9 @@ bun run --cwd packages/backend test tests/auth.test.ts
 Os testes do backend compartilham o banco de desenvolvimento — cada teste limpa e
 recria o admin. Os testes do frontend rodam com jsdom usando scripts de preload
 para globais do DOM e helpers do React.
+
+## Postman
+
+Collection disponível em `postman/pitang-reimbursement-challenge.postman_collection.json`
+com 33 requisições cobrindo todos os endpoints. As variáveis de token e IDs são
+auto-populadas via scripts de teste ao executar os logins e o ciclo completo.
