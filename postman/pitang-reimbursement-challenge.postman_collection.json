@@ -1,93 +1,770 @@
 {
-  "info": {
-    "name": "Pitang Reimbursement Control",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "## Setup\n\nbun install && bun run --cwd packages/backend prisma:migrate && bun run --cwd packages/backend prisma:seed && bun run --cwd packages/backend dev\n\n## Seed Users\n\n| Role | Email | Password |\n|------|-------|----------|\n| ADMIN | admin@example.com | admin123 |\n| EMPLOYEE | employee@test.com | secret123 |\n| MANAGER | manager@test.com | secret123 |\n| FINANCE | finance@test.com | secret123 |\n\n## Variables\n\n| Variable | Source |\n|----------|--------|\n| url | http://localhost:3000 |\n| adminToken | Login (Admin) |\n| employeeToken | Login (Employee) |\n| managerToken | Login (Manager) |\n| financeToken | Login (Finance) |\n| categoryId | Create Category |\n| reimbursementId | Full Cycle step 1 |\n\n## Usage\n\n1. Auth - login for all 4 roles (copy tokens to variables)\n2. Categories - create category (copy id to categoryId)\n3. Full Cycle - create through pay (copy id to reimbursementId)\n4. Explore remaining folders"
-  },
-  "variable": [
-    { "key": "url", "value": "http://localhost:3000" },
-    { "key": "adminToken", "value": "" },
-    { "key": "employeeToken", "value": "" },
-    { "key": "managerToken", "value": "" },
-    { "key": "financeToken", "value": "" },
-    { "key": "categoryId", "value": "" },
-    { "key": "reimbursementId", "value": "" }
-  ],
-  "item": [
-    {
-      "name": "1. Auth",
-      "item": [
-        { "name": "Login (Admin)", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"email\":\"admin@example.com\",\"password\":\"admin123\"}" }, "url": { "raw": "{{url}}/auth/login", "host": ["{{url}}"], "path": ["auth", "login"] } } },
-        { "name": "Login (Employee)", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"email\":\"employee@test.com\",\"password\":\"secret123\"}" }, "url": { "raw": "{{url}}/auth/login", "host": ["{{url}}"], "path": ["auth", "login"] } } },
-        { "name": "Login (Manager)", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"email\":\"manager@test.com\",\"password\":\"secret123\"}" }, "url": { "raw": "{{url}}/auth/login", "host": ["{{url}}"], "path": ["auth", "login"] } } },
-        { "name": "Login (Finance)", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"email\":\"finance@test.com\",\"password\":\"secret123\"}" }, "url": { "raw": "{{url}}/auth/login", "host": ["{{url}}"], "path": ["auth", "login"] } } },
-        { "name": "Me", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": { "raw": "{{url}}/auth/me", "host": ["{{url}}"], "path": ["auth", "me"] } } }
-      ]
+    "info": {
+        "name": "Pitang Reimbursement Control",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "description": "## Setup\n\nbun install && bun run --cwd packages/backend prisma:migrate && bun run --cwd packages/backend prisma:seed && bun run --cwd packages/backend dev\n\n## Seed Users\n\n| Role | Email | Password |\n|------|-------|----------|\n| ADMIN | admin@example.com | admin123 |\n| EMPLOYEE | employee@test.com | secret123 |\n| MANAGER | manager@test.com | secret123 |\n| FINANCE | finance@test.com | secret123 |\n\n## Variables\n\n| Variable | Source |\n|----------|--------|\n| url | http://localhost:3000 |\n| adminToken | Login (Admin) |\n| employeeToken | Login (Employee) |\n| managerToken | Login (Manager) |\n| financeToken | Login (Finance) |\n| categoryId | Create Category |\n| reimbursementId | Full Cycle step 1 |\n\n## Usage\n\n1. Auth - login for all 4 roles (copy tokens to variables)\n2. Categories - create category (copy id to categoryId)\n3. Full Cycle - create through pay (copy id to reimbursementId)\n4. Explore remaining folders"
     },
-    {
-      "name": "2. Categories",
-      "item": [
-        { "name": "Create Category", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{adminToken}}" }], "body": { "mode": "raw", "raw": "{\"name\":\"Transporte\"}" }, "url": { "raw": "{{url}}/categories", "host": ["{{url}}"], "path": ["categories"] } } },
-        { "name": "List Categories", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": { "raw": "{{url}}/categories", "host": ["{{url}}"], "path": ["categories"] } } },
-        { "name": "Deactivate Category", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{adminToken}}" }], "body": { "mode": "raw", "raw": "{\"active\":false}" }, "url": { "raw": "{{url}}/categories/{{categoryId}}", "host": ["{{url}}"], "path": ["categories", "{{categoryId}}"] } } },
-        { "name": "Reactivate Category", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{adminToken}}" }], "body": { "mode": "raw", "raw": "{\"active\":true}" }, "url": { "raw": "{{url}}/categories/{{categoryId}}", "host": ["{{url}}"], "path": ["categories", "{{categoryId}}"] } } },
-        { "name": "Create (Employee - 403)", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "body": { "mode": "raw", "raw": "{\"name\":\"Hacked\"}" }, "url": { "raw": "{{url}}/categories", "host": ["{{url}}"], "path": ["categories"] } } }
-      ]
-    },
-    {
-      "name": "3. Users",
-      "item": [
-        { "name": "Create User", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{adminToken}}" }], "body": { "mode": "raw", "raw": "{\"name\":\"Jane\",\"email\":\"jane@test.com\",\"password\":\"secret123\",\"role\":\"EMPLOYEE\"}" }, "url": { "raw": "{{url}}/users", "host": ["{{url}}"], "path": ["users"] } } },
-        { "name": "List Users", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": { "raw": "{{url}}/users?page=1&limit=10&sort=name&order=asc", "host": ["{{url}}"], "path": ["users"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }, { "key": "sort", "value": "name" }, { "key": "order", "value": "asc" }] } } }
-      ]
-    },
-    {
-      "name": "4. Full Cycle (DRAFT - PAID)",
-      "description": "Complete workflow: create, submit, approve, pay. Saves reimbursementId.",
-      "item": [
-        { "name": "1. Create (DRAFT)", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "body": { "mode": "raw", "raw": "{\"description\":\"Almoco com cliente\",\"amount\":85.50,\"expenseDate\":\"2026-04-25\",\"categoryId\":\"{{categoryId}}\"}" }, "url": { "raw": "{{url}}/reimbursements", "host": ["{{url}}"], "path": ["reimbursements"] } } },
-        { "name": "2. Submit (SUBMITTED)", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}/submit", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}", "submit"] } } },
-        { "name": "3. Approve (APPROVED)", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{managerToken}}" }], "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}/approve", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}", "approve"] } } },
-        { "name": "4. Pay (PAID)", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{financeToken}}" }], "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}/pay", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}", "pay"] } } },
-        { "name": "5. Detail", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}"] } } },
-        { "name": "6. History", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}/history", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}", "history"] } } }
-      ]
-    },
-    {
-      "name": "5. Actions and Errors",
-      "description": "Uses reimbursementId from Full Cycle.",
-      "item": [
-        { "name": "Reject with reason", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{managerToken}}" }], "body": { "mode": "raw", "raw": "{\"rejectionReason\":\"Valor acima do limite\"}" }, "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}/reject", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}", "reject"] } } },
-        { "name": "Create future date (400)", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "body": { "mode": "raw", "raw": "{\"description\":\"Futuro\",\"amount\":100,\"expenseDate\":\"2099-12-31\",\"categoryId\":\"{{categoryId}}\"}" }, "url": { "raw": "{{url}}/reimbursements", "host": ["{{url}}"], "path": ["reimbursements"] } } },
-        { "name": "Edit non-DRAFT (400)", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "body": { "mode": "raw", "raw": "{\"description\":\"Hacked\"}" }, "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}"] } } },
-        { "name": "Approve non-SUBMITTED (400)", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{managerToken}}" }], "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}/approve", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}", "approve"] } } },
-        { "name": "Pay non-APPROVED (400)", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{financeToken}}" }], "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}/pay", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}", "pay"] } } }
-      ]
-    },
-    {
-      "name": "6. List and Filter",
-      "item": [
-        { "name": "List (Employee - sort amount desc)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "url": { "raw": "{{url}}/reimbursements?sort=amount&order=desc", "host": ["{{url}}"], "path": ["reimbursements"], "query": [{ "key": "sort", "value": "amount" }, { "key": "order", "value": "desc" }] } } },
-        { "name": "List (Employee - filter DRAFT)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "url": { "raw": "{{url}}/reimbursements?status=DRAFT", "host": ["{{url}}"], "path": ["reimbursements"], "query": [{ "key": "status", "value": "DRAFT" }] } } },
-        { "name": "List (Employee - filter category)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "url": { "raw": "{{url}}/reimbursements?categoryId={{categoryId}}", "host": ["{{url}}"], "path": ["reimbursements"], "query": [{ "key": "categoryId", "value": "{{categoryId}}" }] } } },
-        { "name": "List (paginated)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "url": { "raw": "{{url}}/reimbursements?page=1&limit=2", "host": ["{{url}}"], "path": ["reimbursements"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "2" }] } } }
-      ]
-    },
-    {
-      "name": "7. Stats",
-      "item": [
-        { "name": "Stats (Employee)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "url": { "raw": "{{url}}/reimbursements/stats", "host": ["{{url}}"], "path": ["reimbursements", "stats"] } } },
-        { "name": "Stats (Manager)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{managerToken}}" }], "url": { "raw": "{{url}}/reimbursements/stats", "host": ["{{url}}"], "path": ["reimbursements", "stats"] } } },
-        { "name": "Stats (Finance)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{financeToken}}" }], "url": { "raw": "{{url}}/reimbursements/stats", "host": ["{{url}}"], "path": ["reimbursements", "stats"] } } },
-        { "name": "Stats (Admin)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": { "raw": "{{url}}/reimbursements/stats", "host": ["{{url}}"], "path": ["reimbursements", "stats"] } } }
-      ]
-    },
-    {
-      "name": "8. Attachments",
-      "item": [
-        { "name": "Upload PDF (form-data)", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "body": { "mode": "formdata", "formdata": [{ "key": "file", "type": "file", "src": "sample.pdf" }] }, "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}/attachments", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}", "attachments"] } } },
-        { "name": "List Attachments", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{employeeToken}}" }], "url": { "raw": "{{url}}/reimbursements/{{reimbursementId}}/attachments", "host": ["{{url}}"], "path": ["reimbursements", "{{reimbursementId}}", "attachments"] } } }
-      ]
-    }
-  ]
+    "variable": [
+        { "key": "url", "value": "http://localhost:3000" },
+        { "key": "adminToken", "value": "" },
+        { "key": "employeeToken", "value": "" },
+        { "key": "managerToken", "value": "" },
+        { "key": "financeToken", "value": "" },
+        { "key": "categoryId", "value": "" },
+        { "key": "reimbursementId", "value": "" }
+    ],
+    "item": [
+        {
+            "name": "1. Auth",
+            "item": [
+                {
+                    "name": "Login (Admin)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"email\":\"admin@example.com\",\"password\":\"admin123\"}"
+                        },
+                        "url": {
+                            "raw": "{{url}}/auth/login",
+                            "host": ["{{url}}"],
+                            "path": ["auth", "login"]
+                        }
+                    }
+                },
+                {
+                    "name": "Login (Employee)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"email\":\"employee@test.com\",\"password\":\"secret123\"}"
+                        },
+                        "url": {
+                            "raw": "{{url}}/auth/login",
+                            "host": ["{{url}}"],
+                            "path": ["auth", "login"]
+                        }
+                    }
+                },
+                {
+                    "name": "Login (Manager)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"email\":\"manager@test.com\",\"password\":\"secret123\"}"
+                        },
+                        "url": {
+                            "raw": "{{url}}/auth/login",
+                            "host": ["{{url}}"],
+                            "path": ["auth", "login"]
+                        }
+                    }
+                },
+                {
+                    "name": "Login (Finance)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"email\":\"finance@test.com\",\"password\":\"secret123\"}"
+                        },
+                        "url": {
+                            "raw": "{{url}}/auth/login",
+                            "host": ["{{url}}"],
+                            "path": ["auth", "login"]
+                        }
+                    }
+                },
+                {
+                    "name": "Me",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{adminToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/auth/me",
+                            "host": ["{{url}}"],
+                            "path": ["auth", "me"]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "2. Categories",
+            "item": [
+                {
+                    "name": "Create Category",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{adminToken}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"Transporte\"}"
+                        },
+                        "url": {
+                            "raw": "{{url}}/categories",
+                            "host": ["{{url}}"],
+                            "path": ["categories"]
+                        }
+                    }
+                },
+                {
+                    "name": "List Categories",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{adminToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/categories",
+                            "host": ["{{url}}"],
+                            "path": ["categories"]
+                        }
+                    }
+                },
+                {
+                    "name": "Deactivate Category",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{adminToken}}"
+                            }
+                        ],
+                        "body": { "mode": "raw", "raw": "{\"active\":false}" },
+                        "url": {
+                            "raw": "{{url}}/categories/{{categoryId}}",
+                            "host": ["{{url}}"],
+                            "path": ["categories", "{{categoryId}}"]
+                        }
+                    }
+                },
+                {
+                    "name": "Reactivate Category",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{adminToken}}"
+                            }
+                        ],
+                        "body": { "mode": "raw", "raw": "{\"active\":true}" },
+                        "url": {
+                            "raw": "{{url}}/categories/{{categoryId}}",
+                            "host": ["{{url}}"],
+                            "path": ["categories", "{{categoryId}}"]
+                        }
+                    }
+                },
+                {
+                    "name": "Create (Employee - 403)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{employeeToken}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"Hacked\"}"
+                        },
+                        "url": {
+                            "raw": "{{url}}/categories",
+                            "host": ["{{url}}"],
+                            "path": ["categories"]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "3. Users",
+            "item": [
+                {
+                    "name": "Create User",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{adminToken}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"Jane\",\"email\":\"jane@test.com\",\"password\":\"secret123\",\"role\":\"EMPLOYEE\"}"
+                        },
+                        "url": {
+                            "raw": "{{url}}/users",
+                            "host": ["{{url}}"],
+                            "path": ["users"]
+                        }
+                    }
+                },
+                {
+                    "name": "List Users",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{adminToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/users?page=1&limit=10&sort=name&order=asc",
+                            "host": ["{{url}}"],
+                            "path": ["users"],
+                            "query": [
+                                { "key": "page", "value": "1" },
+                                { "key": "limit", "value": "10" },
+                                { "key": "sort", "value": "name" },
+                                { "key": "order", "value": "asc" }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "4. Full Cycle (DRAFT - PAID)",
+            "description": "Complete workflow: create, submit, approve, pay. Saves reimbursementId.",
+            "item": [
+                {
+                    "name": "1. Create (DRAFT)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{employeeToken}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"description\":\"Almoco com cliente\",\"amount\":85.50,\"expenseDate\":\"2026-04-25\",\"categoryId\":\"{{categoryId}}\"}"
+                        },
+                        "url": {
+                            "raw": "{{url}}/reimbursements",
+                            "host": ["{{url}}"],
+                            "path": ["reimbursements"]
+                        }
+                    }
+                },
+                {
+                    "name": "2. Submit (SUBMITTED)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{employeeToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/submit",
+                            "host": ["{{url}}"],
+                            "path": [
+                                "reimbursements",
+                                "{{reimbursementId}}",
+                                "submit"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "3. Approve (APPROVED)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{managerToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/approve",
+                            "host": ["{{url}}"],
+                            "path": [
+                                "reimbursements",
+                                "{{reimbursementId}}",
+                                "approve"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "4. Pay (PAID)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{financeToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/pay",
+                            "host": ["{{url}}"],
+                            "path": [
+                                "reimbursements",
+                                "{{reimbursementId}}",
+                                "pay"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "5. Detail",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{employeeToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/reimbursements/{{reimbursementId}}",
+                            "host": ["{{url}}"],
+                            "path": ["reimbursements", "{{reimbursementId}}"]
+                        }
+                    }
+                },
+                {
+                    "name": "6. History",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{employeeToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/history",
+                            "host": ["{{url}}"],
+                            "path": [
+                                "reimbursements",
+                                "{{reimbursementId}}",
+                                "history"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "5. Actions and Errors",
+            "description": "Uses reimbursementId from Full Cycle.",
+            "item": [
+                {
+                    "name": "Reject with reason",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{managerToken}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"rejectionReason\":\"Valor acima do limite\"}"
+                        },
+                        "url": {
+                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/reject",
+                            "host": ["{{url}}"],
+                            "path": [
+                                "reimbursements",
+                                "{{reimbursementId}}",
+                                "reject"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create future date (400)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{employeeToken}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"description\":\"Futuro\",\"amount\":100,\"expenseDate\":\"2099-12-31\",\"categoryId\":\"{{categoryId}}\"}"
+                        },
+                        "url": {
+                            "raw": "{{url}}/reimbursements",
+                            "host": ["{{url}}"],
+                            "path": ["reimbursements"]
+                        }
+                    }
+                },
+                {
+                    "name": "Edit non-DRAFT (400)",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{employeeToken}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"description\":\"Hacked\"}"
+                        },
+                        "url": {
+                            "raw": "{{url}}/reimbursements/{{reimbursementId}}",
+                            "host": ["{{url}}"],
+                            "path": ["reimbursements", "{{reimbursementId}}"]
+                        }
+                    }
+                },
+                {
+                    "name": "Approve non-SUBMITTED (400)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{managerToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/approve",
+                            "host": ["{{url}}"],
+                            "path": [
+                                "reimbursements",
+                                "{{reimbursementId}}",
+                                "approve"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Pay non-APPROVED (400)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{financeToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/pay",
+                            "host": ["{{url}}"],
+                            "path": [
+                                "reimbursements",
+                                "{{reimbursementId}}",
+                                "pay"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "6. List and Filter",
+            "item": [
+                {
+                    "name": "List (Employee - sort amount desc)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{employeeToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/reimbursements?sort=amount&order=desc",
+                            "host": ["{{url}}"],
+                            "path": ["reimbursements"],
+                            "query": [
+                                { "key": "sort", "value": "amount" },
+                                { "key": "order", "value": "desc" }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "List (Employee - filter DRAFT)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{employeeToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/reimbursements?status=DRAFT",
+                            "host": ["{{url}}"],
+                            "path": ["reimbursements"],
+                            "query": [{ "key": "status", "value": "DRAFT" }]
+                        }
+                    }
+                },
+                {
+                    "name": "List (Employee - filter category)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{employeeToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/reimbursements?categoryId={{categoryId}}",
+                            "host": ["{{url}}"],
+                            "path": ["reimbursements"],
+                            "query": [
+                                {
+                                    "key": "categoryId",
+                                    "value": "{{categoryId}}"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "List (paginated)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{employeeToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/reimbursements?page=1&limit=2",
+                            "host": ["{{url}}"],
+                            "path": ["reimbursements"],
+                            "query": [
+                                { "key": "page", "value": "1" },
+                                { "key": "limit", "value": "2" }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "7. Stats",
+            "item": [
+                {
+                    "name": "Stats (Employee)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{employeeToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/reimbursements/stats",
+                            "host": ["{{url}}"],
+                            "path": ["reimbursements", "stats"]
+                        }
+                    }
+                },
+                {
+                    "name": "Stats (Manager)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{managerToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/reimbursements/stats",
+                            "host": ["{{url}}"],
+                            "path": ["reimbursements", "stats"]
+                        }
+                    }
+                },
+                {
+                    "name": "Stats (Finance)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{financeToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/reimbursements/stats",
+                            "host": ["{{url}}"],
+                            "path": ["reimbursements", "stats"]
+                        }
+                    }
+                },
+                {
+                    "name": "Stats (Admin)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{adminToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/reimbursements/stats",
+                            "host": ["{{url}}"],
+                            "path": ["reimbursements", "stats"]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "8. Attachments",
+            "item": [
+                {
+                    "name": "Upload PDF (form-data)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{employeeToken}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": "sample.pdf"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/attachments",
+                            "host": ["{{url}}"],
+                            "path": [
+                                "reimbursements",
+                                "{{reimbursementId}}",
+                                "attachments"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "List Attachments",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{employeeToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{url}}/reimbursements/{{reimbursementId}}/attachments",
+                            "host": ["{{url}}"],
+                            "path": [
+                                "reimbursements",
+                                "{{reimbursementId}}",
+                                "attachments"
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
 }

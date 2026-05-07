@@ -1,7 +1,5 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { Plus } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 
 import { Delayed } from '@/components/shared/Delayed.tsx';
@@ -19,9 +17,7 @@ import {
     TableRow,
 } from '@/components/ui/table.tsx';
 import { usePermissions } from '@/hooks/use-permissions.ts';
-import { userService } from '@/services/user.service.ts';
-
-import type { User } from '@/types/index.ts';
+import { useUserList } from '@/hooks/use-user-list.ts';
 
 const searchSchema = z.object({
     limit: z.coerce.number().int().positive().max(50).default(10),
@@ -40,38 +36,7 @@ function UsersPage() {
     const search = Route.useSearch();
     const navigate = Route.useNavigate();
 
-    const [users, setUsers] = useState<User[]>([]);
-    const [total, setTotal] = useState(0);
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(true);
-    const firstLoad = useRef(true);
-
-    const fetchPage = useCallback(async () => {
-        if (firstLoad.current) setLoading(true);
-        try {
-            const res = await userService.list({
-                limit: search.limit,
-                order: search.order,
-                page: search.page,
-                sort: search.sort,
-            });
-            setUsers(res.data);
-            setTotal(res.total);
-        } catch (err) {
-            setError(
-                err instanceof Error ? err.message : 'Failed to load users',
-            );
-        } finally {
-            if (firstLoad.current) {
-                setLoading(false);
-                firstLoad.current = false;
-            }
-        }
-    }, [search]);
-
-    useEffect(() => {
-        fetchPage();
-    }, [fetchPage]);
+    const { error, loading, total, users } = useUserList(search);
 
     function handleSort(field: string, order: string) {
         navigate({
@@ -134,8 +99,6 @@ function UsersPage() {
                 </Button>
             </div>
 
-            {error && <ErrorAlert message={error} />}
-
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>
@@ -180,7 +143,9 @@ function UsersPage() {
                                     <TableCell>
                                         <span className="bg-primary/10 text-primary inline-flex rounded-full px-2 py-0.5 text-xs font-medium">
                                             {u.role.charAt(0) +
-                                                u.role.slice(1).toLowerCase()}
+                                                u.role
+                                                    .slice(1)
+                                                    .toLowerCase()}
                                         </span>
                                     </TableCell>
                                     <TableCell className="text-muted-foreground">

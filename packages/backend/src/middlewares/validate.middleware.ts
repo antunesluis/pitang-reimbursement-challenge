@@ -1,15 +1,18 @@
 import { AppError } from '../lib/errors.ts';
 
 import type { NextFunction, Request, Response } from 'express';
-import type { ZodSchema } from 'zod';
+import type { ZodType } from 'zod';
 
+// Define quais partes da request podem possuir validação
 type ValidationSchemas = {
-    body?: ZodSchema;
-    params?: ZodSchema;
-    query?: ZodSchema;
+    body?: ZodType;
+    params?: ZodType;
+    query?: ZodType;
 };
 
+// Factory de middleware de validação (irá salvar o schema a ser verificado)
 export function validate(schemas: ValidationSchemas) {
+    // Retorna o middleware do Express
     return (req: Request, _res: Response, next: NextFunction) => {
         if (schemas.params) {
             const result = schemas.params.safeParse(req.params);

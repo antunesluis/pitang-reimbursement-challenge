@@ -1,7 +1,5 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { Plus } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 
 import { CategorySelect } from '@/components/categories/CategorySelect.tsx';
@@ -22,16 +20,18 @@ import {
     TableRow,
 } from '@/components/ui/table.tsx';
 import { usePermissions } from '@/hooks/use-permissions.ts';
-import { reimbursementService } from '@/services/reimbursement.service.ts';
+import { useReimbursementList } from '@/hooks/use-reimbursement-list.ts';
 
-import type { Reimbursement, Status } from '@/types/index.ts';
+import type { Status } from '@/types/index.ts';
 
 const searchSchema = z.object({
     categoryId: z.string().optional(),
     limit: z.coerce.number().int().positive().max(50).default(10),
     order: z.enum(['asc', 'desc']).default('desc'),
     page: z.coerce.number().int().positive().default(1),
-    sort: z.enum(['amount', 'createdAt', 'expenseDate']).default('createdAt'),
+    sort: z.enum(['amount', 'createdAt', 'expenseDate']).default(
+        'createdAt',
+    ),
     status: z
         .enum([
             'APPROVED',
@@ -54,38 +54,7 @@ function ReimbursementListPage() {
     const search = Route.useSearch();
     const navigate = Route.useNavigate();
 
-    const [data, setData] = useState<Reimbursement[]>([]);
-    const [total, setTotal] = useState(0);
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(true);
-    const firstLoad = useRef(true);
-
-    const fetchPage = useCallback(async () => {
-        if (firstLoad.current) setLoading(true);
-        try {
-            const res = await reimbursementService.list({
-                categoryId: search.categoryId,
-                limit: search.limit,
-                order: search.order,
-                page: search.page,
-                sort: search.sort,
-                status: search.status,
-            });
-            setData(res.data);
-            setTotal(res.total);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to load');
-        } finally {
-            if (firstLoad.current) {
-                setLoading(false);
-                firstLoad.current = false;
-            }
-        }
-    }, [search]);
-
-    useEffect(() => {
-        fetchPage();
-    }, [fetchPage]);
+    const { data, error, loading, total } = useReimbursementList(search);
 
     function handleSort(field: string, order: string) {
         navigate({
@@ -120,7 +89,9 @@ function ReimbursementListPage() {
             <Delayed>
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                        <h1 className="text-2xl font-bold">Reimbursements</h1>
+                        <h1 className="text-2xl font-bold">
+                            Reimbursements
+                        </h1>
                     </div>
                     <div className="space-y-2">
                         {Array.from({ length: 5 }).map((_, i) => (
@@ -144,7 +115,9 @@ function ReimbursementListPage() {
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold">Reimbursements ({total})</h1>
+                <h1 className="text-2xl font-bold">
+                    Reimbursements ({total})
+                </h1>
                 {isEmployee && (
                     <Button asChild>
                         <Link to="/reimbursements/new">
@@ -220,7 +193,9 @@ function ReimbursementListPage() {
                                         ${r.amount.toFixed(2)}
                                     </TableCell>
                                     <TableCell>
-                                        <StatusBadge status={r.status} />
+                                        <StatusBadge
+                                            status={r.status}
+                                        />
                                     </TableCell>
                                     <TableCell className="text-muted-foreground">
                                         {r.category.name}

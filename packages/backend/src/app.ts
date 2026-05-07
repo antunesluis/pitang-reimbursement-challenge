@@ -15,6 +15,7 @@ const app = express();
 
 app.use(express.json());
 
+// Permite que frontends externos consumam a API
 app.use(
     cors({
         allowedHeaders: ['Content-Type', 'Authorization'],
@@ -23,8 +24,11 @@ app.use(
     }),
 );
 
+// Middleware de segurança HTTP, adiciona vários headers de proteção automaticamente
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
+// Expõe a pasta uploads publicamente
+// Tudo que estiver dentro de ../uploads poderá ser acessado via URL
 app.use(
     '/uploads',
     express.static(path.resolve(import.meta.dirname, '../uploads')),
@@ -39,10 +43,12 @@ app.use('/users', userRoutes);
 app.use('/categories', categoryRoutes);
 app.use('/reimbursements', reimbursementRoutes);
 
+// Middleware executado caso nenhuma rota anterior seja encontrada
 app.use((_req) => {
     throw new AppError(404, 'Route not found');
 });
 
+// Middleware global de tratamento de erros
 app.use(errorFallbackMiddleware);
 
 export { app };

@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dialog.tsx';
 
 type Props = {
+    closeLabel: string;
     confirmLabel: string;
     confirmVariant?: 'default' | 'destructive' | 'outline';
     description: string;
@@ -20,6 +21,7 @@ type Props = {
 };
 
 export function ConfirmActionDialog({
+    closeLabel,
     confirmLabel,
     confirmVariant = 'default',
     description,
@@ -31,10 +33,12 @@ export function ConfirmActionDialog({
 }: Props) {
     return (
         <Dialog onOpenChange={onClose} open={open}>
-            <DialogContent>
+            <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-md">
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
-                    <DialogDescription>{description}</DialogDescription>
+                    <DialogDescription className="text-sm">
+                        {description}
+                    </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
                     <Button
@@ -43,7 +47,7 @@ export function ConfirmActionDialog({
                         type="button"
                         variant="outline"
                     >
-                        Cancel
+                        {closeLabel}
                     </Button>
                     <Button
                         disabled={loading}

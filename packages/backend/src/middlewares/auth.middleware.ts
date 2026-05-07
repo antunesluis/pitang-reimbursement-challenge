@@ -6,12 +6,14 @@ import { prisma } from '../lib/prisma.ts';
 
 import type { NextFunction, Request, Response } from 'express';
 
+// Define o formato esperado do payload do JWT
 type JwtPayload = {
     email: string;
     role: string;
     userId: string;
 };
 
+// Adiciona propriedades customizadas ao objeto req
 declare global {
     namespace Express {
         interface Request {
@@ -36,10 +38,12 @@ export async function authMiddleware(
         throw new AppError(401, 'Authentication required');
     }
 
+    // Remove "Bearer " e mantém apenas o token
     const token = authHeader.slice(7);
 
     let decoded: JwtPayload;
     try {
+        // Valida o token usando a chave secreta
         decoded = jwt.verify(token, env.JWT_SECRET) as JwtPayload;
     } catch {
         throw new AppError(401, 'Invalid or expired token');
@@ -54,6 +58,9 @@ export async function authMiddleware(
         throw new AppError(401, 'User not found');
     }
 
+    // Adiciona os dados do usuário autenticado na requisição
     req.user = user;
+
+    // Continua para o próximo middleware/controller
     next();
 }
