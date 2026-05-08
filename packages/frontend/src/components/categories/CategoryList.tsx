@@ -103,8 +103,8 @@ export function CategoryList({
                                     <span
                                         className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
                                             cat.active
-                                                ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                                                : 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'
+                                                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400'
+                                                : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-500'
                                         }`}
                                     >
                                         {cat.active
@@ -118,7 +118,7 @@ export function CategoryList({
                                     ).toLocaleDateString()}
                                 </TableCell>
                                 <TableCell>
-                                    <div className="flex gap-1">
+                                    <div className="flex gap-1 min-w-[140px]">
                                         {editingId === cat.id ? (
                                             <>
                                                 <Button

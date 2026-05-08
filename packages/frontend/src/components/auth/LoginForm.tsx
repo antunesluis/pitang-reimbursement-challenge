@@ -51,7 +51,7 @@ export function LoginForm() {
             <div
                 className="pointer-events-none absolute inset-0"
                 style={{
-                    backgroundColor: '#F37021',
+                    backgroundColor: 'var(--color-pitang)',
                     maskImage: 'url(/insigna-pitang.png)',
                     maskPosition: 'center',
                     maskRepeat: 'no-repeat',

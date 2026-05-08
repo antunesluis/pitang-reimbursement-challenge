@@ -1,29 +1,35 @@
 import { cn } from '@/lib/utils.ts';
+import { Status } from '@/types/index.ts';
 
-import type { Status } from '@/types/index.ts';
-
-const STYLES: Record<Status, string> = {
-    APPROVED:
-        'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-    CANCELLED:
-        'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
-    DRAFT: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400',
-    PAID: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
-    REJECTED: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
-    SUBMITTED:
-        'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+const STYLES: Record<string, string> = {
+    [Status.APPROVED]:
+        'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400',
+    [Status.CANCELLED]:
+        'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400',
+    [Status.DRAFT]:
+        'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400',
+    [Status.PAID]:
+        'bg-violet-50 text-violet-700 dark:bg-violet-950 dark:text-violet-400',
+    [Status.REJECTED]:
+        'bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-400',
+    [Status.SUBMITTED]:
+        'bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-400',
 };
 
-const LABELS: Record<Status, string> = {
-    APPROVED: 'Approved',
-    CANCELLED: 'Cancelled',
-    DRAFT: 'Draft',
-    PAID: 'Paid',
-    REJECTED: 'Rejected',
-    SUBMITTED: 'Submitted',
+const LABELS: Record<string, string> = {
+    [Status.APPROVED]: 'Approved',
+    [Status.CANCELLED]: 'Cancelled',
+    [Status.DRAFT]: 'Draft',
+    [Status.PAID]: 'Paid',
+    [Status.REJECTED]: 'Rejected',
+    [Status.SUBMITTED]: 'Submitted',
 };
 
-export function StatusBadge({ status }: { status: Status }) {
+type Props = {
+    status: string;
+};
+
+export function StatusBadge({ status }: Props) {
     return (
         <span
             className={cn(
@@ -31,7 +37,7 @@ export function StatusBadge({ status }: { status: Status }) {
                 STYLES[status],
             )}
         >
-            {LABELS[status]}
+            {LABELS[status] ?? status}
         </span>
     );
 }
