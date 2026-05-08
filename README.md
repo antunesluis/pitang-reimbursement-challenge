@@ -1,4 +1,8 @@
-# Sistema de Controle de Reembolsos
+<div align="center">
+  <img alt="Sistema de Controle de Reembolsos – lista de solicitações" src="docs/images/reembolsos.png" width="800">
+  <img alt="Sistema de Controle de Reembolsos – lista de solicitações" src="docs/images/login.png" width="800">
+  <h1 align="center">Sistema de Controle de Reembolsos</h1>
+</div>
 
 Aplicação fullstack de gestão de reembolsos — colaboradores enviam despesas,
 gestores aprovam/rejeitam, financeiro marca como pago e admins gerenciam
@@ -12,12 +16,7 @@ usuários e categorias.
 - [Matriz de Permissões](docs/permissions.md) — Ações por role, visibilidade, listagem, estatísticas
 - [Detalhes da Implementação](docs/implementation.md) — Spec vs código, decisões, diferenciais
 - [Documentação de Testes](docs/tests.md) — 134 testes documentados por arquivo
-
-### Telas
-
-![Login](docs/images/login.png) ![Dashboard](docs/images/dashboard.png)
-![Reembolsos](docs/images/reembolsos.png) ![Novo Reembolso](docs/images/criar-reembolso.png)
-![Usuários](docs/images/usuarios.png) ![Categorias](docs/images/categorias.png)
+- [Screenshots das Telas](docs/images) - Screenshots de todas as telas e formulários da aplicação
 
 ## Stack
 
