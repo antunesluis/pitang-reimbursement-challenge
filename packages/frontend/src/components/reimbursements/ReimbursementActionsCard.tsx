@@ -66,12 +66,7 @@ export function ReimbursementActionsCard({
     rejectSubmit,
 }: Props) {
     const hasActions =
-        canEdit ||
-        canSubmit ||
-        canApprove ||
-        canReject ||
-        canPay ||
-        canCancel;
+        canEdit || canSubmit || canApprove || canReject || canPay || canCancel;
 
     if (!hasActions) return null;
 

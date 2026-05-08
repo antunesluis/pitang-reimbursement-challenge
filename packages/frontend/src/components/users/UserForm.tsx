@@ -130,9 +130,7 @@ export function UserForm({ onCancel, onSubmit }: Props) {
                             disabled={isSubmitting}
                             type="submit"
                         >
-                            {isSubmitting
-                                ? 'Creating...'
-                                : 'Create User'}
+                            {isSubmitting ? 'Creating...' : 'Create User'}
                         </Button>
                         <Button
                             className="w-full sm:w-auto"

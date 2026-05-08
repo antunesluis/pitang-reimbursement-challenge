@@ -9,8 +9,8 @@ const win = dom.window as any;
 
 Object.assign(globalThis, {
     CustomEvent: win.CustomEvent,
-    DOMParser: win.DOMParser,
     document: win.document,
+    DOMParser: win.DOMParser,
     Element: win.Element,
     Event: win.Event,
     getComputedStyle: win.getComputedStyle,

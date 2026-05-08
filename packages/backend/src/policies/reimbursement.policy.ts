@@ -25,8 +25,7 @@ export const reimbursementPolicy = {
         role === Role.MANAGER && status === Status.SUBMITTED,
 
     canCancel: ({ isOwner, status }: PolicyContext) =>
-        isOwner &&
-        [Status.DRAFT, Status.SUBMITTED].includes(status),
+        isOwner && [Status.DRAFT, Status.SUBMITTED].includes(status),
 
     canEdit: ({ isOwner, status }: PolicyContext) =>
         isOwner && status === Status.DRAFT,

@@ -27,9 +27,7 @@ export function useUserList(params: ListParams) {
             setTotal(res.total);
         } catch (err) {
             setError(
-                err instanceof Error
-                    ? err.message
-                    : 'Failed to load users',
+                err instanceof Error ? err.message : 'Failed to load users',
             );
         } finally {
             if (firstLoad.current) {

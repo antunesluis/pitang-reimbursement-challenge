@@ -51,9 +51,7 @@ export function ReimbursementForm({
     return (
         <Card>
             <CardHeader>
-                <CardTitle className="text-lg">
-                    {title ?? 'Details'}
-                </CardTitle>
+                <CardTitle className="text-lg">{title ?? 'Details'}</CardTitle>
             </CardHeader>
             <CardContent>
                 <form className="space-y-4" onSubmit={onSubmit}>
@@ -82,9 +80,7 @@ export function ReimbursementForm({
                     <div className="space-y-2">
                         <Label>Category</Label>
                         <CategorySelect
-                            onChange={(value) =>
-                                setValue('categoryId', value)
-                            }
+                            onChange={(value) => setValue('categoryId', value)}
                             value={categoryId}
                         />
                         <FieldError message={errors.categoryId?.message} />
@@ -101,9 +97,7 @@ export function ReimbursementForm({
                     </div>
 
                     {rootError && (
-                        <p className="text-destructive text-sm">
-                            {rootError}
-                        </p>
+                        <p className="text-destructive text-sm">{rootError}</p>
                     )}
 
                     <Button

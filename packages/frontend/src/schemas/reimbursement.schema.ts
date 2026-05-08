@@ -26,9 +26,7 @@ export type ReimbursementListSearchParams = z.infer<
 
 export const createReimbursementSchema = z
     .object({
-        amount: z.coerce
-            .number()
-            .positive('Amount must be greater than zero'),
+        amount: z.coerce.number().positive('Amount must be greater than zero'),
         categoryId: z.string().min(1, 'Category is required'),
         description: z.string().min(1, 'Description is required'),
         expenseDate: z.string().min(1, 'Expense date is required'),
@@ -41,14 +39,8 @@ export const updateReimbursementSchema = z
             .number()
             .positive('Amount must be greater than zero')
             .optional(),
-        categoryId: z
-            .string()
-            .min(1, 'Category is required')
-            .optional(),
-        description: z
-            .string()
-            .min(1, 'Description is required')
-            .optional(),
+        categoryId: z.string().min(1, 'Category is required').optional(),
+        description: z.string().min(1, 'Description is required').optional(),
         expenseDate: z
             .string()
             .regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format')
@@ -58,9 +50,7 @@ export const updateReimbursementSchema = z
 
 export const rejectReimbursementSchema = z
     .object({
-        rejectionReason: z
-            .string()
-            .min(1, 'Rejection reason is required'),
+        rejectionReason: z.string().min(1, 'Rejection reason is required'),
     })
     .strict();
 

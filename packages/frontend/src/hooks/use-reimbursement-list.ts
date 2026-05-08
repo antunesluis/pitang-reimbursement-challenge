@@ -28,9 +28,7 @@ export function useReimbursementList(params: ListParams) {
             setData(res.data);
             setTotal(res.total);
         } catch (err) {
-            setError(
-                err instanceof Error ? err.message : 'Failed to load',
-            );
+            setError(err instanceof Error ? err.message : 'Failed to load');
         } finally {
             if (firstLoad.current) {
                 setLoading(false);

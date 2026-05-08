@@ -22,12 +22,12 @@ import {
 import { attachmentService } from '@/services/attachment.service.ts';
 import { reimbursementService } from '@/services/reimbursement.service.ts';
 
-export const Route = createFileRoute(
-    '/_authenticated/reimbursements/$id/edit',
-)({
-    component: EditReimbursementPage,
-    staticData: { breadcrumb: 'Edit' },
-});
+export const Route = createFileRoute('/_authenticated/reimbursements/$id/edit')(
+    {
+        component: EditReimbursementPage,
+        staticData: { breadcrumb: 'Edit' },
+    },
+);
 
 function EditReimbursementPage() {
     const { id } = Route.useParams();
@@ -50,8 +50,7 @@ function EditReimbursementPage() {
                   amount: data.amount,
                   categoryId: data.category.id,
                   description: data.description,
-                  expenseDate:
-                      data.expenseDate.split('T')[0] ?? '',
+                  expenseDate: data.expenseDate.split('T')[0] ?? '',
               }
             : undefined,
     });
@@ -68,10 +67,7 @@ function EditReimbursementPage() {
                 payload.amount = formData.amount;
             if (formData.categoryId !== data?.category.id)
                 payload.categoryId = formData.categoryId;
-            if (
-                formData.expenseDate !==
-                data?.expenseDate?.split('T')[0]
-            ) {
+            if (formData.expenseDate !== data?.expenseDate?.split('T')[0]) {
                 payload.expenseDate = new Date(
                     formData.expenseDate ?? '',
                 ).toISOString();
@@ -86,9 +82,7 @@ function EditReimbursementPage() {
         } catch (err) {
             setError('root', {
                 message:
-                    err instanceof Error
-                        ? err.message
-                        : 'Failed to update',
+                    err instanceof Error ? err.message : 'Failed to update',
             });
         }
     }

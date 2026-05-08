@@ -21,11 +21,7 @@ type Props = {
     onToggleActive: (cat: Category) => void;
 };
 
-export function CategoryList({
-    categories,
-    onRename,
-    onToggleActive,
-}: Props) {
+export function CategoryList({ categories, onRename, onToggleActive }: Props) {
     const [editingId, setEditingId] = useState<null | string>(null);
     const [editName, setEditName] = useState('');
     const [editError, setEditError] = useState('');
@@ -46,9 +42,7 @@ export function CategoryList({
             await onRename(id, editName.trim());
             setEditingId(null);
         } catch (err) {
-            setEditError(
-                err instanceof Error ? err.message : 'Invalid name',
-            );
+            setEditError(err instanceof Error ? err.message : 'Invalid name');
         }
     }
 
@@ -78,9 +72,7 @@ export function CategoryList({
                                             <Input
                                                 className="h-8 w-48"
                                                 onChange={(e) => {
-                                                    setEditName(
-                                                        e.target.value,
-                                                    );
+                                                    setEditName(e.target.value);
                                                     setEditError('');
                                                 }}
                                                 onKeyDown={(e) => {
@@ -91,9 +83,7 @@ export function CategoryList({
                                                 }}
                                                 value={editName}
                                             />
-                                            <FieldError
-                                                message={editError}
-                                            />
+                                            <FieldError message={editError} />
                                         </div>
                                     ) : (
                                         cat.name
@@ -107,9 +97,7 @@ export function CategoryList({
                                                 : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-500'
                                         }`}
                                     >
-                                        {cat.active
-                                            ? 'Active'
-                                            : 'Inactive'}
+                                        {cat.active ? 'Active' : 'Inactive'}
                                     </span>
                                 </TableCell>
                                 <TableCell className="text-muted-foreground">
@@ -118,7 +106,7 @@ export function CategoryList({
                                     ).toLocaleDateString()}
                                 </TableCell>
                                 <TableCell>
-                                    <div className="flex gap-1 min-w-[140px]">
+                                    <div className="flex min-w-[140px] gap-1">
                                         {editingId === cat.id ? (
                                             <>
                                                 <Button

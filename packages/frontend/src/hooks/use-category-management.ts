@@ -17,9 +17,7 @@ export function useCategoryManagement() {
         try {
             setCategories(await categoryService.list());
         } catch (err) {
-            setError(
-                err instanceof Error ? err.message : 'Failed to load',
-            );
+            setError(err instanceof Error ? err.message : 'Failed to load');
         } finally {
             setLoading(false);
         }
@@ -46,16 +44,12 @@ export function useCategoryManagement() {
                     active: !cat.active,
                 });
                 toast.success(
-                    cat.active
-                        ? 'Category deactivated'
-                        : 'Category activated',
+                    cat.active ? 'Category deactivated' : 'Category activated',
                 );
                 await fetchCategories();
             } catch (err) {
                 toast.error(
-                    err instanceof Error
-                        ? err.message
-                        : 'Failed to update',
+                    err instanceof Error ? err.message : 'Failed to update',
                 );
             }
         },

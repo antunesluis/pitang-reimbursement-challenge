@@ -39,9 +39,7 @@ export function CategoryForm({ onCancel, onCreate }: Props) {
         } catch (err) {
             setError('root', {
                 message:
-                    err instanceof Error
-                        ? err.message
-                        : 'Failed to create',
+                    err instanceof Error ? err.message : 'Failed to create',
             });
         }
     }
@@ -68,11 +66,7 @@ export function CategoryForm({ onCancel, onCreate }: Props) {
                     <Button disabled={isSubmitting} type="submit">
                         {isSubmitting ? 'Creating...' : 'Create'}
                     </Button>
-                    <Button
-                        onClick={onCancel}
-                        type="button"
-                        variant="outline"
-                    >
+                    <Button onClick={onCancel} type="button" variant="outline">
                         Cancel
                     </Button>
                 </form>

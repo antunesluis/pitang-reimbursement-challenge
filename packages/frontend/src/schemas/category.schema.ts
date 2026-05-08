@@ -8,9 +8,11 @@ export const createCategorySchema = z
 
 export const updateCategorySchema = z
     .object({
-        active: z.boolean({
-            message: 'Active must be true or false',
-        }).optional(),
+        active: z
+            .boolean({
+                message: 'Active must be true or false',
+            })
+            .optional(),
         name: z
             .string()
             .min(2, 'Name must be at least 2 characters')

@@ -1,6 +1,10 @@
 import dayjs from 'dayjs';
 
-import { Action, Role, Status } from '../../prisma/src/generated/prisma/enums.ts';
+import {
+    Action,
+    Role,
+    Status,
+} from '../../prisma/src/generated/prisma/enums.ts';
 import { AppError } from '../lib/errors.ts';
 import { prisma } from '../lib/prisma.ts';
 import { reimbursementPolicy } from '../policies/reimbursement.policy.ts';
@@ -189,7 +193,12 @@ export async function update(req: Request, res: Response) {
         where: { id },
     });
 
-    await recordHistory(id, req.user!.id, Action.UPDATED, 'Reimbursement updated');
+    await recordHistory(
+        id,
+        req.user!.id,
+        Action.UPDATED,
+        'Reimbursement updated',
+    );
 
     res.json(updated);
 }
@@ -420,8 +429,8 @@ export async function getStats(req: Request, res: Response) {
     }
 
     if (role === Role.FINANCE) {
-        const [pending, paidThisMonth, paidAmountThisMonth] =
-            await Promise.all([
+        const [pending, paidThisMonth, paidAmountThisMonth] = await Promise.all(
+            [
                 prisma.reimbursement.count({
                     where: { status: Status.APPROVED },
                 }),
@@ -432,7 +441,8 @@ export async function getStats(req: Request, res: Response) {
                     _sum: { amount: true },
                     where: { status: Status.PAID, updatedAt: thisMonth },
                 }),
-            ]);
+            ],
+        );
         res.json({
             paidAmountThisMonth: paidAmountThisMonth._sum.amount ?? 0,
             paidThisMonth,

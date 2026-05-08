@@ -65,9 +65,7 @@ function NewReimbursementPage() {
         } catch (err) {
             setError('root', {
                 message:
-                    err instanceof Error
-                        ? err.message
-                        : 'Failed to create',
+                    err instanceof Error ? err.message : 'Failed to create',
             });
         }
     }
@@ -107,18 +105,13 @@ function NewReimbursementPage() {
                                         </p>
                                         <p className="text-muted-foreground text-sm">
                                             {file.type} —{' '}
-                                            {(file.size / 1024).toFixed(
-                                                1,
-                                            )}{' '}
-                                            KB
+                                            {(file.size / 1024).toFixed(1)} KB
                                         </p>
                                     </div>
                                     <Button
                                         onClick={() =>
                                             setPendingFiles((prev) =>
-                                                prev.filter(
-                                                    (_, j) => j !== i,
-                                                ),
+                                                prev.filter((_, j) => j !== i),
                                             )
                                         }
                                         size="sm"

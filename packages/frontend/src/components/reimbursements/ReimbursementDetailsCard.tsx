@@ -42,9 +42,7 @@ export function ReimbursementDetailsCard({ data }: Props) {
                         <span className="text-muted-foreground text-sm font-medium">
                             Expense Date
                         </span>
-                        <p>
-                            {new Date(data.expenseDate).toLocaleDateString()}
-                        </p>
+                        <p>{new Date(data.expenseDate).toLocaleDateString()}</p>
                     </div>
                     <Separator />
                     <div>

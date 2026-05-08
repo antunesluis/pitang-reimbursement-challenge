@@ -121,12 +121,12 @@ function ReimbursementDetailPage() {
                 confirm={
                     confirm
                         ? {
-                            closeLabel: confirm.closeLabel,
-                            confirmLabel: confirm.confirmLabel,
-                            description: confirm.description,
-                            title: confirm.title,
-                            variant: confirm.variant,
-                        }
+                              closeLabel: confirm.closeLabel,
+                              confirmLabel: confirm.confirmLabel,
+                              description: confirm.description,
+                              title: confirm.title,
+                              variant: confirm.variant,
+                          }
                         : null
                 }
                 confirmLoading={actionLoading}

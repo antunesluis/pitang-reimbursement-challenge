@@ -71,9 +71,7 @@ function ReimbursementListPage() {
             <Delayed>
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                        <h1 className="text-2xl font-bold">
-                            Reimbursements
-                        </h1>
+                        <h1 className="text-2xl font-bold">Reimbursements</h1>
                     </div>
                     <div className="space-y-2">
                         {Array.from({ length: 5 }).map((_, i) => (
@@ -97,9 +95,7 @@ function ReimbursementListPage() {
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold">
-                    Reimbursements ({total})
-                </h1>
+                <h1 className="text-2xl font-bold">Reimbursements ({total})</h1>
                 {isEmployee && (
                     <Button asChild>
                         <Link to="/reimbursements/new">
@@ -171,9 +167,7 @@ function ReimbursementListPage() {
                                         {formatCurrency(r.amount)}
                                     </TableCell>
                                     <TableCell>
-                                        <StatusBadge
-                                            status={r.status}
-                                        />
+                                        <StatusBadge status={r.status} />
                                     </TableCell>
                                     <TableCell className="text-muted-foreground">
                                         {r.category.name}

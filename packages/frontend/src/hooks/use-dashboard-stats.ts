@@ -21,11 +21,7 @@ export function useDashboardStats() {
                 setStats(statsData);
                 setRecent(reimbs.data);
             } catch (err) {
-                setError(
-                    err instanceof Error
-                        ? err.message
-                        : 'Failed to load',
-                );
+                setError(err instanceof Error ? err.message : 'Failed to load');
             } finally {
                 setLoading(false);
             }

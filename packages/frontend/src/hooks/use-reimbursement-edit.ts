@@ -13,21 +13,14 @@ export function useReimbursementEdit(id: string) {
 
     const fetchData = useCallback(async () => {
         try {
-            const reimbursement =
-                await reimbursementService.getById(id);
+            const reimbursement = await reimbursementService.getById(id);
             if (reimbursement.status !== Status.DRAFT) {
-                setLoadError(
-                    'Only DRAFT reimbursements can be edited',
-                );
+                setLoadError('Only DRAFT reimbursements can be edited');
                 return;
             }
             setData(reimbursement);
         } catch (err) {
-            setLoadError(
-                err instanceof Error
-                    ? err.message
-                    : 'Failed to load',
-            );
+            setLoadError(err instanceof Error ? err.message : 'Failed to load');
         } finally {
             setLoading(false);
         }

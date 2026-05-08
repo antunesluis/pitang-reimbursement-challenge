@@ -14,9 +14,9 @@ type ConfirmAction = {
     variant: 'default' | 'destructive' | 'outline';
 };
 
-export type RejectHandler = (
-    data: { rejectionReason: string },
-) => Promise<void>;
+export type RejectHandler = (data: {
+    rejectionReason: string;
+}) => Promise<void>;
 
 type UseReimbursementActionsParams = {
     id: string;
@@ -46,9 +46,7 @@ export function useReimbursementActions({
                 toast.success(confirm.message);
             }
         } catch (err) {
-            toast.error(
-                err instanceof Error ? err.message : 'Action failed',
-            );
+            toast.error(err instanceof Error ? err.message : 'Action failed');
         } finally {
             setActionLoading(false);
             setConfirm(null);
@@ -59,10 +57,7 @@ export function useReimbursementActions({
         async (formData: { rejectionReason: string }) => {
             setActionLoading(true);
             try {
-                await reimbursementService.reject(
-                    id,
-                    formData.rejectionReason,
-                );
+                await reimbursementService.reject(id, formData.rejectionReason);
                 toast.success('Reimbursement rejected');
                 onNavigate();
             } catch (err) {
@@ -95,8 +90,7 @@ export function useReimbursementActions({
                 action: () => reimbursementService.cancel(id),
                 closeLabel: 'Keep',
                 confirmLabel: 'Cancel',
-                description:
-                    'This will cancel the reimbursement request.',
+                description: 'This will cancel the reimbursement request.',
                 message: 'Reimbursement cancelled',
                 redirect: true,
                 title: 'Cancel Reimbursement?',
