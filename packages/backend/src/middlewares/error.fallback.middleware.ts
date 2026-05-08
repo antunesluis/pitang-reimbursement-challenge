@@ -9,7 +9,9 @@ export function errorFallbackMiddleware(
     response: Response,
     _next: NextFunction,
 ) {
-    console.error(error.stack);
+    if (env.NODE_ENV !== 'test') {
+        console.error(error.stack);
+    }
 
     if (error instanceof AppError) {
         response.status(error.statusCode).json({

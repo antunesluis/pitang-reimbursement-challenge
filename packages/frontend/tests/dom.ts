@@ -9,6 +9,7 @@ const win = dom.window as any;
 
 Object.assign(globalThis, {
     CustomEvent: win.CustomEvent,
+    DOMParser: win.DOMParser,
     document: win.document,
     Element: win.Element,
     Event: win.Event,
@@ -23,5 +24,7 @@ Object.assign(globalThis, {
     MouseEvent: win.MouseEvent,
     MutationObserver: win.MutationObserver,
     Node: win.Node,
+    NodeFilter: win.NodeFilter,
+    Range: win.Range,
     window: win,
 });
