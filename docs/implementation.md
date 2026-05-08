@@ -132,29 +132,29 @@ Todas as 6 transições foram implementadas:
 
 ## Plus / Diferenciais (spec seção 17)
 
-| # | Diferencial | Status |
-|---|-------------|:---:|
-| 1 | Paginação | ✅ `?page=1&limit=10` em `/users` e `/reimbursements` |
-| 2 | Filtro por status | ✅ `?status=DRAFT` com validação por role |
-| 3 | Filtro por categoria | ✅ `?categoryId=xyz` |
-| 4 | Busca por colaborador | ❌ |
-| 5 | Ordenação por data ou valor | ✅ `?sort=amount&order=desc` |
-| 6 | Dashboard com totais | ✅ `GET /reimbursements/stats` por role |
-| 7 | Preview/download de anexos | ✅ `target="_blank"` link + `express.static('/uploads')` |
-| 8 | Soft delete | ❌ |
-| 9 | Seeds iniciais | ✅ 4 users + 3 categories + sample |
-| 10 | Collection do Postman | ✅ 33 requests, 8 folders |
-| 11 | Mais testes backend | ✅ 68 testes |
-| 12 | Mais testes frontend | ✅ 66 testes |
-| 13 | Consumo de API externa | ❌ |
-| 14 | Refresh token | ❌ |
-| 15 | Docker Compose | ✅ `docker compose up --build` (dev, hot-reload) |
-| 16 | Upload real de comprovantes | ✅ multer diskStorage |
-| 17 | Limite de valor configurável | ❌ |
-| 18 | Bloqueio de despesas futuras | ✅ `isFutureDate()` → 400 |
-| 19 | Bloqueio sem anexo acima de valor | ✅ `ATTACHMENT_REQUIRED_THRESHOLD` (default 100). Submit bloqueado com 400 se `amount > threshold` sem anexos. Frontend desabilita botão com aviso visual. |
+| # | Diferencial | Status | Detalhe |
+|---|-------------|:---:|---------|
+| 1 | Paginação | ✅ | `?page=1&limit=10` em `/users` e `/reimbursements` |
+| 2 | Filtro por status | ✅ | `?status=DRAFT` com validação por role |
+| 3 | Filtro por categoria | ✅ | `?categoryId=xyz` |
+| 4 | Busca por colaborador | ❌ | |
+| 5 | Ordenação por data ou valor | ✅ | `?sort=amount&order=desc` |
+| 6 | Dashboard com totais | ✅ | `GET /reimbursements/stats` por role |
+| 7 | Preview/download de anexos | ✅ | `target="_blank"` link + `express.static('/uploads')` |
+| 8 | Soft delete | ❌ | |
+| 9 | Seeds iniciais | ✅ | 4 users + 3 categories + sample |
+| 10 | Collection do Postman | ✅ | 33 requests, 8 folders |
+| 11 | Mais testes backend | ✅ | 70 testes |
+| 12 | Mais testes frontend | ✅ | 66 testes |
+| 13 | Consumo de API externa | ❌ | |
+| 14 | Refresh token | ❌ | |
+| 15 | Docker Compose | ✅ | `docker compose up --build` (dev, hot-reload) |
+| 16 | Upload real de comprovantes | ✅ | multer diskStorage |
+| 17 | Limite de valor configurável | ❌ | |
+| 18 | Bloqueio de despesas futuras | ✅ | `isFutureDate()` → 400 |
+| 19 | Bloqueio sem anexo acima de valor | ✅ | `ATTACHMENT_REQUIRED_THRESHOLD` (default 100) |
 
-**Total: 13 de 19 diferenciais implementados**
+**Total: 14 de 19 diferenciais implementados**
 
 ---
 
@@ -188,14 +188,14 @@ Todas as 6 transições foram implementadas:
 
 ## Entrega (spec seção 19)
 
-| Item | Status |
-|------|:---:|
-| Código fonte em repositório Git | ✅ |
-| README com instruções claras | ✅ (raiz + `packages/backend/README.md` + `packages/frontend/README.md`) |
-| Usuários de teste | ✅ (4 usuários no seed) |
-| Explicação das decisões técnicas | ✅ (este documento + READMEs) |
-| Tecnologias da ementa utilizadas | ✅ (todas, com adaptações documentadas) |
-| Collection do Postman | ✅ (`postman/`) |
-| Documentação de testes | ✅ (`docs/tests.md`) |
-| Documentação de fluxo | ✅ (`docs/flow.md`) |
-| Matriz de permissões | ✅ (`docs/permissions.md`) |
+| Item | Status | Detalhe |
+|------|:---:|---------|
+| Código fonte em repositório Git | ✅ | |
+| README com instruções claras | ✅ | Raiz + `packages/backend/README.md` + `packages/frontend/README.md` |
+| Usuários de teste | ✅ | 4 usuários no seed |
+| Explicação das decisões técnicas | ✅ | Este documento + READMEs |
+| Tecnologias da ementa utilizadas | ✅ | Todas, com adaptações documentadas |
+| Collection do Postman | ✅ | `postman/` |
+| Documentação de testes | ✅ | `docs/tests.md` |
+| Documentação de fluxo | ✅ | `docs/flow.md` |
+| Matriz de permissões | ✅ | `docs/permissions.md` |
