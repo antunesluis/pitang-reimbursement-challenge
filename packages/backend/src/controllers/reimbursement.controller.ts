@@ -5,6 +5,7 @@ import {
     Role,
     Status,
 } from '../../prisma/src/generated/prisma/enums.ts';
+import { env } from '../lib/env.vars.ts';
 import { AppError } from '../lib/errors.ts';
 import { prisma } from '../lib/prisma.ts';
 import { reimbursementPolicy } from '../policies/reimbursement.policy.ts';
@@ -232,6 +233,20 @@ export async function submit(req: Request, res: Response) {
         })
     ) {
         throw new AppError(403, 'Access denied');
+    }
+
+    if (
+        reimbursement.amount > env.ATTACHMENT_REQUIRED_THRESHOLD
+    ) {
+        const count = await prisma.attachment.count({
+            where: { reimbursementId: reimbursement.id },
+        });
+        if (count === 0) {
+            throw new AppError(
+                400,
+                `At least one attachment is required for amounts above $${env.ATTACHMENT_REQUIRED_THRESHOLD}`,
+            );
+        }
     }
 
     const updated = await prisma.reimbursement.update({

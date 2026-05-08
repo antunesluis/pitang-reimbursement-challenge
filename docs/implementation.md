@@ -152,7 +152,7 @@ Todas as 6 transições foram implementadas:
 | 16 | Upload real de comprovantes | ✅ multer diskStorage |
 | 17 | Limite de valor configurável | ❌ |
 | 18 | Bloqueio de despesas futuras | ✅ `isFutureDate()` → 400 |
-| 19 | Bloqueio sem anexo acima de valor | ❌ |
+| 19 | Bloqueio sem anexo acima de valor | ✅ `ATTACHMENT_REQUIRED_THRESHOLD` (default 100). Submit bloqueado com 400 se `amount > threshold` sem anexos. Frontend desabilita botão com aviso visual. |
 
 **Total: 13 de 19 diferenciais implementados**
 

@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 import { beforeAll, describe, expect, it } from 'bun:test';
 
 import {
@@ -142,7 +144,7 @@ describe('Reimbursements', () => {
                 .post('/reimbursements')
                 .set('Authorization', `Bearer ${empToken}`)
                 .send({
-                    amount: 200,
+                    amount: 99,
                     categoryId: activeCatId,
                     description: 'Conference ticket',
                     expenseDate: '2026-05-01T00:00:00Z',
@@ -259,6 +261,56 @@ describe('Reimbursements', () => {
                 .post(`/reimbursements/${id}/submit`)
                 .set('Authorization', `Bearer ${empToken}`);
             expect(failRes.status).toBe(400);
+        });
+    });
+
+    describe('attachment threshold', () => {
+        it('submit requires attachment for amount above threshold', async () => {
+            const createRes = await request(app)
+                .post('/reimbursements')
+                .set('Authorization', `Bearer ${empToken}`)
+                .send({
+                    amount: 200,
+                    categoryId: activeCatId,
+                    description: 'No attachments',
+                    expenseDate: '2026-05-01T00:00:00Z',
+                });
+            const id = createRes.body.id;
+
+            const res = await request(app)
+                .post(`/reimbursements/${id}/submit`)
+                .set('Authorization', `Bearer ${empToken}`);
+
+            expect(res.status).toBe(400);
+            expect(res.body.message).toContain('At least one attachment');
+        });
+
+        it('submit succeeds with attachment for amount above threshold', async () => {
+            const createRes = await request(app)
+                .post('/reimbursements')
+                .set('Authorization', `Bearer ${empToken}`)
+                .send({
+                    amount: 200,
+                    categoryId: activeCatId,
+                    description: 'With attachment',
+                    expenseDate: '2026-05-01T00:00:00Z',
+                });
+            const id = createRes.body.id;
+
+            await request(app)
+                .post(`/reimbursements/${id}/attachments`)
+                .set('Authorization', `Bearer ${empToken}`)
+                .attach(
+                    'file',
+                    path.resolve(import.meta.dirname, 'fixtures/sample.pdf'),
+                );
+
+            const res = await request(app)
+                .post(`/reimbursements/${id}/submit`)
+                .set('Authorization', `Bearer ${empToken}`);
+
+            expect(res.status).toBe(200);
+            expect(res.body.status).toBe('SUBMITTED');
         });
     });
 

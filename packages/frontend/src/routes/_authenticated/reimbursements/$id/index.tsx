@@ -17,6 +17,7 @@ import {
     CardTitle,
 } from '@/components/ui/card.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
+import { ATTACHMENT_REQUIRED_THRESHOLD } from '@/config/index.ts';
 import { usePermissions } from '@/hooks/use-permissions.ts';
 import { useReimbursementActions } from '@/hooks/use-reimbursement-actions.ts';
 import { getFileUrl } from '@/lib/api.ts';
@@ -100,6 +101,10 @@ function ReimbursementDetailPage() {
         );
     }
 
+    const submitBlocked =
+        data.amount > ATTACHMENT_REQUIRED_THRESHOLD &&
+        attachments.length === 0;
+
     return (
         <div className="space-y-6">
             {error && <ErrorAlert message={error} />}
@@ -111,13 +116,23 @@ function ReimbursementDetailPage() {
 
             <ReimbursementDetailsCard data={data} />
 
+            {submitBlocked && (
+                <p className="text-destructive text-sm">
+                    At least one attachment is required before submitting
+                    amounts above ${ATTACHMENT_REQUIRED_THRESHOLD}.
+                </p>
+            )}
+
             <ReimbursementActionsCard
                 canApprove={perm.canApprove(data.status)}
                 canCancel={perm.canCancel(data.status, data.requesterId)}
                 canEdit={perm.canEdit(data.status, data.requesterId)}
                 canPay={perm.canPay(data.status)}
                 canReject={perm.canReject(data.status)}
-                canSubmit={perm.canSubmit(data.status, data.requesterId)}
+                canSubmit={
+                    perm.canSubmit(data.status, data.requesterId) &&
+                    !submitBlocked
+                }
                 confirm={
                     confirm
                         ? {
