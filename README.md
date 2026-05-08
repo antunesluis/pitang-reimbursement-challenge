@@ -1,4 +1,13 @@
-# Sistema de Controle de Reembolsos
+<div align="center">
+  <img alt="Sistema de Controle de Reembolsos – lista de solicitações" src="docs/images/reembolsos.png" width="800">
+
+  <h1 align="center">Sistema de Controle de Reembolsos</h1>
+
+  <p align="center">
+    Fullstack reimbursement management — submit expenses, get approvals, track payments.
+  </p>
+
+</div>
 
 Aplicação fullstack de gestão de reembolsos — colaboradores enviam despesas,
 gestores aprovam/rejeitam, financeiro marca como pago e admins gerenciam
