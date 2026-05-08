@@ -1,5 +1,5 @@
 <div align="center">
-  <img alt="Sistema de Controle de Reembolsos – lista de solicitações" src="docs/images/reembolsos.png" width="800">
+  <img alt="Sistema de Controle de Reembolsos – lista de solicitações" src="docs/images/login.png" width="800">
   <h1 align="center">Sistema de Controle de Reembolsos</h1>
 </div>
 
